@@ -21,12 +21,12 @@ use crate::predicate::{GateType, Predicate};
 // ── Config (env-driven, same as one-engine) ──
 
 const DEFAULT_URL: &str = "https://openrouter.ai/api/v1/chat/completions";
-const DEFAULT_MODEL: &str = "minimax/minimax-m2.5";
+const DEFAULT_MODEL: &str = "google/gemini-3-pro-preview";
 
 const BACKUP_MODELS: &[&str] = &[
-    "google/gemini-2.0-flash-lite-001",
-    "anthropic/claude-3.5-haiku",
-    "openai/gpt-4o-mini",
+    "google/gemini-pro-1.5",
+    "anthropic/claude-3.7-sonnet",
+    "openai/gpt-4o",
 ];
 
 fn env_or(keys: &[&str], default: &str) -> String {
@@ -120,7 +120,7 @@ impl LmClient {
     }
 
     /// Raw chat completion — send messages, get text back.
-    async fn chat(&self, system: &str, user: &str) -> Result<String> {
+    pub async fn chat_raw(&self, system: &str, user: &str) -> Result<String> {
         let messages = vec![
             json!({"role": "system", "content": system}),
             json!({"role": "user", "content": user}),
@@ -219,7 +219,7 @@ Return JSON: {"evaluations": [{"name": "...", "activation": 0.0-1.0, "reason": "
             outs.errors.join("; ")
         );
 
-        let response = self.chat(system, &user).await?;
+        let response = self.chat_raw(system, &user).await?;
         let parsed: Value = serde_json::from_str(&response)
             .or_else(|_| {
                 // Try stripping markdown fences
@@ -277,7 +277,7 @@ Return JSON:
             outs.errors.join("; ")
         );
 
-        let response = self.chat(system, &user).await?;
+        let response = self.chat_raw(system, &user).await?;
         let parsed: Value = serde_json::from_str(&response)
             .or_else(|_| {
                 let clean = response
@@ -334,7 +334,7 @@ Return JSON:
   "errors": ["any errors, missing information, or uncertainty"]
 }"#;
 
-        let response = self.chat(system, task).await?;
+        let response = self.chat_raw(system, task).await?;
         
         let parsed: Value = serde_json::from_str(&response)
             .or_else(|_| {
