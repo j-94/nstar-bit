@@ -11,6 +11,14 @@ use std::path::Path;
 use crate::collapse::Collapse;
 use crate::predicate::Predicate;
 
+fn truncate_str(s: &str, max: usize) -> String {
+    if s.len() <= max {
+        s.to_string()
+    } else {
+        format!("{}…", &s[..max])
+    }
+}
+
 /// The full nstar-bit state — persisted to disk as JSON.
 ///
 /// Starts empty: zero predicates, zero collapses.
@@ -140,19 +148,116 @@ impl NstarState {
         candidates
     }
 
-    /// Summary for display.
+    /// Rich summary dashboard for display.
     pub fn summary(&self) -> String {
-        format!(
-            "N★ State: {} predicates, {} collapses, {} turns\nPredicates: {}",
-            self.predicates.len(),
-            self.collapses.len(),
-            self.total_turns,
-            self.predicates
-                .iter()
-                .map(|p| format!("{}({}×)", p.name, p.reinforcements))
-                .collect::<Vec<_>>()
-                .join(", ")
-        )
+        let mut out = String::new();
+
+        out.push_str("╔══════════════════════════════════════════════════╗\n");
+        out.push_str("║             N★ BIT — STATE DASHBOARD             ║\n");
+        out.push_str("╚══════════════════════════════════════════════════╝\n\n");
+
+        out.push_str(&format!("  Session : {}\n", &self.session[..8]));
+        out.push_str(&format!("  Turns   : {}\n", self.total_turns));
+        out.push_str(&format!("  n       : {} (discovered predicates)\n", self.predicates.len()));
+        out.push_str(&format!("  History : {} collapses retained\n\n", self.collapses.len()));
+
+        // ── Predicates ──
+        if self.predicates.is_empty() {
+            out.push_str("  Predicates: (none — tabula rasa)\n\n");
+        } else {
+            out.push_str("  ┌─ PREDICATES ────────────────────────────────────\n");
+            for (i, p) in self.predicates.iter().enumerate() {
+                out.push_str(&format!(
+                    "  │ {}. {} [Gate:{:?} T:{:.1}] discovered@turn {} reinforced×{}\n",
+                    i + 1,
+                    p.name,
+                    p.gate,
+                    p.threshold,
+                    p.discovered_at,
+                    p.reinforcements
+                ));
+                out.push_str(&format!(
+                    "  │    condition: \"{}\"\n",
+                    truncate_str(&p.activation_condition, 60)
+                ));
+            }
+            out.push_str("  └─────────────────────────────────────────────────\n\n");
+        }
+
+        // ── Collapse History ──
+        if !self.collapses.is_empty() {
+            out.push_str("  ┌─ COLLAPSE CHAIN ────────────────────────────────\n");
+            for c in &self.collapses {
+                let discovered_marker = if let Some(ref d) = c.discovered {
+                    format!(" ★ NEW:{}", d.name)
+                } else {
+                    String::new()
+                };
+
+                let active: Vec<String> = c.activations
+                    .iter()
+                    .filter(|(_, v)| *v > 0.0)
+                    .map(|(n, v)| format!("{}={:.2}", n, v))
+                    .collect();
+
+                let active_str = if active.is_empty() {
+                    "∅".to_string()
+                } else {
+                    active.join(", ")
+                };
+
+                let gates_str = if c.gates_fired.is_empty() {
+                    "—".to_string()
+                } else {
+                    c.gates_fired
+                        .iter()
+                        .map(|g| format!("{:?}({})", g.gate_type, g.predicate_name))
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                };
+
+                out.push_str(&format!(
+                    "  │ T{:>3} [{}] n={} q={:.1} | {} | gates: {}{}\n",
+                    c.turn,
+                    &c.hash[..8],
+                    c.n,
+                    c.quality,
+                    active_str,
+                    gates_str,
+                    discovered_marker,
+                ));
+            }
+            out.push_str("  └─────────────────────────────────────────────────\n\n");
+        }
+
+        // ── Dimensionality Growth ──
+        if self.collapses.len() >= 2 {
+            out.push_str("  ┌─ DIMENSIONALITY GROWTH ─────────────────────────\n");
+            out.push_str("  │ ");
+            for c in &self.collapses {
+                let bar = "█".repeat(c.n.max(1));
+                out.push_str(&format!("{} ", bar));
+            }
+            out.push_str("\n");
+            out.push_str("  │ ");
+            for c in &self.collapses {
+                out.push_str(&format!("T{}  ", c.turn));
+            }
+            out.push_str("\n");
+            out.push_str("  └─────────────────────────────────────────────────\n\n");
+        }
+
+        // ── Merge Candidates ──
+        let merges = self.find_merge_candidates(0.8);
+        if !merges.is_empty() {
+            out.push_str("  ┌─ MERGE CANDIDATES (jaccard ≥ 0.8) ─────────────\n");
+            for (a, b) in &merges {
+                out.push_str(&format!("  │ {} ↔ {}\n", a, b));
+            }
+            out.push_str("  └─────────────────────────────────────────────────\n\n");
+        }
+
+        out
     }
 }
 
