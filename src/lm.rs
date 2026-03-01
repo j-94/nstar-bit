@@ -48,6 +48,22 @@ fn api_key() -> Option<String> {
             }
         }
     }
+
+    // Fallback: try macOS keychain
+    if cfg!(target_os = "macos") {
+        let output = std::process::Command::new("security")
+            .args(&["find-generic-password", "-s", "OPENROUTER_API_KEY", "-w"])
+            .output()
+            .ok()?;
+        
+        if output.status.success() {
+            let val = String::from_utf8_lossy(&output.stdout).trim().to_string();
+            if !val.is_empty() {
+                return Some(val);
+            }
+        }
+    }
+
     None
 }
 
@@ -301,6 +317,50 @@ Return JSON:
                 .and_then(|v| v.as_str())
                 .unwrap_or("")
                 .to_string(),
+        })
+    }
+
+    /// Execute a task as an agent and return the outputs.
+    /// This is used for the "ACT" phase, before the "META" and "REFLECT" phases.
+    pub async fn execute_task(&self, task: &str) -> Result<TurnOuts> {
+        let system = r#"You are an AI assistant. Complete the user's task.
+Perform the task, and then self-assess your performance.
+If you are unable to complete the task perfectly, note the issues in the "errors" array.
+Return JSON:
+{
+  "response": "your detailed response to the task",
+  "actions": ["hypothetical actions taken, e.g. 'read file X'"],
+  "quality": 0.0-1.0,
+  "errors": ["any errors, missing information, or uncertainty"]
+}"#;
+
+        let response = self.chat(system, task).await?;
+        
+        let parsed: Value = serde_json::from_str(&response)
+            .or_else(|_| {
+                let clean = response
+                    .lines()
+                    .filter(|l| !l.trim().starts_with("```"))
+                    .collect::<Vec<_>>()
+                    .join("\n");
+                serde_json::from_str(&clean)
+            })
+            .unwrap_or(json!({
+                "response": response,
+                "actions": [],
+                "quality": 0.5,
+                "errors": ["Failed to parse json response"]
+            }));
+
+        Ok(TurnOuts {
+            response: parsed.get("response").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            actions: parsed.get("actions").and_then(|v| v.as_array())
+                .map(|a| a.iter().filter_map(|x| x.as_str().map(|s| s.to_string())).collect())
+                .unwrap_or_default(),
+            quality: parsed.get("quality").and_then(|v| v.as_f64()).unwrap_or(0.5) as f32,
+            errors: parsed.get("errors").and_then(|v| v.as_array())
+                .map(|a| a.iter().filter_map(|x| x.as_str().map(|s| s.to_string())).collect())
+                .unwrap_or_default(),
         })
     }
 }

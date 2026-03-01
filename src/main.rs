@@ -84,16 +84,18 @@ async fn run_single_turn(
     state_path: &PathBuf,
     receipts_path: &PathBuf,
 ) -> Result<()> {
-    println!("\n[Processing via LM...]");
+    println!("\n[Executing Task via LM...]");
 
-    // In a real agent, we would call the LM to produce the response/actions.
-    // For this demonstration, we mock the output so we focus on the META pipeline.
-    let outs = TurnOuts {
-        response: format!("Processed task: {}", prompt),
-        actions: vec![],
-        quality: 0.9,
-        errors: vec![], // Add mock errors here to see it discover error predicates
-    };
+    let lm = nstar_bit::lm::LmClient::new()
+        .ok_or_else(|| anyhow::anyhow!("API key is required to run."))?;
+
+    let outs = lm.execute_task(&prompt).await?;
+    
+    println!("Response: {}", outs.response);
+    if !outs.errors.is_empty() {
+        println!("Errors  : {:?}", outs.errors);
+    }
+    println!("[Computing Causal Collapse...]");
 
     let ins = TurnIns {
         prompt,
