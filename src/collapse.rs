@@ -99,16 +99,20 @@ impl Collapse {
         ins: &TurnIns,
         outs: &TurnOuts,
         predicates: &mut [Predicate],
+        evaluations: &[(String, f32)],
     ) -> Self {
         // Step 1: Evaluate each predicate's activation
-        // In a full implementation, this calls an LLM to evaluate each
-        // predicate's activation_condition against ins/outs.
-        // For now, we use heuristic activation based on signal words.
+        // In the nstar-bit protocol, this requires LM evaluation.
         let mut activations = Vec::new();
         let mut gates_fired = Vec::new();
 
         for pred in predicates.iter_mut() {
-            let activation = heuristic_activation(pred, ins, outs);
+            let activation = evaluations
+                .iter()
+                .find(|(n, _)| n == &pred.name)
+                .map(|(_, a)| *a)
+                .unwrap_or(0.0);
+                
             pred.activate(activation);
             activations.push((pred.name.clone(), activation));
 
@@ -138,49 +142,6 @@ impl Collapse {
             n,
         }
     }
-}
-
-/// Heuristic activation — evaluates a predicate without calling an LLM.
-///
-/// In the full system, this is replaced by asking the LLM to evaluate
-/// the predicate's `activation_condition` against the turn's context.
-/// This heuristic version checks for signal words in the ins/outs.
-fn heuristic_activation(pred: &Predicate, ins: &TurnIns, outs: &TurnOuts) -> f32 {
-    let all_text = format!(
-        "{} {} {} {}",
-        ins.prompt,
-        ins.context.join(" "),
-        outs.response,
-        outs.errors.join(" ")
-    )
-    .to_lowercase();
-
-    let condition = pred.activation_condition.to_lowercase();
-
-    // Simple: count how many words from the condition appear in the turn text
-    let condition_words: Vec<&str> = condition.split_whitespace().collect();
-    let matches = condition_words
-        .iter()
-        .filter(|w| w.len() > 3 && all_text.contains(**w))
-        .count();
-
-    let ratio = if condition_words.is_empty() {
-        0.0
-    } else {
-        matches as f32 / condition_words.len() as f32
-    };
-
-    // Boost if there are errors and the predicate is error-related
-    let error_boost = if !outs.errors.is_empty()
-        && (pred.name.to_lowercase().contains("error")
-            || pred.name.to_lowercase().contains("recovery"))
-    {
-        0.3
-    } else {
-        0.0
-    };
-
-    (ratio + error_boost).clamp(0.0, 1.0)
 }
 
 /// Compute a SHA-256 hash of the collapse for receipt purposes.
@@ -214,7 +175,7 @@ mod tests {
             errors: vec![],
         };
         let mut predicates: Vec<Predicate> = vec![];
-        let collapse = Collapse::compute(&ins, &outs, &mut predicates);
+        let collapse = Collapse::compute(&ins, &outs, &mut predicates, &[]);
         assert_eq!(collapse.n, 0);
         assert_eq!(collapse.turn, 1);
         assert!(collapse.gates_fired.is_empty());
@@ -241,7 +202,8 @@ mod tests {
                 0.3,
             ),
         ];
-        let collapse = Collapse::compute(&ins, &outs, &mut predicates);
+        let evals = vec![("Error Recovery".to_string(), 0.9)];
+        let collapse = Collapse::compute(&ins, &outs, &mut predicates, &evals);
         assert!(collapse.n > 0);
     }
 }
