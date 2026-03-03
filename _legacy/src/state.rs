@@ -19,6 +19,33 @@ fn truncate_str(s: &str, max: usize) -> String {
     }
 }
 
+fn is_prime(n: u64) -> bool {
+    if n <= 1 { return false; }
+    if n <= 3 { return true; }
+    if n % 2 == 0 || n % 3 == 0 { return false; }
+    let mut i = 5;
+    while i * i <= n {
+        if n % i == 0 || n % (i + 2) == 0 {
+            return false;
+        }
+        i += 6;
+    }
+    true
+}
+
+fn next_prime(after: u64) -> u64 {
+    if after < 2 {
+        return 2;
+    }
+    let mut candidate = after + 1;
+    loop {
+        if is_prime(candidate) {
+            return candidate;
+        }
+        candidate += 1;
+    }
+}
+
 /// The full nstar-bit state — persisted to disk as JSON.
 ///
 /// Starts empty: zero predicates, zero collapses.
@@ -94,6 +121,11 @@ impl NstarState {
     /// Add a newly discovered predicate.
     pub fn add_predicate(&mut self, mut predicate: Predicate) {
         predicate.discovered_at = self.total_turns;
+        
+        // Find the next available prime so this node has a unique Ruliad dimension
+        let max_prime = self.predicates.iter().map(|p| p.prime_id).max().unwrap_or(1);
+        predicate.prime_id = next_prime(max_prime);
+        
         self.predicates.push(predicate);
     }
 
@@ -168,9 +200,10 @@ impl NstarState {
             out.push_str("  ┌─ PREDICATES ────────────────────────────────────\n");
             for (i, p) in self.predicates.iter().enumerate() {
                 out.push_str(&format!(
-                    "  │ {}. {} [Gate:{:?} T:{:.1}] discovered@turn {} reinforced×{}\n",
+                    "  │ {}. {} [Prime:{}] [Gate:{:?} T:{:.1}] discovered@turn {} reinforced×{}\n",
                     i + 1,
                     p.name,
+                    p.prime_id,
                     p.gate,
                     p.threshold,
                     p.discovered_at,

@@ -12,7 +12,7 @@ use std::path::Path;
 use crate::collapse::{Collapse, TurnIns, TurnOuts};
 use crate::gate::GateResult;
 use crate::lm::{self, LmClient};
-use crate::predicate::{GateType, Predicate};
+use crate::predicate::Predicate;
 use crate::receipt::Receipt;
 use crate::state::NstarState;
 
@@ -64,7 +64,7 @@ pub async fn process_turn(
 
     let mut new_predicate: Option<Predicate> = None;
     let mut reinforced: Vec<String> = Vec::new();
-    let mut reasoning = String::new();
+    let reasoning;
 
     match lm.reflect(&state.predicates, ins, outs).await {
         Ok(reflection) => {
@@ -165,6 +165,7 @@ pub async fn quick_turn(prompt: &str, response: &str, quality: f32) -> Result<Tu
         actions: vec![],
         quality,
         errors: vec![],
+        operations: vec![],
     };
 
     process_turn(&ins, &outs, &mut state, state_path, receipts_path).await

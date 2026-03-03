@@ -39,6 +39,23 @@ pub struct TurnOuts {
 
     /// Any errors or issues
     pub errors: Vec<String>,
+
+    /// UTIR operations proposed by the LLM
+    #[serde(default)]
+    pub operations: Vec<crate::utir::Operation>,
+}
+
+/// A spatial coordinate mapping a computation into the Ruliad.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Coordinate {
+    /// The composite event ID (product of active prime IDs)
+    pub event_id: u64,
+    /// The individual prime factors that compose this state
+    pub primes: Vec<u64>,
+    /// Overall intensity of the activation
+    pub intensity: f32,
+    /// Multi-scale level (0 = token, 1 = turn, 2 = session, etc.)
+    pub scale: u8,
 }
 
 /// The causal collapse — the result of n★(ins, outs).
@@ -50,6 +67,9 @@ pub struct TurnOuts {
 pub struct Collapse {
     /// Unique hash of this collapse
     pub hash: String,
+
+    /// Unique spatial coordinate defining this exact computation state
+    pub coordinate: Coordinate,
 
     /// When this collapse occurred
     pub timestamp: String,
@@ -128,11 +148,36 @@ impl Collapse {
         // Step 2: Compute dimensionality (how many predicates are active)
         let n = activations.iter().filter(|(_, a)| *a > 0.0).count();
 
-        // Step 3: Compute hash (the receipt — proof this collapse occurred)
+        // Step 3: Compute Ruliad Coordinate (multiply primes of active predicates)
+        let mut event_id: u64 = 1;
+        let mut active_primes = Vec::new();
+        let mut total_intensity: f32 = 0.0;
+
+        for pred in predicates.iter() {
+            if pred.activation > 0.0 {
+                // To avoid overflow on event_id for huge compositions, 
+                // in reality we might use a BigUint, but u64 works for demo scales.
+                event_id = event_id.saturating_mul(pred.prime_id);
+                active_primes.push(pred.prime_id);
+                total_intensity += pred.activation;
+            }
+        }
+        
+        let avg_intensity = if n > 0 { total_intensity / n as f32 } else { 0.0 };
+
+        let coordinate = Coordinate {
+            event_id,
+            primes: active_primes,
+            intensity: avg_intensity,
+            scale: 1, // Turn level collapse
+        };
+
+        // Step 4: Compute hash (the receipt — proof this collapse occurred)
         let hash = collapse_hash(ins, outs, &activations);
 
         Collapse {
             hash,
+            coordinate,
             timestamp: Utc::now().to_rfc3339(),
             turn: ins.turn,
             activations,
@@ -173,6 +218,7 @@ mod tests {
             actions: vec![],
             quality: 0.8,
             errors: vec![],
+            operations: vec![],
         };
         let mut predicates: Vec<Predicate> = vec![];
         let collapse = Collapse::compute(&ins, &outs, &mut predicates, &[]);
@@ -193,6 +239,7 @@ mod tests {
             actions: vec![],
             quality: 0.3,
             errors: vec!["NullPointerException".to_string()],
+            operations: vec![],
         };
         let mut predicates = vec![
             Predicate::new(

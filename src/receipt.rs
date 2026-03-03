@@ -4,78 +4,89 @@
 //! this specific computation occurred with these specific results.
 //! Matches the receipt pattern from meta3-graph-core.
 
-use chrono::Utc;
+
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
-use crate::collapse::Collapse;
-use crate::gate::GateResult;
 
-/// A receipt — proof that a turn was processed through the nstar-bit protocol.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Receipt {
-    /// Hash of the collapse
-    pub collapse_hash: String,
 
-    /// Hash of this receipt (chains with previous)
-    pub receipt_hash: String,
-
-    /// Previous receipt hash (forms a chain)
-    pub prev_hash: String,
-
-    /// Timestamp
-    pub timestamp: String,
-
-    /// Turn number
-    pub turn: u64,
-
-    /// How many predicates were active
-    pub n: usize,
-
-    /// Gate result summary
-    pub gate_summary: String,
-
-    /// Quality score
-    pub quality: f32,
-
-    /// New predicate discovered (name, or null)
-    pub discovered: Option<String>,
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(tag = "kind")]
+pub enum Effect {
+    #[serde(rename = "write_file")]
+    WriteFile {
+        path: String,
+        bytes: usize,
+        sha256: String,
+        ok: bool,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    #[serde(rename = "read_file")]
+    ReadFile {
+        path: String,
+        bytes: usize,
+        sha256: String,
+        ok: bool,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        content: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    #[serde(rename = "http_get")]
+    HttpGet {
+        url: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        status: Option<u16>,
+        bytes: usize,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        sha256: Option<String>,
+        ok: bool,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    #[serde(rename = "git_patch")]
+    GitPatch {
+        repo_path: String,
+        ok: bool,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    #[serde(rename = "assert")]
+    Assert {
+        assert_kind: String,
+        ok: bool,
+        message: String,
+    },
+    #[serde(rename = "blocked")]
+    Blocked {
+        op: String,
+        reason: String,
+    },
+    #[serde(rename = "exec")]
+    Exec {
+        cmd: String,
+        ok: bool,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        status: Option<i32>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        stdout_sha256: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        stderr_sha256: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
 }
 
-impl Receipt {
-    /// Create a receipt from a collapse and gate result.
-    pub fn from_collapse(collapse: &Collapse, gate: &GateResult, prev_hash: &str) -> Self {
-        let discovered = collapse.discovered.as_ref().map(|d| d.name.clone());
-
-        let mut hasher = Sha256::new();
-        hasher.update(collapse.hash.as_bytes());
-        hasher.update(prev_hash.as_bytes());
-        hasher.update(collapse.turn.to_le_bytes());
-        let hash = format!("{:x}", hasher.finalize());
-        let receipt_hash = hash[..16].to_string();
-
-        Receipt {
-            collapse_hash: collapse.hash.clone(),
-            receipt_hash,
-            prev_hash: prev_hash.to_string(),
-            timestamp: Utc::now().to_rfc3339(),
-            turn: collapse.turn,
-            n: collapse.n,
-            gate_summary: gate.summary(),
-            quality: collapse.quality,
-            discovered,
-        }
-    }
-
-    /// Append this receipt to a JSONL file.
-    pub fn append_to_file(&self, path: &std::path::Path) -> anyhow::Result<()> {
-        use std::io::Write;
-        let mut file = std::fs::OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(path)?;
-        let line = serde_json::to_string(self)?;
-        writeln!(file, "{}", line)?;
-        Ok(())
-    }
+pub fn sha256_hex_bytes(bytes: &[u8]) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(bytes);
+    let digest = hasher.finalize();
+    digest.iter().map(|b| format!("{:02x}", b)).collect()
 }
+
+pub fn sha256_hex_str(s: &str) -> String {
+    sha256_hex_bytes(s.as_bytes())
+}
+
+

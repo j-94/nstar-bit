@@ -15,17 +15,45 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::time::Duration;
 
-use crate::collapse::{TurnIns, TurnOuts};
-use crate::predicate::{GateType, Predicate};
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TurnIns {
+    pub prompt: String,
+    pub context: Vec<String>,
+    pub turn: u64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TurnOuts {
+    pub response: String,
+    pub actions: Vec<String>,
+    pub quality: f32,
+    pub errors: Vec<String>,
+    pub operations: Vec<crate::utir::Operation>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Predicate {
+    pub id: String,
+    pub prime_id: u64,
+    pub name: String,
+    pub discovered_at: u64,
+    pub activation_condition: String,
+    #[serde(default)]
+    pub control_signals: Vec<String>,
+    pub threshold: f32,
+    pub activation: f32,
+    pub reinforcements: u64,
+    pub merged_from: Vec<String>,
+}
 
 // ── Config (env-driven, same as one-engine) ──
 
 const DEFAULT_URL: &str = "https://openrouter.ai/api/v1/chat/completions";
-const DEFAULT_MODEL: &str = "google/gemini-3-pro-preview";
+const DEFAULT_MODEL: &str = "anthropic/claude-4.5-sonnet";
 
 const BACKUP_MODELS: &[&str] = &[
     "google/gemini-pro-1.5",
-    "anthropic/claude-3.7-sonnet",
+    "google/gemini-3-pro-preview",
     "openai/gpt-4o",
 ];
 
@@ -97,7 +125,8 @@ pub struct ReflectionResult {
 pub struct NewPredicateProposal {
     pub name: String,
     pub activation_condition: String,
-    pub gate_type: String,
+    #[serde(default)]
+    pub control_signals: Vec<String>,
     pub threshold: f32,
     pub reason: String,
 }
@@ -126,8 +155,15 @@ impl LmClient {
             json!({"role": "user", "content": user}),
         ];
 
+        // Print header for the metacognitive process
+        println!("  [Meta Pass] Thinking... ");
+
+        use std::io::{self, Write};
+        use futures::StreamExt;
+
         let mut current_model = self.model.clone();
         let mut attempts = 0;
+        let mut full_text = String::new();
 
         loop {
             attempts += 1;
@@ -135,7 +171,8 @@ impl LmClient {
                 "model": current_model,
                 "messages": messages,
                 "temperature": 0.1,
-                "response_format": { "type": "json_object" }
+                "max_tokens": 4096,
+                "stream": true
             });
 
             let resp = self
@@ -150,13 +187,29 @@ impl LmClient {
 
             match resp {
                 Ok(r) if r.status().is_success() => {
-                    let body: Value = r.json().await?;
-                    let content = body
-                        .pointer("/choices/0/message/content")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("{}")
-                        .to_string();
-                    return Ok(content);
+                    let mut stream = r.bytes_stream();
+                    while let Some(chunk_res) = stream.next().await {
+                        if let Ok(chunk) = chunk_res {
+                            let text = String::from_utf8_lossy(&chunk);
+                            for line in text.lines() {
+                                if line.starts_with("data: ") {
+                                    let data = &line[6..];
+                                    if data == "[DONE]" { continue; }
+                                    if let Ok(v) = serde_json::from_str::<Value>(data) {
+                                        if let Some(content) = v.pointer("/choices/0/delta/content").and_then(|c| c.as_str()) {
+                                            if !content.is_empty() {
+                                                full_text.push_str(content);
+                                                print!("{}", content);
+                                                io::stdout().flush().unwrap();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    println!("\x1b[0m\n"); // Reset color and add newline
+                    return Ok(full_text);
                 }
                 Ok(r) if r.status().as_u16() == 429 || r.status().as_u16() == 503 => {
                     if attempts <= BACKUP_MODELS.len() {
@@ -212,9 +265,10 @@ impl LmClient {
 Return JSON: {"evaluations": [{"name": "...", "activation": 0.0-1.0, "reason": "brief"}]}"#;
 
         let user = format!(
-            "PREDICATES:\n{}\n\nTURN INPUT:\n{}\n\nTURN OUTPUT:\n{}\n\nERRORS: {}\n\nScore each predicate.",
+            "PREDICATES:\n{}\n\nTURN INPUT (Initial Prompt):\n{}\n\nTURN CONTEXT (Internal Session History):\n{:?}\n\nTURN OUTPUT (Final Response):\n{}\n\nERRORS: {}\n\nScore each predicate.",
             serde_json::to_string_pretty(&predicate_list)?,
             ins.prompt,
+            ins.context,
             outs.response,
             outs.errors.join("; ")
         );
@@ -263,15 +317,16 @@ Rules:
 Return JSON:
 {
   "turn_quality": 0.0-1.0,
-  "new_predicate": null | {"name": "...", "activation_condition": "...", "gate_type": "halt|verify|escalate|simulate|none", "threshold": 0.0-1.0, "reason": "..."},
+  "new_predicate": null | {"name": "...", "activation_condition": "...", "control_signals": ["halt", "verify", "escalate", "simulate", "assert:wrote", "assert:read", "assert:cannot", "assert:definitely", "require_evidence:fs.read", "require_evidence:fs.write"], "threshold": 0.0-1.0, "reason": "..."},
   "reinforced": ["predicate_names_that_helped"],
   "reasoning": "brief explanation"
 }"#;
 
         let user = format!(
-            "EXISTING PREDICATES: {:?}\n\nTURN INPUT:\n{}\n\nTURN OUTPUT:\n{}\n\nQUALITY SELF-ASSESSMENT: {}\nERRORS: {}\n\nReflect on this turn.",
+            "EXISTING PREDICATES: {:?}\n\nTURN INPUT (Initial Prompt):\n{}\n\nTURN CONTEXT (Internal Session History):\n{:?}\n\nTURN OUTPUT (Final Response):\n{}\n\nQUALITY SELF-ASSESSMENT: {}\nERRORS: {}\n\nReflect on this turn.",
             current_names,
             ins.prompt,
+            ins.context,
             outs.response,
             outs.quality,
             outs.errors.join("; ")
@@ -320,25 +375,114 @@ Return JSON:
         })
     }
 
-    /// Execute a task as an agent and return the outputs.
-    /// This is used for the "ACT" phase, before the "META" and "REFLECT" phases.
-    pub async fn execute_task(&self, task: &str) -> Result<TurnOuts> {
+    /// Execute a task with a default system prompt for single-shot scripts.
+    pub async fn execute_task_simple(&self, task: &str) -> Result<TurnOuts> {
         let system = r#"You are an AI assistant. Complete the user's task.
+If you need to execute code, shell commands, or file I/O, output them in the "utir_operations" array as UTIR JSON objects (types: "shell", "fs.read", "fs.write", "http.get", "git.patch", "assert.file_exists", "assert.shell_success").
+CRITICAL: If you need to read a file to complete a task, you MUST emit the `fs.read` operation FIRST, and wait for the results in the next turn before attempting to use the file's contents or issuing any `fs.write` operations. Do not hallucinate file contents!
 Perform the task, and then self-assess your performance.
 If you are unable to complete the task perfectly, note the issues in the "errors" array.
-Return JSON:
+Return JSON ONLY:
 {
   "response": "your detailed response to the task",
+  "utir_operations": [], // optional array of UTIR operations
   "actions": ["hypothetical actions taken, e.g. 'read file X'"],
   "quality": 0.0-1.0,
   "errors": ["any errors, missing information, or uncertainty"]
 }"#;
 
-        let response = self.chat_raw(system, task).await?;
+        let messages = vec![
+            json!({"role": "system", "content": system}),
+            json!({"role": "user", "content": task}),
+        ];
         
-        let parsed: Value = serde_json::from_str(&response)
+        self.execute_task(&messages).await
+    }
+
+    /// Execute a task as an agent and return the outputs.
+    /// This is used for the "ACT" phase, before the "META" and "REFLECT" phases.
+    pub async fn execute_task(&self, messages: &[Value]) -> Result<TurnOuts> {
+        use std::io::{self, Write};
+        use futures::StreamExt;
+
+        let mut current_model = self.model.clone();
+        let mut attempts = 0;
+        let mut full_text = String::new();
+
+        loop {
+            attempts += 1;
+            let payload = json!({
+                "model": current_model,
+                "messages": messages,
+                "temperature": 0.3,
+                "max_tokens": 8192,
+                "response_format": { "type": "json_object" },
+                "stream": true
+            });
+
+            let resp = self
+                .client
+                .post(&self.url)
+                .bearer_auth(&self.key)
+                .header("HTTP-Referer", "http://localhost:8080")
+                .header("X-Title", "nstar-bit")
+                .json(&payload)
+                .send()
+                .await;
+
+            match resp {
+                Ok(r) if r.status().is_success() => {
+                    let mut stream = r.bytes_stream();
+                    while let Some(chunk_res) = stream.next().await {
+                        if let Ok(chunk) = chunk_res {
+                            let text = String::from_utf8_lossy(&chunk);
+                            for line in text.lines() {
+                                if line.starts_with("data: ") {
+                                    let data = &line[6..];
+                                    if data == "[DONE]" { continue; }
+                                    if let Ok(v) = serde_json::from_str::<Value>(data) {
+                                        if let Some(content) = v.pointer("/choices/0/delta/content").and_then(|c| c.as_str()) {
+                                            if !content.is_empty() {
+                                                full_text.push_str(content);
+                                                print!("{}", content);
+                                                io::stdout().flush().unwrap();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    println!("\n"); // Format newline at end of stream
+                    break;
+                }
+                Ok(r) if r.status().as_u16() == 429 || r.status().as_u16() == 503 => {
+                    if attempts <= BACKUP_MODELS.len() {
+                        current_model = BACKUP_MODELS[attempts - 1].to_string();
+                        tokio::time::sleep(Duration::from_millis(500)).await;
+                        continue;
+                    }
+                    return Err(anyhow!("All models rate-limited"));
+                }
+                Ok(r) => {
+                    let status = r.status();
+                    let body = r.text().await.unwrap_or_default();
+                    return Err(anyhow!("LM error {}: {}", status, body));
+                }
+                Err(e) => {
+                    if attempts <= BACKUP_MODELS.len() {
+                        current_model = BACKUP_MODELS[attempts - 1].to_string();
+                        tokio::time::sleep(Duration::from_millis(500)).await;
+                        continue;
+                    }
+                    return Err(anyhow!("Network error: {}", e));
+                }
+            }
+        }
+        
+        let parsed: Value = serde_json::from_str(&full_text)
             .or_else(|_| {
-                let clean = response
+                let clean = full_text
                     .lines()
                     .filter(|l| !l.trim().starts_with("```"))
                     .collect::<Vec<_>>()
@@ -346,11 +490,15 @@ Return JSON:
                 serde_json::from_str(&clean)
             })
             .unwrap_or(json!({
-                "response": response,
+                "response": full_text,
                 "actions": [],
                 "quality": 0.5,
                 "errors": ["Failed to parse json response"]
             }));
+
+        let utir_operations = parsed.get("utir_operations")
+            .and_then(|v| serde_json::from_value::<Vec<crate::utir::Operation>>(v.clone()).ok())
+            .unwrap_or_default();
 
         Ok(TurnOuts {
             response: parsed.get("response").and_then(|v| v.as_str()).unwrap_or("").to_string(),
@@ -361,17 +509,9 @@ Return JSON:
             errors: parsed.get("errors").and_then(|v| v.as_array())
                 .map(|a| a.iter().filter_map(|x| x.as_str().map(|s| s.to_string())).collect())
                 .unwrap_or_default(),
+            operations: utir_operations,
         })
     }
 }
 
-/// Convert an LM-proposed gate type string to our GateType enum.
-pub fn parse_gate_type(s: &str) -> GateType {
-    match s.to_lowercase().as_str() {
-        "halt" => GateType::Halt,
-        "verify" => GateType::Verify,
-        "escalate" => GateType::Escalate,
-        "simulate" => GateType::Simulate,
-        _ => GateType::None,
-    }
-}
+

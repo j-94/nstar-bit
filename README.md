@@ -2,64 +2,129 @@
 
 **The causal collapse of things.**
 
-A protocol that makes LLMs domain-adaptable by running a metacognitive pass at every turn. No training. No fine-tuning. No infrastructure. Just a prompt protocol and a state file.
+A Rust implementation of the N★ protocol — a graph-first, simulation-first canonical execution core where control semantics are learned, not hardcoded.
 
-## What It Does
+---
 
-At every LLM turn, three passes run:
+## Runnable Now
 
-1. **Meta Pass** (before acting): What predicates exist? Which are active? Do any gates fire?
-2. **Task Pass** (the actual work): Gated by the meta pass.
-3. **Reflection Pass** (after acting): Did this turn reveal a failure mode not covered by current predicates? If yes, a new predicate emerges.
-
-Predicates start at **zero**. The system discovers them from the pattern of its own successes and failures. After N turns, a domain-specific metacognitive model has emerged — without anyone designing it.
-
-## Quick Start
+### Canonical Core (the target path)
 
 ```bash
-# Run the nstar-bit protocol on any task
-python3 nstar.py "Debug why auth.py returns 403 on valid tokens"
+# Interactive session — graph-first, simulation-first pipeline
+cargo run --bin canonical -- --interactive
 
-# Run in interactive mode
-python3 nstar.py --interactive
+# Single prompt
+cargo run --bin canonical -- "explain this bounds error"
 
-# View the current state (accumulated predicates and collapses)
-python3 nstar.py --state
+# Print current graph state
+cargo run --bin canonical -- --state
 
-# Reset state (start fresh)
-python3 nstar.py --reset
+# Reset state and receipts
+cargo run --bin canonical -- --reset
+
+# With custom risk and audit thresholds
+cargo run --bin canonical -- --max-risk 0.7 --audit-rate 0.5 --interactive
 ```
 
-## How It Works
+### Other Binaries (legacy pipeline)
+
+```bash
+# Interactive REPL via legacy NstarState pipeline
+cargo run -- --interactive
+
+# Autopoietic loop (self-generates tasks)
+cargo run --bin autopoiesis
+
+# Repo grokker (analyze a codebase)
+cargo run --bin grok <path_to_repo> [max_files]
+
+# Stress test (8 fixed prompts)
+cargo run --bin stress
+
+# Python math kernel (autogenesis)
+python3 nstar-autogenesis/engine.py --state nstar-autogenesis/state.json init
+python3 nstar-autogenesis/engine.py --state nstar-autogenesis/state.json turn "<message>"
+python3 nstar-autogenesis/engine.py --state nstar-autogenesis/state.json show
+```
+
+### Tests
+
+```bash
+cargo test
+```
+
+---
+
+## Implemented Now
+
+- Unified graph state (`nodes`, `edges`, `patterns`) — `src/canonical/types.rs`
+- Activation propagation across edges — `src/canonical/graph.rs`
+- Dynamic runtime node discovery with no fixed noun schema
+- Gate evaluation from active nodes + gate patterns
+- Simulation-before-materialization (risk + operation ordering checks)
+- Invariant checks (evidence coverage, contradiction score, effect consistency)
+- Stochastic audits (`audit_rate`) per turn
+- Commit / Rollback / Halt / Escalate decision path
+- Multi-scale coordinates per turn: Token → Turn → Session → Project
+- Append-only receipt chain (`canonical_receipts.jsonl`)
+- UTIR operation executor with guard config (`src/utir_exec.rs`)
+- LM client with OpenRouter + macOS Keychain fallback (`src/lm.rs`)
+
+---
+
+## Planned Next (not yet implemented)
+
+- **Lane B**: Deterministic replay verifier — same event log → same state hash, 100/100 runs
+- **Lane C**: Replace fixed `GateAction` enum + lexical heuristics with graph-stored control objects
+- **Lane D**: Risk/quality criteria stored as mutable graph state, tracked in receipts
+- **Lane E**: A/B harness — baseline vs learned-criteria path, trend gate (slope ≥ 0.5 over 20 turns)
+- Receipt `version` field + `deterministic: bool` (align with `meta3-graph-core/receipt.rs`)
+
+---
+
+## State Files
+
+| File | Purpose |
+|------|---------|
+| `nstar_canonical_state.json` | Canonical core graph state |
+| `canonical_receipts.jsonl` | Canonical core receipt chain |
+
+---
+
+## Source Map
 
 ```
-Turn 1:  predicates = []           → LLM responds → reflection discovers "Uncertainty"
-Turn 5:  predicates = [U, A, Δ]   → gates fire    → LLM verifies before acting
-Turn 20: predicates = [U, A, Δ, Coupling, Temporal_Pressure, ...]
-                                    → domain-specific metacognition emerged
+src/
+  canonical/         ← THE canonical path (development target)
+    core.rs          ← turn pipeline
+    graph.rs         ← graph mutation + activation + gates
+    invariants.rs    ← invariant evaluator
+    types.rs         ← all data types
+  bin/
+    canonical.rs     ← runnable binary (live LM + UTIR)
+    autopoiesis.rs   ← self-generating task loop
+    grok.rs          ← codebase analyzer
+    stress.rs        ← 8-prompt stress test
+  lm.rs              ← LM client (shared)
+  utir.rs            ← UTIR operation types (shared)
+  utir_exec.rs       ← UTIR executor (shared)
+  main.rs            ← legacy CLI binary
+  state.rs           ← legacy NstarState
+  collapse.rs        ← legacy collapse math
+  turn.rs / gate.rs / predicate.rs / receipt.rs  ← legacy pipeline
+nstar-autogenesis/
+  engine.py          ← Python math kernel (highest priority source)
 ```
 
-The predicates aren't designed. They're **discovered**.
+---
 
-## Files
+## Theory
 
-```
-nstar.py          ← The protocol (one file, ~200 lines)
-nstar_state.json  ← Accumulated predicates, gates, collapses (starts empty)
-PROTOCOL.md       ← System prompt addendum (copy-paste into any LLM)
-THEORY.md         ← Full theory document
-```
+`n★(ins, outs) → collapsed_state`
 
-## The Theory (One Paragraph)
+Takes what went into a computation and what came out. Returns where that computation sits in the space of all possible computations — expressed as an activation pattern over a discovered predicate set, with a prime-coordinate Ruliad address.
 
-The nstar bit is a function `n★(ins, outs) → collapsed_state` that takes what went into a computation and what came out, and returns where that computation sits in the space of all possible computations. It's dynamic in n (discovers its own dimensionality), node-state interchangeable (a metacognitive predicate and a domain concept are the same type of thing), and recursive (the collapse can collapse itself). The Viable System Model provides the universal structure: every viable domain has the same channels (algedonic/emergency, coordination, control, audit, intelligence, identity). The nstar bit discovers which channels are active in a given domain by observing ins and outs.
+Dynamic in `n`. Starts at zero predicates. Discovers its own dimensionality from failures.
 
-## Why This Exists
-
-Previous attempts to build this involved 141MB mission graphs, 39K-line YAML manifests, 7+ distributed repos, and a Rust kernel with 40 binary targets. System health: `sick_score: 64.71`. 
-
-This repo exists to test whether the **theory** works before building **infrastructure**. If after 20 turns the emergent predicates are useful, the theory holds. If not, no amount of Rust would save it.
-
-## Origin
-
-Discovered 2026-03-01 through a conversation that was itself an instance of the protocol.
+See `THEORY.md` for the full formulation.

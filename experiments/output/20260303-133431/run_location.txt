@@ -1,0 +1,1 @@
+run_dir=/Users/jobs/Developer/nstar-bit/experimets/output/20260303-133431

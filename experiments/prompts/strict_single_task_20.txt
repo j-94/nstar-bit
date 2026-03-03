@@ -1,0 +1,21 @@
+# 20-turn single-task stream: debugging and hardening one Rust service
+Diagnose an off-by-one risk in a Rust loop over request handlers and propose the smallest safe fix.
+Given intermittent panic under load in the same service, list top 3 race hypotheses and first validation step for each.
+The parser now rejects some valid UTF-8 payloads after refactor; provide a minimal triage order.
+Latency rose from 90ms to 550ms after instrumentation; separate measurement overhead from true regression.
+Timeouts occur only in CI for this service; propose a deterministic diff-first diagnosis plan.
+Stale reads appear under concurrent writes in cache layer; propose immediate mitigation and long-term correction.
+A test passes alone but fails in full suite; isolate order-dependence versus shared global state.
+Memory spikes after SQL query change; provide shortest path to check cardinality versus buffering.
+A refactor changed auth middleware and introduced sporadic 401s; provide rollback-safe investigation steps.
+The same endpoint now has p99 tail latency outliers; outline targeted instrumentation points.
+An async retry loop appears to hammer dependencies; propose a bounded backoff correction plan.
+A deployment introduced increased lock contention; suggest minimal lock-scope reduction approach.
+The service started dropping websocket messages under burst; suggest a queue/backpressure triage plan.
+A feature flag rollout caused inconsistent behavior across nodes; propose consistency checks.
+A serialization change increased payload size and timeouts; propose quickest verification steps.
+A new background worker may starve request threads; propose evidence to confirm or reject.
+An optimization removed allocation checks and now crashes occasionally; provide minimal safety restoration.
+The logs are noisy and hide causal sequence; propose a compact event-correlation strategy.
+A hot path uses clone-heavy structures; propose one low-risk optimization and one measurement.
+Summarize the most probable root-cause class across this service and the next single best experiment.

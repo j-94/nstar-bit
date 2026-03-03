@@ -9,11 +9,11 @@
 //! or "Missing_Ruliad_Context". The system grows a metacognitive
 //! model of your codebase.
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use nstar_bit::collapse::{TurnIns, TurnOuts};
+use nstar_bit::collapse::TurnIns;
 use nstar_bit::lm::LmClient;
 use nstar_bit::state::NstarState;
 use nstar_bit::turn::process_turn;
@@ -68,10 +68,10 @@ async fn main() -> Result<()> {
         let prompt = format!(
             "Analyze the architecture and logic of this file. Identify its role in the larger system, and point out any potential edge cases, tight coupling, or physical/security constraints.\n\nFile: {}\n\nContent:\n{}",
             file_path.display(),
-            truncate(&content, 8000) // limit context window slightly
+            content
         );
 
-        let outs = match lm.execute_task(&prompt).await {
+        let outs = match lm.execute_task_simple(&prompt).await {
             Ok(o) => o,
             Err(e) => {
                 println!("  ⚠ Execution failed: {}", e);
@@ -79,8 +79,9 @@ async fn main() -> Result<()> {
             }
         };
 
-        // We only show a tiny snippet of the analysis, focusing on the META state
-        println!("  Analysis: {}", truncate(&outs.response, 120));
+        // The stream already printed the output to stdout.
+        println!(); // Add a newline after the stream finishes
+
         if !outs.errors.is_empty() {
             println!("  Errors  : {:?}", outs.errors);
         }
@@ -127,8 +128,7 @@ fn gather_files(dir: &Path, max: usize) -> Result<Vec<PathBuf>> {
         let path = entry.path();
         let ext = path.extension().and_then(|s| s.to_str()).unwrap_or("");
         
-        // Only grab source code, ignore target/ and large things
-        if (ext == "rs" || ext == "py" || ext == "js" || ext == "ts") && !path.to_string_lossy().contains("target/") && !path.to_string_lossy().contains("node_modules/") {
+        if (ext == "rs" || ext == "py" || ext == "js" || ext == "ts" || ext == "md") && !path.to_string_lossy().contains("target/") && !path.to_string_lossy().contains("node_modules/") {
             files.push(path.to_path_buf());
             if files.len() >= max {
                 break;

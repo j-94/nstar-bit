@@ -1,6 +1,0 @@
-{"collapse_hash":"ec5f9fe4de19280a","receipt_hash":"af2f63444c9c7c5c","prev_hash":"genesis","timestamp":"2026-03-01T18:49:40.271819+00:00","turn":1,"n":0,"gate_summary":"CLEAR: proceed","quality":1.0,"discovered":null}
-{"collapse_hash":"726d1ab26a82b2a8","receipt_hash":"4dfa365e088540a5","prev_hash":"ec5f9fe4de19280a","timestamp":"2026-03-01T18:49:50.134065+00:00","turn":2,"n":0,"gate_summary":"CLEAR: proceed","quality":0.0,"discovered":null}
-{"collapse_hash":"69810ca767c07c99","receipt_hash":"dc0d22688ae8dae9","prev_hash":"726d1ab26a82b2a8","timestamp":"2026-03-01T18:49:59.560662+00:00","turn":3,"n":0,"gate_summary":"CLEAR: proceed","quality":1.0,"discovered":null}
-{"collapse_hash":"4ee42fe68bb9f5ab","receipt_hash":"7373e40f80a7c696","prev_hash":"69810ca767c07c99","timestamp":"2026-03-01T18:50:24.087909+00:00","turn":4,"n":0,"gate_summary":"CLEAR: proceed","quality":0.5,"discovered":"empty_response_detection"}
-{"collapse_hash":"62b0f668b676744c","receipt_hash":"b1515c779e18900f","prev_hash":"4ee42fe68bb9f5ab","timestamp":"2026-03-01T18:50:47.442644+00:00","turn":5,"n":0,"gate_summary":"HALT","quality":0.0,"discovered":null}
-{"collapse_hash":"455d033831e8a3d9","receipt_hash":"11a1181b00b6fce7","prev_hash":"62b0f668b676744c","timestamp":"2026-03-01T18:51:07.779537+00:00","turn":6,"n":0,"gate_summary":"HALT","quality":1.0,"discovered":null}

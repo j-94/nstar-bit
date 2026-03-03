@@ -68,10 +68,10 @@ async fn main() -> Result<()> {
 
         // ─── STEP 1: SURVEY — Generate a task from the current state ───
         let task = generate_next_task(&lm, &state).await?;
-        println!("Generated Task: {}", truncate(&task, 100));
+        println!("Generated Task:\n{}\n", task);
 
         // ─── STEP 2: EXECUTE — Run the task ───
-        let outs = match lm.execute_task(&task).await {
+        let outs = match lm.execute_task_simple(&task).await {
             Ok(o) => o,
             Err(e) => {
                 println!("  ⚠ Execution failed: {}", e);
@@ -79,7 +79,7 @@ async fn main() -> Result<()> {
             }
         };
 
-        println!("Quality: {:.2} | Errors: {}", outs.quality, outs.errors.len());
+        println!("\nQuality: {:.2} | Errors: {}", outs.quality, outs.errors.len());
 
         // ─── STEP 3+4: COLLAPSE + REFLECT ───
         let ins = TurnIns {
@@ -218,6 +218,7 @@ Return JSON: {"task": "the task string"}"#;
         .to_string())
 }
 
+#[allow(dead_code)]
 fn truncate(s: &str, max: usize) -> String {
     let s = s.replace('\n', " ");
     if s.len() <= max {

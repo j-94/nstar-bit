@@ -22,6 +22,9 @@ pub struct Predicate {
     /// Unique identifier
     pub id: String,
 
+    /// Prime number identity for composing Ruliad coordinates
+    pub prime_id: u64,
+
     /// Human-readable name (e.g., "Alignment", "Coupling", "Urgency")
     pub name: String,
 
@@ -75,6 +78,7 @@ impl Predicate {
     pub fn new(name: &str, activation_condition: &str, gate: GateType, threshold: f32) -> Self {
         Self {
             id: Uuid::new_v4().to_string(),
+            prime_id: 2, // Default, will be updated by registry later
             name: name.to_string(),
             discovered_at: 0,
             activation_condition: activation_condition.to_string(),

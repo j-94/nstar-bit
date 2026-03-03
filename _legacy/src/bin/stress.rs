@@ -2,9 +2,9 @@
 //! to demonstrate predicate discovery, gate firing, and dimensionality growth.
 
 use anyhow::Result;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
-use nstar_bit::collapse::{TurnIns, TurnOuts};
+use nstar_bit::collapse::TurnIns;
 use nstar_bit::lm::LmClient;
 use nstar_bit::state::NstarState;
 use nstar_bit::turn::process_turn;
@@ -61,7 +61,7 @@ async fn main() -> Result<()> {
         println!("Prompt: {}\n", truncate(prompt, 80));
 
         // Execute the task
-        let outs = lm.execute_task(prompt).await?;
+        let outs = lm.execute_task_simple(prompt).await?;
 
         println!("Response: {}", truncate(&outs.response, 120));
         println!("Quality : {:.2}", outs.quality);

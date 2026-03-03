@@ -1,0 +1,9 @@
+# Mixed-domain prompts (code + strategy)
+You are debugging a Rust service with intermittent panics under load. Provide a concise triage sequence.
+Given a failing auth flow after token rotation, list likely failure points and what to inspect first.
+A deployment caused p95 latency regression. Provide a rollback-safe investigation plan.
+A flaky test appears only with parallel execution. Provide root-cause hypotheses and validation steps.
+Design a weekly decision protocol for a technical lead choosing between speed and reliability under deadline pressure.
+Describe how to evaluate whether a team is overfitting to metrics instead of real outcomes.
+Give a framework for deciding when to explore new architecture vs exploit current stack.
+How should an operator summarize "ins and outs" to guide high-level corrective action without drowning in logs?

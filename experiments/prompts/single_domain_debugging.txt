@@ -1,0 +1,9 @@
+# Single-domain debugging prompts
+You are reviewing a Rust function that loops `for i in 0..=items.len()` and indexes `items[i]`. Explain the likely bug and the minimal fix.
+Given a flaky unit test that fails 1/20 times after introducing async tasks, list the top 3 race-condition hypotheses and one validation step for each.
+A parser now rejects valid UTF-8 input after a refactor. Provide a minimal triage plan with first checks and likely root-cause classes.
+An API latency jumped from 80ms to 600ms after adding metrics. Give a debugging sequence that separates measurement overhead from real regression.
+We get `timeout` errors only in CI, never locally. Propose a diagnosis strategy that prioritizes environment and dependency differences.
+A cache invalidation bug causes stale reads under concurrent writes. Provide a safe mitigation plan and one longer-term fix.
+An integration test passes alone but fails in full suite. Explain probable isolation/order causes and how to prove which one it is.
+You changed a SQL query and now memory usage spikes. Describe the shortest path to confirm whether row cardinality or buffering behavior is the cause.
