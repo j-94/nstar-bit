@@ -5,7 +5,7 @@ use std::path::PathBuf;
 
 use nstar_bit::canonical::core::CanonicalCore;
 use nstar_bit::canonical::types::{
-    CanonicalCriteria, CanonicalInput, CanonicalProposal, NodeDiscovery, NodeObservation,
+    CanonicalInput, CanonicalProposal, NodeDiscovery, NodeObservation,
 };
 use nstar_bit::lm::{LmClient, TurnIns, TurnOuts, Predicate};
 use nstar_bit::utir_exec::GuardConfig;

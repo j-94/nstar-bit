@@ -14,7 +14,7 @@ use super::graph::{
 };
 use super::invariants::evaluate_invariants;
 use super::types::{
-    CanonicalConfig, CanonicalInput, CanonicalProposal, CanonicalReceipt, CanonicalState,
+    CanonicalInput, CanonicalProposal, CanonicalReceipt, CanonicalState,
     CanonicalTurnResult, NodeDiscovery, NodeObservation, Scale, ScaleCoordinate, SimulationReport,
     TurnDecision, TurnTrace,
 };

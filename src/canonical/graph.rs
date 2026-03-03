@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use super::types::{
-    CanonicalConfig, EdgeKind, GateDecision, GatePattern, GraphEdge, GraphState,
+    EdgeKind, GateDecision, GatePattern, GraphEdge, GraphState,
     NodeDiscovery, NodeObservation,
 };
 
