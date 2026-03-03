@@ -1,7 +1,7 @@
 use crate::receipt::Effect;
 use crate::utir::Operation;
 
-use super::types::{CanonicalConfig, CanonicalInput, CanonicalProposal, GateDecision, InvariantReport, SimulationReport};
+use super::types::{CanonicalCriteria, CanonicalInput, CanonicalProposal, GateDecision, InvariantReport, SimulationReport};
 
 #[derive(Debug, Clone, Copy)]
 enum RequiredEvidence {
@@ -17,7 +17,7 @@ pub fn evaluate_invariants(
     gate: &GateDecision,
     simulation: &SimulationReport,
     effects: &[Effect],
-    config: &CanonicalConfig,
+    criteria: &CanonicalCriteria,
     audit_triggered: bool,
 ) -> InvariantReport {
     let mut violations = Vec::new();
@@ -26,7 +26,7 @@ pub fn evaluate_invariants(
         violations.push("simulation_blocked_materialization".to_string());
     }
 
-    if config.require_read_before_write && has_write_before_read(&proposal.operations) {
+    if criteria.require_read_before_write && has_write_before_read(&proposal.operations) {
         violations.push("write_before_read_operation_order".to_string());
     }
 
@@ -50,7 +50,7 @@ pub fn evaluate_invariants(
         satisfied as f32 / required.len() as f32
     };
 
-    if evidence_coverage < config.min_evidence_coverage {
+    if evidence_coverage < criteria.min_evidence_coverage {
         violations.push(format!(
             "insufficient_evidence_coverage:{:.2}",
             evidence_coverage
@@ -58,7 +58,7 @@ pub fn evaluate_invariants(
     }
 
     let contradiction_score = contradiction_score(input, proposal, effects, audit_triggered, gate);
-    if contradiction_score > config.contradiction_threshold {
+    if contradiction_score > criteria.contradiction_threshold {
         violations.push(format!("contradiction_score_exceeded:{:.2}", contradiction_score));
     }
 

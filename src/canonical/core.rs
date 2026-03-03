@@ -21,24 +21,22 @@ use super::types::{
 
 pub struct CanonicalCore {
     pub state: CanonicalState,
-    pub config: CanonicalConfig,
 }
 
 impl CanonicalCore {
-    pub fn new(config: CanonicalConfig) -> Self {
+    pub fn new() -> Self {
         Self {
             state: CanonicalState::default(),
-            config,
         }
     }
 
-    pub fn load_or_create(path: &Path, config: CanonicalConfig) -> Result<Self> {
+    pub fn load_or_create(path: &Path) -> Result<Self> {
         if path.exists() {
             let data = std::fs::read_to_string(path)?;
             let state: CanonicalState = serde_json::from_str(&data)?;
-            Ok(Self { state, config })
+            Ok(Self { state })
         } else {
-            Ok(Self::new(config))
+            Ok(Self::new())
         }
     }
 
@@ -68,7 +66,7 @@ impl CanonicalCore {
         out.push_str(&format!("turns={}\n", self.state.turn_count));
         out.push_str(&format!("nodes={} edges={} patterns={}\n", self.state.graph.nodes.len(), self.state.graph.edges.len(), self.state.graph.patterns.len()));
 
-        let active = active_nodes(&self.state.graph, self.config.activation_cutoff);
+        let active = active_nodes(&self.state.graph, self.state.graph.criteria.activation_cutoff);
         if active.is_empty() {
             out.push_str("active_nodes=0\n");
         } else {
@@ -99,9 +97,11 @@ impl CanonicalCore {
 
         let discovered_nodes = apply_discoveries(&mut self.state.graph, &discoveries, input.turn);
         apply_observations(&mut self.state.graph, &observations, input.turn);
-        propagate_activations(&mut self.state.graph, self.config.propagation_steps);
+        let criteria_before = self.state.graph.criteria.clone();
+        let propagation_steps = self.state.graph.criteria.propagation_steps;
+        propagate_activations(&mut self.state.graph, propagation_steps);
 
-        let gate = evaluate_gates(&self.state.graph, &self.config);
+        let gate = evaluate_gates(&self.state.graph);
         let simulation = self.simulate_operations(&proposal.operations, &input.prompt);
 
         let should_execute = !gate.has_signal("halt") && !gate.has_signal("escalate") && simulation.can_materialize;
@@ -125,7 +125,7 @@ impl CanonicalCore {
             &gate,
             &simulation,
             &execution_effects,
-            &self.config,
+            &self.state.graph.criteria,
             audit_triggered,
         );
 
@@ -140,8 +140,9 @@ impl CanonicalCore {
         };
 
         if matches!(decision, TurnDecision::Commit) {
-            reinforce_active_nodes(&mut self.state.graph, self.config.activation_cutoff);
-            learn_coactivation_edges(&mut self.state.graph, self.config.activation_cutoff);
+            let cutoff = self.state.graph.criteria.activation_cutoff;
+            reinforce_active_nodes(&mut self.state.graph, cutoff);
+            learn_coactivation_edges(&mut self.state.graph, cutoff);
         }
 
         self.update_project_activation();
@@ -157,6 +158,8 @@ impl CanonicalCore {
             coordinates: coordinates.clone(),
             audit_triggered,
             decision: decision.clone(),
+            criteria_before,
+            criteria_after: self.state.graph.criteria.clone(),
         };
 
         let receipt = self.make_receipt(&trace, &discovered_nodes);
@@ -180,7 +183,7 @@ impl CanonicalCore {
     }
 
     fn audit_triggered(&self, input: &CanonicalInput, proposal: &CanonicalProposal) -> bool {
-        if self.config.audit_rate <= 0.0 {
+        if self.state.graph.criteria.audit_rate <= 0.0 {
             return false;
         }
 
@@ -190,7 +193,7 @@ impl CanonicalCore {
         hasher.update(self.state.turn_count.to_le_bytes());
         let digest = hasher.finalize();
         let bucket = (digest[0] as f32) / 255.0;
-        bucket <= self.config.audit_rate
+        bucket <= self.state.graph.criteria.audit_rate
     }
 
     fn simulate_operations(&self, operations: &[Operation], _prompt: &str) -> SimulationReport {
@@ -206,14 +209,14 @@ impl CanonicalCore {
             predicted_effects.push(op_label(op));
         });
 
-        if max_risk > self.config.max_risk {
+        if max_risk > self.state.graph.criteria.max_risk {
             blocked_reasons.push(format!(
                 "max_risk_exceeded:{:.2}>{:.2}",
-                max_risk, self.config.max_risk
+                max_risk, self.state.graph.criteria.max_risk
             ));
         }
 
-        if self.config.require_read_before_write && has_write_before_read(operations) {
+        if self.state.graph.criteria.require_read_before_write && has_write_before_read(operations) {
             blocked_reasons.push("write_before_read_in_plan".to_string());
         }
 
@@ -235,14 +238,14 @@ impl CanonicalCore {
         let token_coord = token_coordinate(&input.prompt, &proposal.response);
         out.push(token_coord);
 
-        let active_turn = active_nodes(&self.state.graph, self.config.activation_cutoff);
+        let active_turn = active_nodes(&self.state.graph, self.state.graph.criteria.activation_cutoff);
         out.push(scale_from_active(Scale::Turn, &active_turn));
 
         let session_active = self
             .state
             .project_activation
             .iter()
-            .filter(|(_, v)| *v >= self.config.activation_cutoff * 0.8)
+            .filter(|(_, v)| *v >= self.state.graph.criteria.activation_cutoff * 0.8)
             .filter_map(|(id, v)| {
                 self.state
                     .graph
@@ -268,7 +271,7 @@ impl CanonicalCore {
                 };
                 (n.id.clone(), intensity, n.prime_id)
             })
-            .filter(|(_, intensity, _)| *intensity >= self.config.activation_cutoff * 0.5)
+            .filter(|(_, intensity, _)| *intensity >= self.state.graph.criteria.activation_cutoff * 0.5)
             .collect::<Vec<_>>();
         out.push(scale_from_active(Scale::Project, &project_active));
 
@@ -327,6 +330,8 @@ impl CanonicalCore {
             coordinates: trace.coordinates.clone(),
             discovered_nodes: discovered_nodes.to_vec(),
             violations: trace.invariants.violations.clone(),
+            criteria_before: trace.criteria_before.clone(),
+            criteria_after: trace.criteria_after.clone(),
         }
     }
 
@@ -513,10 +518,8 @@ mod tests {
 
     #[test]
     fn audit_rate_zero_never_audits() {
-        let core = CanonicalCore::new(CanonicalConfig {
-            audit_rate: 0.0,
-            ..CanonicalConfig::default()
-        });
+        let mut core = CanonicalCore::new();
+        core.state.graph.criteria.audit_rate = 0.0;
         let input = CanonicalInput {
             prompt: "hello".to_string(),
             context: vec![],
@@ -534,7 +537,7 @@ mod tests {
 
     #[test]
     fn simulation_blocks_write_before_read() {
-        let core = CanonicalCore::new(CanonicalConfig::default());
+        let core = CanonicalCore::new();
         let ops = vec![Operation::FsWrite {
             path: "a.txt".to_string(),
             content: "x".to_string(),
@@ -547,7 +550,7 @@ mod tests {
 
     #[test]
     fn commit_path_with_no_ops() {
-        let mut core = CanonicalCore::new(CanonicalConfig::default());
+        let mut core = CanonicalCore::new();
         let input = CanonicalInput {
             prompt: "explain bounds bug".to_string(),
             context: vec![],

@@ -166,7 +166,7 @@ pub fn propagate_activations(graph: &mut GraphState, steps: usize) {
     }
 }
 
-pub fn evaluate_gates(graph: &GraphState, config: &CanonicalConfig) -> GateDecision {
+pub fn evaluate_gates(graph: &GraphState) -> GateDecision {
     let mut emitted_signals = Vec::new();
 
     for node in &graph.nodes {
@@ -181,7 +181,7 @@ pub fn evaluate_gates(graph: &GraphState, config: &CanonicalConfig) -> GateDecis
                 .nodes
                 .iter()
                 .find(|n| &n.id == id)
-                .map(|n| n.activation >= config.activation_cutoff)
+                .map(|n| n.activation >= graph.criteria.activation_cutoff)
                 .unwrap_or(false)
         });
 
@@ -194,7 +194,7 @@ pub fn evaluate_gates(graph: &GraphState, config: &CanonicalConfig) -> GateDecis
                 .nodes
                 .iter()
                 .find(|n| &n.id == id)
-                .map(|n| n.activation >= config.activation_cutoff)
+                .map(|n| n.activation >= graph.criteria.activation_cutoff)
                 .unwrap_or(false)
         });
 

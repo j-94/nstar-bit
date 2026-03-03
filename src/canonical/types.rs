@@ -41,7 +41,33 @@ pub struct GatePattern {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CanonicalCriteria {
+    pub max_risk: f64,
+    pub audit_rate: f32,
+    pub require_read_before_write: bool,
+    pub min_evidence_coverage: f32,
+    pub contradiction_threshold: f32,
+    pub activation_cutoff: f32,
+    pub propagation_steps: usize,
+}
+
+impl Default for CanonicalCriteria {
+    fn default() -> Self {
+        Self {
+            max_risk: 0.8,
+            audit_rate: 0.33,
+            require_read_before_write: true,
+            min_evidence_coverage: 0.7,
+            contradiction_threshold: 0.1,
+            activation_cutoff: 0.4,
+            propagation_steps: 2,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GraphState {
+    pub criteria: CanonicalCriteria,
     pub nodes: Vec<GraphNode>,
     pub edges: Vec<GraphEdge>,
     pub patterns: Vec<GatePattern>,
@@ -50,6 +76,7 @@ pub struct GraphState {
 impl Default for GraphState {
     fn default() -> Self {
         Self {
+            criteria: CanonicalCriteria::default(),
             nodes: Vec::new(),
             edges: Vec::new(),
             patterns: Vec::new(),
@@ -175,6 +202,8 @@ pub struct TurnTrace {
     pub coordinates: Vec<ScaleCoordinate>,
     pub audit_triggered: bool,
     pub decision: TurnDecision,
+    pub criteria_before: CanonicalCriteria,
+    pub criteria_after: CanonicalCriteria,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -201,30 +230,16 @@ pub struct CanonicalReceipt {
     pub coordinates: Vec<ScaleCoordinate>,
     pub discovered_nodes: Vec<String>,
     pub violations: Vec<String>,
+    pub criteria_before: CanonicalCriteria,
+    pub criteria_after: CanonicalCriteria,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CanonicalConfig {
-    pub max_risk: f64,
-    pub audit_rate: f32,
-    pub require_read_before_write: bool,
-    pub min_evidence_coverage: f32,
-    pub contradiction_threshold: f32,
-    pub activation_cutoff: f32,
-    pub propagation_steps: usize,
-}
+pub struct CanonicalConfig {}
 
 impl Default for CanonicalConfig {
     fn default() -> Self {
-        Self {
-            max_risk: 0.8,
-            audit_rate: 0.33,
-            require_read_before_write: true,
-            min_evidence_coverage: 0.7,
-            contradiction_threshold: 0.1,
-            activation_cutoff: 0.4,
-            propagation_steps: 2,
-        }
+        Self {}
     }
 }
 

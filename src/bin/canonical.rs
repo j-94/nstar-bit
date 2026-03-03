@@ -5,7 +5,7 @@ use std::path::PathBuf;
 
 use nstar_bit::canonical::core::CanonicalCore;
 use nstar_bit::canonical::types::{
-    CanonicalConfig, CanonicalInput, CanonicalProposal, NodeDiscovery, NodeObservation,
+    CanonicalCriteria, CanonicalInput, CanonicalProposal, NodeDiscovery, NodeObservation,
 };
 use nstar_bit::lm::{LmClient, TurnIns, TurnOuts, Predicate};
 use nstar_bit::utir_exec::GuardConfig;
@@ -50,13 +50,9 @@ async fn main() -> Result<()> {
         return Ok(());
     }
 
-    let config = CanonicalConfig {
-        max_risk: args.max_risk,
-        audit_rate: args.audit_rate,
-        ..CanonicalConfig::default()
-    };
-
-    let mut core = CanonicalCore::load_or_create(&state_path, config)?;
+    let mut core = CanonicalCore::load_or_create(&state_path)?;
+    core.state.graph.criteria.max_risk = args.max_risk;
+    core.state.graph.criteria.audit_rate = args.audit_rate;
 
     if args.state {
         println!("{}", core.summary());
