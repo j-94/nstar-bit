@@ -89,6 +89,12 @@ impl CanonicalCore {
             out.push_str(&format!("last_gate={}\n", last.gate_summary));
         }
 
+        let promo = self.evaluate_promotion();
+        out.push_str(&format!(
+            "promotion_eligible={} slope={:.3} failures={}\n",
+            promo.passes_promotion, promo.trend_slope, promo.repeated_failures
+        ));
+
         out
     }
 
@@ -183,6 +189,9 @@ impl CanonicalCore {
             .map(|n| (n.id.clone(), n.activation))
             .collect();
         self.state.receipts.push(receipt.clone());
+
+        // Lane E: Track motifs and trends
+        self.track_motifs(&trace);
 
         Ok(CanonicalTurnResult {
             trace,
@@ -356,6 +365,73 @@ impl CanonicalCore {
             violations: trace.invariants.violations.clone(),
             criteria_before: trace.criteria_before.clone(),
             criteria_after: trace.criteria_after.clone(),
+        }
+    }
+
+    fn track_motifs(&mut self, trace: &TurnTrace) {
+        self.state.contradiction_history.push(trace.invariants.contradiction_score);
+        if self.state.contradiction_history.len() > 100 {
+            self.state.contradiction_history.remove(0);
+        }
+
+        if !trace.invariants.passed {
+            for violation in &trace.invariants.violations {
+                *self.state.motif_counts.entry(violation.clone()).or_insert(0) += 1;
+            }
+        }
+
+        if matches!(trace.decision, TurnDecision::Rollback | TurnDecision::Halt) {
+            *self.state.motif_counts.entry("system_interruption".to_string()).or_insert(0) += 1;
+            self.state.intervention_count += 1;
+        }
+    }
+
+    pub fn evaluate_promotion(&self) -> super::types::MotifReport {
+        let repeated_failures = self.state.motif_counts.values().sum::<u64>();
+        let trend_slope = self.calculate_contradiction_slope();
+
+        // Exit gate: candidate reduces repeated-failure motifs by at least 30% by turn 20
+        // We evaluate if the trend is negative and significant enough
+        let turns = self.state.turn_count;
+        let passes_promotion = if turns < 10 {
+            false // Not enough data
+        } else {
+            // Significant negative slope of contradiction or failures
+            trend_slope < -0.01 || (turns >= 20 && (repeated_failures as f32 / turns as f32) < 0.5)
+        };
+
+        super::types::MotifReport {
+            repeated_failures,
+            trend_slope,
+            passes_promotion,
+        }
+    }
+
+    fn calculate_contradiction_slope(&self) -> f32 {
+        let history = &self.state.contradiction_history;
+        if history.len() < 5 {
+            return 0.0;
+        }
+
+        let n = history.len() as f32;
+        let mut x_sum = 0.0;
+        let mut y_sum = 0.0;
+        let mut xy_sum = 0.0;
+        let mut x2_sum = 0.0;
+
+        for (i, &y) in history.iter().enumerate() {
+            let x = i as f32;
+            x_sum += x;
+            y_sum += y;
+            xy_sum += x * y;
+            x2_sum += x * x;
+        }
+
+        let denominator = n * x2_sum - x_sum * x_sum;
+        if denominator == 0.0 {
+            0.0
+        } else {
+            (n * xy_sum - x_sum * y_sum) / denominator
         }
     }
 

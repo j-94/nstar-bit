@@ -260,6 +260,14 @@ pub struct CanonicalState {
     pub receipts: Vec<CanonicalReceipt>,
     pub project_activation: Vec<(String, f32)>,
     pub last_turn_activation: Vec<(String, f32)>,
+
+    // Lane E: Trend and Motif tracking
+    #[serde(default)]
+    pub motif_counts: std::collections::HashMap<String, u64>,
+    #[serde(default)]
+    pub intervention_count: u64,
+    #[serde(default)]
+    pub contradiction_history: Vec<f32>,
 }
 
 impl Default for CanonicalState {
@@ -271,8 +279,18 @@ impl Default for CanonicalState {
             receipts: Vec::new(),
             project_activation: Vec::new(),
             last_turn_activation: Vec::new(),
+            motif_counts: std::collections::HashMap::new(),
+            intervention_count: 0,
+            contradiction_history: Vec::new(),
         }
     }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MotifReport {
+    pub repeated_failures: u64,
+    pub trend_slope: f32,
+    pub passes_promotion: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
