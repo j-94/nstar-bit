@@ -125,9 +125,14 @@ impl GuardConfig {
 
     fn is_url_allowed(&self, url: &str) -> bool {
         match reqwest::Url::parse(url) {
-            Ok(parsed) => parsed.host_str().map(|host| {
-                self.allowed_domains.iter().any(|domain| host.ends_with(domain))
-            }).unwrap_or(false),
+            Ok(parsed) => parsed
+                .host_str()
+                .map(|host| {
+                    self.allowed_domains
+                        .iter()
+                        .any(|domain| host.ends_with(domain))
+                })
+                .unwrap_or(false),
             Err(_) => false,
         }
     }
@@ -185,7 +190,14 @@ fn execute_operation(op: &Operation, ctx: &ExecContext) -> Outcome {
     }
 
     match op {
-        Operation::Shell { command, timeout, working_dir, env, allow_network: _, capture_output } => {
+        Operation::Shell {
+            command,
+            timeout,
+            working_dir,
+            env,
+            allow_network: _,
+            capture_output,
+        } => {
             if !ctx.guard.is_command_safe(command) {
                 return Outcome {
                     effects: vec![Effect::Blocked {
@@ -208,22 +220,38 @@ fn execute_operation(op: &Operation, ctx: &ExecContext) -> Outcome {
                     };
                 }
             }
-            let (ok, stdout, stderr, status) = run_shell(command, timeout, work_dir.as_ref().map(|p| p.as_path()), env, *capture_output);
+            let (ok, stdout, stderr, status) = run_shell(
+                command,
+                timeout,
+                work_dir.as_ref().map(|p| p.as_path()),
+                env,
+                *capture_output,
+            );
             let effect = Effect::Exec {
                 cmd: command.to_string(),
                 ok,
                 status,
                 stdout_sha256: stdout.as_ref().map(|s| crate::receipt::sha256_hex_str(s)),
                 stderr_sha256: stderr.as_ref().map(|s| crate::receipt::sha256_hex_str(s)),
-                error: if ok { None } else { Some(stderr.unwrap_or_else(|| "shell failed".to_string())) },
+                error: if ok {
+                    None
+                } else {
+                    Some(stderr.unwrap_or_else(|| "shell failed".to_string()))
+                },
             };
-            Outcome { effects: vec![effect], success: ok }
+            Outcome {
+                effects: vec![effect],
+                success: ok,
+            }
         }
         Operation::FsRead { path, max_size, .. } => {
             let full_path = ctx.guard.resolve_path(path);
             if !ctx.guard.is_within_sandbox(&full_path) {
                 return Outcome {
-                    effects: vec![Effect::Blocked { op: format!("fs.read:{}", path), reason: "path outside sandbox".to_string() }],
+                    effects: vec![Effect::Blocked {
+                        op: format!("fs.read:{}", path),
+                        reason: "path outside sandbox".to_string(),
+                    }],
                     success: false,
                 };
             }
@@ -231,7 +259,17 @@ fn execute_operation(op: &Operation, ctx: &ExecContext) -> Outcome {
             match std::fs::read(&full_path) {
                 Ok(bytes) => {
                     if bytes.len() as u64 > max_bytes {
-                        return Outcome { effects: vec![Effect::ReadFile { path: path.to_string(), bytes: bytes.len(), sha256: crate::receipt::sha256_hex_bytes(&bytes), ok: false, content: None, error: Some("file too large".to_string()) }], success: false };
+                        return Outcome {
+                            effects: vec![Effect::ReadFile {
+                                path: path.to_string(),
+                                bytes: bytes.len(),
+                                sha256: crate::receipt::sha256_hex_bytes(&bytes),
+                                ok: false,
+                                content: None,
+                                error: Some("file too large".to_string()),
+                            }],
+                            success: false,
+                        };
                     }
                     let content = String::from_utf8(bytes.clone()).ok().map(|mut s| {
                         if s.len() > 8000 {
@@ -241,26 +279,57 @@ fn execute_operation(op: &Operation, ctx: &ExecContext) -> Outcome {
                         s
                     });
                     Outcome {
-                        effects: vec![Effect::ReadFile { path: path.to_string(), bytes: bytes.len(), sha256: crate::receipt::sha256_hex_bytes(&bytes), ok: true, content, error: None }],
+                        effects: vec![Effect::ReadFile {
+                            path: path.to_string(),
+                            bytes: bytes.len(),
+                            sha256: crate::receipt::sha256_hex_bytes(&bytes),
+                            ok: true,
+                            content,
+                            error: None,
+                        }],
                         success: true,
                     }
                 }
                 Err(e) => Outcome {
-                    effects: vec![Effect::ReadFile { path: path.to_string(), bytes: 0, sha256: crate::receipt::sha256_hex_str(""), ok: false, content: None, error: Some(e.to_string()) }],
+                    effects: vec![Effect::ReadFile {
+                        path: path.to_string(),
+                        bytes: 0,
+                        sha256: crate::receipt::sha256_hex_str(""),
+                        ok: false,
+                        content: None,
+                        error: Some(e.to_string()),
+                    }],
                     success: false,
                 },
             }
         }
-        Operation::FsWrite { path, content, create_dirs, .. } => {
+        Operation::FsWrite {
+            path,
+            content,
+            create_dirs,
+            ..
+        } => {
             let full_path = ctx.guard.resolve_path(path);
             if !ctx.guard.is_within_sandbox(&full_path) {
                 return Outcome {
-                    effects: vec![Effect::Blocked { op: format!("fs.write:{}", path), reason: "path outside sandbox".to_string() }],
+                    effects: vec![Effect::Blocked {
+                        op: format!("fs.write:{}", path),
+                        reason: "path outside sandbox".to_string(),
+                    }],
                     success: false,
                 };
             }
             if content.len() as u64 > ctx.guard.max_file_bytes {
-                return Outcome { effects: vec![Effect::WriteFile { path: path.to_string(), bytes: content.len(), sha256: crate::receipt::sha256_hex_str(content), ok: false, error: Some("content too large".to_string()) }], success: false };
+                return Outcome {
+                    effects: vec![Effect::WriteFile {
+                        path: path.to_string(),
+                        bytes: content.len(),
+                        sha256: crate::receipt::sha256_hex_str(content),
+                        ok: false,
+                        error: Some("content too large".to_string()),
+                    }],
+                    success: false,
+                };
             }
             if *create_dirs {
                 if let Some(parent) = full_path.parent() {
@@ -268,18 +337,62 @@ fn execute_operation(op: &Operation, ctx: &ExecContext) -> Outcome {
                 }
             }
             match std::fs::write(&full_path, content) {
-                Ok(_) => Outcome { effects: vec![Effect::WriteFile { path: path.to_string(), bytes: content.len(), sha256: crate::receipt::sha256_hex_str(content), ok: true, error: None }], success: true },
-                Err(e) => Outcome { effects: vec![Effect::WriteFile { path: path.to_string(), bytes: content.len(), sha256: crate::receipt::sha256_hex_str(content), ok: false, error: Some(e.to_string()) }], success: false },
+                Ok(_) => Outcome {
+                    effects: vec![Effect::WriteFile {
+                        path: path.to_string(),
+                        bytes: content.len(),
+                        sha256: crate::receipt::sha256_hex_str(content),
+                        ok: true,
+                        error: None,
+                    }],
+                    success: true,
+                },
+                Err(e) => Outcome {
+                    effects: vec![Effect::WriteFile {
+                        path: path.to_string(),
+                        bytes: content.len(),
+                        sha256: crate::receipt::sha256_hex_str(content),
+                        ok: false,
+                        error: Some(e.to_string()),
+                    }],
+                    success: false,
+                },
             }
         }
-        Operation::HttpGet { url, headers, timeout, max_response_size } => {
+        Operation::HttpGet {
+            url,
+            headers,
+            timeout,
+            max_response_size,
+        } => {
             if !ctx.guard.is_url_allowed(url) {
-                return Outcome { effects: vec![Effect::Blocked { op: format!("http.get:{}", url), reason: "domain not allowed".to_string() }], success: false };
+                return Outcome {
+                    effects: vec![Effect::Blocked {
+                        op: format!("http.get:{}", url),
+                        reason: "domain not allowed".to_string(),
+                    }],
+                    success: false,
+                };
             }
             let timeout = parse_duration(timeout, ctx.guard.max_exec_ms);
-            let client = match reqwest::blocking::Client::builder().timeout(timeout).build() {
+            let client = match reqwest::blocking::Client::builder()
+                .timeout(timeout)
+                .build()
+            {
                 Ok(c) => c,
-                Err(e) => return Outcome { effects: vec![Effect::HttpGet { url: url.to_string(), status: None, bytes: 0, sha256: None, ok: false, error: Some(e.to_string()) }], success: false },
+                Err(e) => {
+                    return Outcome {
+                        effects: vec![Effect::HttpGet {
+                            url: url.to_string(),
+                            status: None,
+                            bytes: 0,
+                            sha256: None,
+                            ok: false,
+                            error: Some(e.to_string()),
+                        }],
+                        success: false,
+                    }
+                }
             };
             let mut req = client.get(url);
             for (k, v) in headers {
@@ -290,27 +403,90 @@ fn execute_operation(op: &Operation, ctx: &ExecContext) -> Outcome {
                     let status = resp.status().as_u16();
                     match resp.bytes() {
                         Ok(bytes) => {
-                            let max_bytes = parse_size(max_response_size, ctx.guard.max_response_bytes);
+                            let max_bytes =
+                                parse_size(max_response_size, ctx.guard.max_response_bytes);
                             if bytes.len() as u64 > max_bytes {
-                                return Outcome { effects: vec![Effect::HttpGet { url: url.to_string(), status: Some(status), bytes: bytes.len(), sha256: None, ok: false, error: Some("response too large".to_string()) }], success: false };
+                                return Outcome {
+                                    effects: vec![Effect::HttpGet {
+                                        url: url.to_string(),
+                                        status: Some(status),
+                                        bytes: bytes.len(),
+                                        sha256: None,
+                                        ok: false,
+                                        error: Some("response too large".to_string()),
+                                    }],
+                                    success: false,
+                                };
                             }
                             let ok = status >= 200 && status < 300;
-                            Outcome { effects: vec![Effect::HttpGet { url: url.to_string(), status: Some(status), bytes: bytes.len(), sha256: Some(crate::receipt::sha256_hex_bytes(&bytes)), ok, error: if ok { None } else { Some(format!("http status {}", status)) } }], success: ok }
+                            Outcome {
+                                effects: vec![Effect::HttpGet {
+                                    url: url.to_string(),
+                                    status: Some(status),
+                                    bytes: bytes.len(),
+                                    sha256: Some(crate::receipt::sha256_hex_bytes(&bytes)),
+                                    ok,
+                                    error: if ok {
+                                        None
+                                    } else {
+                                        Some(format!("http status {}", status))
+                                    },
+                                }],
+                                success: ok,
+                            }
                         }
-                        Err(e) => Outcome { effects: vec![Effect::HttpGet { url: url.to_string(), status: Some(status), bytes: 0, sha256: None, ok: false, error: Some(e.to_string()) }], success: false },
+                        Err(e) => Outcome {
+                            effects: vec![Effect::HttpGet {
+                                url: url.to_string(),
+                                status: Some(status),
+                                bytes: 0,
+                                sha256: None,
+                                ok: false,
+                                error: Some(e.to_string()),
+                            }],
+                            success: false,
+                        },
                     }
                 }
-                Err(e) => Outcome { effects: vec![Effect::HttpGet { url: url.to_string(), status: None, bytes: 0, sha256: None, ok: false, error: Some(e.to_string()) }], success: false },
+                Err(e) => Outcome {
+                    effects: vec![Effect::HttpGet {
+                        url: url.to_string(),
+                        status: None,
+                        bytes: 0,
+                        sha256: None,
+                        ok: false,
+                        error: Some(e.to_string()),
+                    }],
+                    success: false,
+                },
             }
         }
-        Operation::GitPatch { repo_path, patch_content, commit_message, author } => {
+        Operation::GitPatch {
+            repo_path,
+            patch_content,
+            commit_message,
+            author,
+        } => {
             let full_path = ctx.guard.resolve_path(repo_path);
             if !ctx.guard.is_within_sandbox(&full_path) {
-                return Outcome { effects: vec![Effect::Blocked { op: format!("git.patch:{}", repo_path), reason: "path outside sandbox".to_string() }], success: false };
+                return Outcome {
+                    effects: vec![Effect::Blocked {
+                        op: format!("git.patch:{}", repo_path),
+                        reason: "path outside sandbox".to_string(),
+                    }],
+                    success: false,
+                };
             }
             let patch_file = full_path.join(".graph_patch.tmp");
             if let Err(e) = std::fs::write(&patch_file, patch_content) {
-                return Outcome { effects: vec![Effect::GitPatch { repo_path: repo_path.to_string(), ok: false, error: Some(e.to_string()) }], success: false };
+                return Outcome {
+                    effects: vec![Effect::GitPatch {
+                        repo_path: repo_path.to_string(),
+                        ok: false,
+                        error: Some(e.to_string()),
+                    }],
+                    success: false,
+                };
             }
             let check = Command::new("git")
                 .args(["apply", "--check", patch_file.to_string_lossy().as_ref()])
@@ -319,7 +495,14 @@ fn execute_operation(op: &Operation, ctx: &ExecContext) -> Outcome {
             if let Ok(out) = check {
                 if !out.status.success() {
                     let _ = std::fs::remove_file(&patch_file);
-                    return Outcome { effects: vec![Effect::GitPatch { repo_path: repo_path.to_string(), ok: false, error: Some(String::from_utf8_lossy(&out.stderr).to_string()) }], success: false };
+                    return Outcome {
+                        effects: vec![Effect::GitPatch {
+                            repo_path: repo_path.to_string(),
+                            ok: false,
+                            error: Some(String::from_utf8_lossy(&out.stderr).to_string()),
+                        }],
+                        success: false,
+                    };
                 }
             }
             let apply = Command::new("git")
@@ -329,7 +512,14 @@ fn execute_operation(op: &Operation, ctx: &ExecContext) -> Outcome {
             if let Ok(out) = apply {
                 if !out.status.success() {
                     let _ = std::fs::remove_file(&patch_file);
-                    return Outcome { effects: vec![Effect::GitPatch { repo_path: repo_path.to_string(), ok: false, error: Some(String::from_utf8_lossy(&out.stderr).to_string()) }], success: false };
+                    return Outcome {
+                        effects: vec![Effect::GitPatch {
+                            repo_path: repo_path.to_string(),
+                            ok: false,
+                            error: Some(String::from_utf8_lossy(&out.stderr).to_string()),
+                        }],
+                        success: false,
+                    };
                 }
             }
             let commit = Command::new("git")
@@ -340,34 +530,102 @@ fn execute_operation(op: &Operation, ctx: &ExecContext) -> Outcome {
             match commit {
                 Ok(out) => {
                     let ok = out.status.success();
-                    Outcome { effects: vec![Effect::GitPatch { repo_path: repo_path.to_string(), ok, error: if ok { None } else { Some(String::from_utf8_lossy(&out.stderr).to_string()) } }], success: ok }
+                    Outcome {
+                        effects: vec![Effect::GitPatch {
+                            repo_path: repo_path.to_string(),
+                            ok,
+                            error: if ok {
+                                None
+                            } else {
+                                Some(String::from_utf8_lossy(&out.stderr).to_string())
+                            },
+                        }],
+                        success: ok,
+                    }
                 }
-                Err(e) => Outcome { effects: vec![Effect::GitPatch { repo_path: repo_path.to_string(), ok: false, error: Some(e.to_string()) }], success: false },
+                Err(e) => Outcome {
+                    effects: vec![Effect::GitPatch {
+                        repo_path: repo_path.to_string(),
+                        ok: false,
+                        error: Some(e.to_string()),
+                    }],
+                    success: false,
+                },
             }
         }
         Operation::AssertFileExists { path } => {
             let full_path = ctx.guard.resolve_path(path);
             let exists = full_path.exists();
-            Outcome { effects: vec![Effect::Assert { assert_kind: "file_exists".to_string(), ok: exists, message: if exists { format!("exists:{}", path) } else { format!("missing:{}", path) } }], success: exists }
+            Outcome {
+                effects: vec![Effect::Assert {
+                    assert_kind: "file_exists".to_string(),
+                    ok: exists,
+                    message: if exists {
+                        format!("exists:{}", path)
+                    } else {
+                        format!("missing:{}", path)
+                    },
+                }],
+                success: exists,
+            }
         }
-        Operation::AssertShellSuccess { command, timeout, expected_output } => {
+        Operation::AssertShellSuccess {
+            command,
+            timeout,
+            expected_output,
+        } => {
             if !ctx.guard.is_command_safe(command) {
-                return Outcome { effects: vec![Effect::Blocked { op: format!("assert.shell:{}", command), reason: "command blocked by guardrails".to_string() }], success: false };
+                return Outcome {
+                    effects: vec![Effect::Blocked {
+                        op: format!("assert.shell:{}", command),
+                        reason: "command blocked by guardrails".to_string(),
+                    }],
+                    success: false,
+                };
             }
             let timeout = parse_duration(timeout, ctx.guard.max_exec_ms);
-            let (ok, stdout, stderr, status) = run_shell(command, timeout, None, &HashMap::new(), true);
+            let (ok, stdout, stderr, status) =
+                run_shell(command, timeout, None, &HashMap::new(), true);
             if !ok {
-                return Outcome { effects: vec![Effect::Assert { assert_kind: "shell_success".to_string(), ok: false, message: stderr.unwrap_or_else(|| "shell failed".to_string()) }], success: false };
+                return Outcome {
+                    effects: vec![Effect::Assert {
+                        assert_kind: "shell_success".to_string(),
+                        ok: false,
+                        message: stderr.unwrap_or_else(|| "shell failed".to_string()),
+                    }],
+                    success: false,
+                };
             }
             if let Some(expected) = expected_output {
                 if let Some(out) = stdout {
                     if out.contains(expected) {
-                        return Outcome { effects: vec![Effect::Assert { assert_kind: "shell_success".to_string(), ok: true, message: "expected output matched".to_string() }], success: true };
+                        return Outcome {
+                            effects: vec![Effect::Assert {
+                                assert_kind: "shell_success".to_string(),
+                                ok: true,
+                                message: "expected output matched".to_string(),
+                            }],
+                            success: true,
+                        };
                     }
-                    return Outcome { effects: vec![Effect::Assert { assert_kind: "shell_success".to_string(), ok: false, message: format!("expected '{}' not found", expected) }], success: false };
+                    return Outcome {
+                        effects: vec![Effect::Assert {
+                            assert_kind: "shell_success".to_string(),
+                            ok: false,
+                            message: format!("expected '{}' not found", expected),
+                        }],
+                        success: false,
+                    };
                 }
             }
-            Outcome { effects: vec![Effect::Assert { assert_kind: "shell_success".to_string(), ok: ok, message: format!("status={:?}", status) }], success: ok }
+            Outcome {
+                effects: vec![Effect::Assert {
+                    assert_kind: "shell_success".to_string(),
+                    ok: ok,
+                    message: format!("status={:?}", status),
+                }],
+                success: ok,
+            }
         }
         Operation::Attempt { operation } => {
             let out = execute_operation(operation, ctx);
@@ -378,30 +636,47 @@ fn execute_operation(op: &Operation, ctx: &ExecContext) -> Outcome {
         }
         Operation::Sequence { steps } => execute_operation_list(steps, ctx),
         Operation::Parallel { steps, .. } => execute_parallel(steps, ctx),
-        Operation::Conditional { condition, then_op, else_op } => {
+        Operation::Conditional {
+            condition,
+            then_op,
+            else_op,
+        } => {
             let cond = execute_operation(condition, ctx);
             if cond.success {
                 execute_operation(then_op, ctx)
             } else if let Some(else_branch) = else_op.as_deref() {
                 execute_operation(else_branch, ctx)
             } else {
-                Outcome { effects: cond.effects, success: true }
+                Outcome {
+                    effects: cond.effects,
+                    success: true,
+                }
             }
         }
-        Operation::Retry { operation, max_attempts, backoff } => {
+        Operation::Retry {
+            operation,
+            max_attempts,
+            backoff,
+        } => {
             let mut effects = Vec::new();
             let delay = parse_duration(backoff, ctx.guard.max_exec_ms);
             for attempt in 1..=*max_attempts {
                 let out = execute_operation(operation, ctx);
                 effects.extend(out.effects);
                 if out.success {
-                    return Outcome { effects, success: true };
+                    return Outcome {
+                        effects,
+                        success: true,
+                    };
                 }
                 if attempt < *max_attempts {
                     thread::sleep(delay);
                 }
             }
-            Outcome { effects, success: false }
+            Outcome {
+                effects,
+                success: false,
+            }
         }
     }
 }
@@ -461,14 +736,22 @@ fn run_shell(
                 let stdout = if let Some(mut out) = child.stdout.take() {
                     let mut buf = Vec::new();
                     let _ = out.read_to_end(&mut buf);
-                    if buf.is_empty() { None } else { Some(String::from_utf8_lossy(&buf).to_string()) }
+                    if buf.is_empty() {
+                        None
+                    } else {
+                        Some(String::from_utf8_lossy(&buf).to_string())
+                    }
                 } else {
                     None
                 };
                 let stderr = if let Some(mut err) = child.stderr.take() {
                     let mut buf = Vec::new();
                     let _ = err.read_to_end(&mut buf);
-                    if buf.is_empty() { None } else { Some(String::from_utf8_lossy(&buf).to_string()) }
+                    if buf.is_empty() {
+                        None
+                    } else {
+                        Some(String::from_utf8_lossy(&buf).to_string())
+                    }
                 } else {
                     None
                 };
@@ -485,7 +768,12 @@ fn parse_duration(input: &str, max_ms: u64) -> Duration {
     if trimmed.is_empty() {
         return Duration::from_millis(max_ms);
     }
-    if trimmed.chars().last().map(|c| c.is_ascii_digit()).unwrap_or(false) {
+    if trimmed
+        .chars()
+        .last()
+        .map(|c| c.is_ascii_digit())
+        .unwrap_or(false)
+    {
         let value = trimmed.parse::<u64>().unwrap_or(max_ms);
         return Duration::from_millis(value.min(max_ms));
     }
@@ -549,7 +837,8 @@ fn normalize_path_lexical(path: &Path) -> PathBuf {
 
 fn default_allowed_commands() -> Vec<String> {
     vec![
-        "echo", "ls", "cat", "mkdir", "rm", "cp", "mv", "git", "curl", "python3", "node", "npm", "cargo", "test", "grep", "find", "ast-grep", "sg",
+        "echo", "ls", "cat", "mkdir", "rm", "cp", "mv", "git", "curl", "python3", "node", "npm",
+        "cargo", "test", "grep", "find", "ast-grep", "sg",
     ]
     .into_iter()
     .map(|s| s.to_string())
@@ -557,15 +846,10 @@ fn default_allowed_commands() -> Vec<String> {
 }
 
 fn default_blocked_patterns() -> Vec<String> {
-    vec![
-        "rm -rf /",
-        "sudo",
-        "chmod 777",
-        "> /dev/",
-    ]
-    .into_iter()
-    .map(|s| s.to_string())
-    .collect()
+    vec!["rm -rf /", "sudo", "chmod 777", "> /dev/"]
+        .into_iter()
+        .map(|s| s.to_string())
+        .collect()
 }
 
 fn risk_score(op: &Operation) -> f64 {
@@ -580,7 +864,11 @@ fn risk_score(op: &Operation) -> f64 {
         Operation::Attempt { operation } => risk_score(operation),
         Operation::Sequence { steps } => steps.iter().map(risk_score).fold(0.0, f64::max),
         Operation::Parallel { steps, .. } => steps.iter().map(risk_score).fold(0.0, f64::max),
-        Operation::Conditional { condition, then_op, else_op } => {
+        Operation::Conditional {
+            condition,
+            then_op,
+            else_op,
+        } => {
             let mut max = risk_score(condition);
             max = max.max(risk_score(then_op));
             if let Some(else_branch) = else_op {
@@ -600,7 +888,9 @@ fn op_label(op: &Operation) -> String {
         Operation::HttpGet { url, .. } => format!("http.get:{}", url),
         Operation::GitPatch { repo_path, .. } => format!("git.patch:{}", repo_path),
         Operation::AssertFileExists { path } => format!("assert.file_exists:{}", path),
-        Operation::AssertShellSuccess { command, .. } => format!("assert.shell_success:{}", command),
+        Operation::AssertShellSuccess { command, .. } => {
+            format!("assert.shell_success:{}", command)
+        }
         Operation::Attempt { .. } => "attempt".to_string(),
         Operation::Sequence { .. } => "sequence".to_string(),
         Operation::Parallel { .. } => "parallel".to_string(),

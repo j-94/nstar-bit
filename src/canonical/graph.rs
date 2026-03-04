@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 
 use super::types::{
-    EdgeKind, GateDecision, GatePattern, GraphEdge, GraphState,
-    NodeDiscovery, NodeObservation,
+    EdgeKind, GateDecision, GatePattern, GraphEdge, GraphState, NodeDiscovery, NodeObservation,
 };
 
 fn is_prime(n: u64) -> bool {
@@ -254,11 +253,11 @@ fn maybe_add_or_reinforce_edge(
     delta: f32,
     kind: EdgeKind,
 ) {
-    if let Some(edge) = graph
-        .edges
-        .iter_mut()
-        .find(|e| e.from == from && e.to == to && std::mem::discriminant(&e.kind) == std::mem::discriminant(&kind))
-    {
+    if let Some(edge) = graph.edges.iter_mut().find(|e| {
+        e.from == from
+            && e.to == to
+            && std::mem::discriminant(&e.kind) == std::mem::discriminant(&kind)
+    }) {
         edge.weight = (edge.weight + delta).clamp(0.0, 1.0);
     } else {
         graph.edges.push(GraphEdge {

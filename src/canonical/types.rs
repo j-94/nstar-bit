@@ -163,7 +163,9 @@ impl GateDecision {
     }
 
     pub fn has_signal(&self, sig: &str) -> bool {
-        self.emitted_signals.iter().any(|s| s.to_lowercase() == sig.to_lowercase())
+        self.emitted_signals
+            .iter()
+            .any(|s| s.to_lowercase() == sig.to_lowercase())
     }
 }
 
@@ -214,6 +216,13 @@ pub struct CanonicalReceipt {
     pub timestamp: String,
     pub prev_hash: String,
     pub hash: String,
+    
+    // Captured execution trace elements for offline deterministic replay
+    pub recorded_input: CanonicalInput,
+    pub recorded_proposal: CanonicalProposal,
+    pub recorded_observations: Vec<NodeObservation>,
+    pub recorded_discoveries: Vec<NodeDiscovery>,
+
     #[serde(default)]
     pub proposal_quality: f32,
     pub decision: TurnDecision,

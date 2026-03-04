@@ -1,7 +1,10 @@
 use crate::receipt::Effect;
 use crate::utir::Operation;
 
-use super::types::{CanonicalCriteria, CanonicalInput, CanonicalProposal, GateDecision, InvariantReport, SimulationReport};
+use super::types::{
+    CanonicalCriteria, CanonicalInput, CanonicalProposal, GateDecision, InvariantReport,
+    SimulationReport,
+};
 
 #[derive(Debug, Clone, Copy)]
 enum RequiredEvidence {
@@ -59,7 +62,10 @@ pub fn evaluate_invariants(
 
     let contradiction_score = contradiction_score(input, proposal, effects, audit_triggered, gate);
     if contradiction_score > criteria.contradiction_threshold {
-        violations.push(format!("contradiction_score_exceeded:{:.2}", contradiction_score));
+        violations.push(format!(
+            "contradiction_score_exceeded:{:.2}",
+            contradiction_score
+        ));
     }
 
     InvariantReport {
@@ -70,10 +76,7 @@ pub fn evaluate_invariants(
     }
 }
 
-fn required_evidence(
-    gate: &GateDecision,
-    proposal: &CanonicalProposal,
-) -> Vec<RequiredEvidence> {
+fn required_evidence(gate: &GateDecision, proposal: &CanonicalProposal) -> Vec<RequiredEvidence> {
     let mut required = Vec::new();
 
     if !proposal.operations.is_empty() {
@@ -94,13 +97,21 @@ fn required_evidence(
 
 fn evidence_satisfied(req: RequiredEvidence, effects: &[Effect], response: &str) -> bool {
     match req {
-        RequiredEvidence::Read => effects.iter().any(|e| matches!(e, Effect::ReadFile { ok: true, .. })),
-        RequiredEvidence::Write => effects.iter().any(|e| matches!(e, Effect::WriteFile { ok: true, .. })),
+        RequiredEvidence::Read => effects
+            .iter()
+            .any(|e| matches!(e, Effect::ReadFile { ok: true, .. })),
+        RequiredEvidence::Write => effects
+            .iter()
+            .any(|e| matches!(e, Effect::WriteFile { ok: true, .. })),
         RequiredEvidence::Verification => {
-            effects
-                .iter()
-                .any(|e| matches!(e, Effect::Assert { ok: true, .. } | Effect::ReadFile { ok: true, .. } | Effect::Exec { ok: true, .. }))
-                || response.to_lowercase().contains("verified")
+            effects.iter().any(|e| {
+                matches!(
+                    e,
+                    Effect::Assert { ok: true, .. }
+                        | Effect::ReadFile { ok: true, .. }
+                        | Effect::Exec { ok: true, .. }
+                )
+            }) || response.to_lowercase().contains("verified")
         }
         RequiredEvidence::Effects => !effects.is_empty(),
     }
@@ -141,9 +152,13 @@ fn contradiction_score(
     gate: &GateDecision,
 ) -> f32 {
     let mut score: f32 = 0.0;
-    
-    let has_write_effect = effects.iter().any(|e| matches!(e, Effect::WriteFile { ok: true, .. }));
-    let has_read_effect = effects.iter().any(|e| matches!(e, Effect::ReadFile { ok: true, .. }));
+
+    let has_write_effect = effects
+        .iter()
+        .any(|e| matches!(e, Effect::WriteFile { ok: true, .. }));
+    let has_read_effect = effects
+        .iter()
+        .any(|e| matches!(e, Effect::ReadFile { ok: true, .. }));
 
     if gate.has_signal("assert:wrote") && !has_write_effect {
         score += 0.7;
@@ -168,7 +183,9 @@ fn flatten_ops<F: FnMut(&Operation)>(ops: &[Operation], f: &mut F) {
     for op in ops {
         f(op);
         match op {
-            Operation::Attempt { operation } => flatten_ops(std::slice::from_ref(operation.as_ref()), f),
+            Operation::Attempt { operation } => {
+                flatten_ops(std::slice::from_ref(operation.as_ref()), f)
+            }
             Operation::Sequence { steps } => flatten_ops(steps, f),
             Operation::Parallel { steps, .. } => flatten_ops(steps, f),
             Operation::Conditional {
@@ -182,7 +199,9 @@ fn flatten_ops<F: FnMut(&Operation)>(ops: &[Operation], f: &mut F) {
                     flatten_ops(std::slice::from_ref(else_op.as_ref()), f);
                 }
             }
-            Operation::Retry { operation, .. } => flatten_ops(std::slice::from_ref(operation.as_ref()), f),
+            Operation::Retry { operation, .. } => {
+                flatten_ops(std::slice::from_ref(operation.as_ref()), f)
+            }
             _ => {}
         }
     }

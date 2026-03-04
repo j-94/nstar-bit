@@ -83,7 +83,7 @@ fn api_key() -> Option<String> {
             .args(&["find-generic-password", "-s", "OPENROUTER_API_KEY", "-w"])
             .output()
             .ok()?;
-        
+
         if output.status.success() {
             let val = String::from_utf8_lossy(&output.stdout).trim().to_string();
             if !val.is_empty() {
@@ -158,8 +158,8 @@ impl LmClient {
         // Print header for the metacognitive process
         println!("  [Meta Pass] Thinking... ");
 
-        use std::io::{self, Write};
         use futures::StreamExt;
+        use std::io::{self, Write};
 
         let mut current_model = self.model.clone();
         let mut attempts = 0;
@@ -194,9 +194,14 @@ impl LmClient {
                             for line in text.lines() {
                                 if line.starts_with("data: ") {
                                     let data = &line[6..];
-                                    if data == "[DONE]" { continue; }
+                                    if data == "[DONE]" {
+                                        continue;
+                                    }
                                     if let Ok(v) = serde_json::from_str::<Value>(data) {
-                                        if let Some(content) = v.pointer("/choices/0/delta/content").and_then(|c| c.as_str()) {
+                                        if let Some(content) = v
+                                            .pointer("/choices/0/delta/content")
+                                            .and_then(|c| c.as_str())
+                                        {
                                             if !content.is_empty() {
                                                 full_text.push_str(content);
                                                 print!("{}", content);
@@ -354,15 +359,13 @@ Return JSON:
                 .get("turn_quality")
                 .and_then(|v| v.as_f64())
                 .unwrap_or(outs.quality as f64) as f32,
-            new_predicate: parsed
-                .get("new_predicate")
-                .and_then(|v| {
-                    if v.is_null() {
-                        None
-                    } else {
-                        serde_json::from_value(v.clone()).ok()
-                    }
-                }),
+            new_predicate: parsed.get("new_predicate").and_then(|v| {
+                if v.is_null() {
+                    None
+                } else {
+                    serde_json::from_value(v.clone()).ok()
+                }
+            }),
             reinforced: parsed
                 .get("reinforced")
                 .and_then(|v| serde_json::from_value(v.clone()).ok())
@@ -395,15 +398,15 @@ Return JSON ONLY:
             json!({"role": "system", "content": system}),
             json!({"role": "user", "content": task}),
         ];
-        
+
         self.execute_task(&messages).await
     }
 
     /// Execute a task as an agent and return the outputs.
     /// This is used for the "ACT" phase, before the "META" and "REFLECT" phases.
     pub async fn execute_task(&self, messages: &[Value]) -> Result<TurnOuts> {
-        use std::io::{self, Write};
         use futures::StreamExt;
+        use std::io::{self, Write};
 
         let mut current_model = self.model.clone();
         let mut attempts = 0;
@@ -439,9 +442,14 @@ Return JSON ONLY:
                             for line in text.lines() {
                                 if line.starts_with("data: ") {
                                     let data = &line[6..];
-                                    if data == "[DONE]" { continue; }
+                                    if data == "[DONE]" {
+                                        continue;
+                                    }
                                     if let Ok(v) = serde_json::from_str::<Value>(data) {
-                                        if let Some(content) = v.pointer("/choices/0/delta/content").and_then(|c| c.as_str()) {
+                                        if let Some(content) = v
+                                            .pointer("/choices/0/delta/content")
+                                            .and_then(|c| c.as_str())
+                                        {
                                             if !content.is_empty() {
                                                 full_text.push_str(content);
                                                 print!("{}", content);
@@ -479,7 +487,7 @@ Return JSON ONLY:
                 }
             }
         }
-        
+
         let parsed: Value = serde_json::from_str(&full_text)
             .or_else(|_| {
                 let clean = full_text
@@ -496,22 +504,40 @@ Return JSON ONLY:
                 "errors": ["Failed to parse json response"]
             }));
 
-        let utir_operations = parsed.get("utir_operations")
+        let utir_operations = parsed
+            .get("utir_operations")
             .and_then(|v| serde_json::from_value::<Vec<crate::utir::Operation>>(v.clone()).ok())
             .unwrap_or_default();
 
         Ok(TurnOuts {
-            response: parsed.get("response").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            actions: parsed.get("actions").and_then(|v| v.as_array())
-                .map(|a| a.iter().filter_map(|x| x.as_str().map(|s| s.to_string())).collect())
+            response: parsed
+                .get("response")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            actions: parsed
+                .get("actions")
+                .and_then(|v| v.as_array())
+                .map(|a| {
+                    a.iter()
+                        .filter_map(|x| x.as_str().map(|s| s.to_string()))
+                        .collect()
+                })
                 .unwrap_or_default(),
-            quality: parsed.get("quality").and_then(|v| v.as_f64()).unwrap_or(0.5) as f32,
-            errors: parsed.get("errors").and_then(|v| v.as_array())
-                .map(|a| a.iter().filter_map(|x| x.as_str().map(|s| s.to_string())).collect())
+            quality: parsed
+                .get("quality")
+                .and_then(|v| v.as_f64())
+                .unwrap_or(0.5) as f32,
+            errors: parsed
+                .get("errors")
+                .and_then(|v| v.as_array())
+                .map(|a| {
+                    a.iter()
+                        .filter_map(|x| x.as_str().map(|s| s.to_string()))
+                        .collect()
+                })
                 .unwrap_or_default(),
             operations: utir_operations,
         })
     }
 }
-
-

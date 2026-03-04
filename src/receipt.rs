@@ -4,11 +4,8 @@
 //! this specific computation occurred with these specific results.
 //! Matches the receipt pattern from meta3-graph-core.
 
-
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-
-
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(tag = "kind")]
@@ -59,10 +56,7 @@ pub enum Effect {
         message: String,
     },
     #[serde(rename = "blocked")]
-    Blocked {
-        op: String,
-        reason: String,
-    },
+    Blocked { op: String, reason: String },
     #[serde(rename = "exec")]
     Exec {
         cmd: String,
@@ -88,5 +82,3 @@ pub fn sha256_hex_bytes(bytes: &[u8]) -> String {
 pub fn sha256_hex_str(s: &str) -> String {
     sha256_hex_bytes(s.as_bytes())
 }
-
-

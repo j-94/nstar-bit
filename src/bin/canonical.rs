@@ -7,11 +7,15 @@ use nstar_bit::canonical::core::CanonicalCore;
 use nstar_bit::canonical::types::{
     CanonicalInput, CanonicalProposal, NodeDiscovery, NodeObservation,
 };
-use nstar_bit::lm::{LmClient, TurnIns, TurnOuts, Predicate};
+use nstar_bit::lm::{LmClient, Predicate, TurnIns, TurnOuts};
 use nstar_bit::utir_exec::GuardConfig;
 
 #[derive(Parser, Debug)]
-#[command(author, version, about = "N* Canonical Core (graph-first, simulation-first)")]
+#[command(
+    author,
+    version,
+    about = "N* Canonical Core (graph-first, simulation-first)"
+)]
 struct Args {
     #[arg(short, long)]
     interactive: bool,
@@ -142,17 +146,35 @@ async fn run_turn(
     let discoveries = reflect_new_nodes(&lm, core, &input, &proposal).await?;
 
     let guard = GuardConfig::from_env();
-    let result = core.process_turn(input, proposal, observations, discoveries, &guard, receipts_path)?;
+    let result = core.process_turn(
+        input,
+        proposal,
+        observations,
+        discoveries,
+        &guard,
+        receipts_path,
+    )?;
 
     core.save(state_path)?;
 
     println!("\n=== Canonical Turn Result ===");
     println!("decision      : {:?}", result.trace.decision);
     println!("gate          : {}", result.trace.gate.summary());
-    println!("simulation    : can_materialize={} max_risk={:.2}", result.trace.simulation.can_materialize, result.trace.simulation.max_risk);
-    println!("invariants    : passed={} coverage={:.2} contradiction={:.2}", result.trace.invariants.passed, result.trace.invariants.evidence_coverage, result.trace.invariants.contradiction_score);
+    println!(
+        "simulation    : can_materialize={} max_risk={:.2}",
+        result.trace.simulation.can_materialize, result.trace.simulation.max_risk
+    );
+    println!(
+        "invariants    : passed={} coverage={:.2} contradiction={:.2}",
+        result.trace.invariants.passed,
+        result.trace.invariants.evidence_coverage,
+        result.trace.invariants.contradiction_score
+    );
     if !result.trace.invariants.violations.is_empty() {
-        println!("violations    : {}", result.trace.invariants.violations.join(", "));
+        println!(
+            "violations    : {}",
+            result.trace.invariants.violations.join(", ")
+        );
     }
     if !result.discovered_nodes.is_empty() {
         println!("discovered    : {}", result.discovered_nodes.join(", "));
@@ -177,7 +199,9 @@ fn prompt_from_messages(messages: &[serde_json::Value]) -> String {
         .rev()
         .find_map(|m| {
             if m.get("role").and_then(|v| v.as_str()) == Some("user") {
-                m.get("content").and_then(|v| v.as_str()).map(str::to_string)
+                m.get("content")
+                    .and_then(|v| v.as_str())
+                    .map(str::to_string)
             } else {
                 None
             }

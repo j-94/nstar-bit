@@ -14,9 +14,9 @@ use super::graph::{
 };
 use super::invariants::evaluate_invariants;
 use super::types::{
-    CanonicalInput, CanonicalProposal, CanonicalReceipt, CanonicalState,
-    CanonicalTurnResult, NodeDiscovery, NodeObservation, Scale, ScaleCoordinate, SimulationReport,
-    TurnDecision, TurnTrace,
+    CanonicalInput, CanonicalProposal, CanonicalReceipt, CanonicalState, CanonicalTurnResult,
+    NodeDiscovery, NodeObservation, Scale, ScaleCoordinate, SimulationReport, TurnDecision,
+    TurnTrace,
 };
 
 pub struct CanonicalCore {
@@ -64,9 +64,17 @@ impl CanonicalCore {
         out.push_str("N* Canonical Core\n");
         out.push_str(&format!("session={}\n", &self.state.session_id[..8]));
         out.push_str(&format!("turns={}\n", self.state.turn_count));
-        out.push_str(&format!("nodes={} edges={} patterns={}\n", self.state.graph.nodes.len(), self.state.graph.edges.len(), self.state.graph.patterns.len()));
+        out.push_str(&format!(
+            "nodes={} edges={} patterns={}\n",
+            self.state.graph.nodes.len(),
+            self.state.graph.edges.len(),
+            self.state.graph.patterns.len()
+        ));
 
-        let active = active_nodes(&self.state.graph, self.state.graph.criteria.activation_cutoff);
+        let active = active_nodes(
+            &self.state.graph,
+            self.state.graph.criteria.activation_cutoff,
+        );
         if active.is_empty() {
             out.push_str("active_nodes=0\n");
         } else {
@@ -104,7 +112,8 @@ impl CanonicalCore {
         let gate = evaluate_gates(&self.state.graph);
         let simulation = self.simulate_operations(&proposal.operations, &input.prompt);
 
-        let should_execute = !gate.has_signal("halt") && !gate.has_signal("escalate") && simulation.can_materialize;
+        let should_execute =
+            !gate.has_signal("halt") && !gate.has_signal("escalate") && simulation.can_materialize;
         let execution_effects = if should_execute && !proposal.operations.is_empty() {
             let doc = UtirDocument {
                 task_id: format!("nstar-canonical-turn-{}", input.turn),
@@ -162,7 +171,7 @@ impl CanonicalCore {
             criteria_after: self.state.graph.criteria.clone(),
         };
 
-        let receipt = self.make_receipt(&trace, &discovered_nodes);
+        let receipt = self.make_receipt(&trace, &observations, &discoveries);
         self.append_receipt(receipts_path, &receipt)?;
 
         self.state.turn_count += 1;
@@ -216,7 +225,8 @@ impl CanonicalCore {
             ));
         }
 
-        if self.state.graph.criteria.require_read_before_write && has_write_before_read(operations) {
+        if self.state.graph.criteria.require_read_before_write && has_write_before_read(operations)
+        {
             blocked_reasons.push("write_before_read_in_plan".to_string());
         }
 
@@ -238,7 +248,10 @@ impl CanonicalCore {
         let token_coord = token_coordinate(&input.prompt, &proposal.response);
         out.push(token_coord);
 
-        let active_turn = active_nodes(&self.state.graph, self.state.graph.criteria.activation_cutoff);
+        let active_turn = active_nodes(
+            &self.state.graph,
+            self.state.graph.criteria.activation_cutoff,
+        );
         out.push(scale_from_active(Scale::Turn, &active_turn));
 
         let session_active = self
@@ -271,7 +284,9 @@ impl CanonicalCore {
                 };
                 (n.id.clone(), intensity, n.prime_id)
             })
-            .filter(|(_, intensity, _)| *intensity >= self.state.graph.criteria.activation_cutoff * 0.5)
+            .filter(|(_, intensity, _)| {
+                *intensity >= self.state.graph.criteria.activation_cutoff * 0.5
+            })
             .collect::<Vec<_>>();
         out.push(scale_from_active(Scale::Project, &project_active));
 
@@ -294,7 +309,12 @@ impl CanonicalCore {
         self.state.project_activation = vec;
     }
 
-    fn make_receipt(&self, trace: &TurnTrace, discovered_nodes: &[String]) -> CanonicalReceipt {
+    fn make_receipt(
+        &self,
+        trace: &TurnTrace,
+        observations: &[NodeObservation],
+        discoveries: &[NodeDiscovery],
+    ) -> CanonicalReceipt {
         let prev_hash = self
             .state
             .receipts
@@ -319,6 +339,10 @@ impl CanonicalCore {
             timestamp: Utc::now().to_rfc3339(),
             prev_hash,
             hash,
+            recorded_input: trace.input.clone(),
+            recorded_proposal: trace.proposal.clone(),
+            recorded_observations: observations.to_vec(),
+            recorded_discoveries: discoveries.to_vec(),
             proposal_quality: trace.proposal.quality,
             decision: trace.decision.clone(),
             gate_summary: trace.gate.summary(),
@@ -328,7 +352,7 @@ impl CanonicalCore {
             evidence_coverage: trace.invariants.evidence_coverage,
             contradiction_score: trace.invariants.contradiction_score,
             coordinates: trace.coordinates.clone(),
-            discovered_nodes: discovered_nodes.to_vec(),
+            discovered_nodes: discoveries.iter().map(|d| d.id.clone()).collect(),
             violations: trace.invariants.violations.clone(),
             criteria_before: trace.criteria_before.clone(),
             criteria_after: trace.criteria_after.clone(),
@@ -388,7 +412,11 @@ fn token_coordinate(prompt: &str, response: &str) -> ScaleCoordinate {
     }
 
     let mut tokens = token_scores.into_iter().collect::<Vec<_>>();
-    tokens.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+    tokens.sort_by(|a, b| {
+        b.1.partial_cmp(&a.1)
+            .unwrap_or(std::cmp::Ordering::Equal)
+            .then_with(|| a.0.cmp(&b.0))
+    });
     tokens.truncate(6);
 
     let mut active = Vec::new();
@@ -413,19 +441,17 @@ fn token_prime(token: &str) -> u64 {
     hasher.update(token.as_bytes());
     let digest = hasher.finalize();
     const TOKEN_PRIMES: [u64; 128] = [
-        2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83,
-        89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179,
-        181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277,
-        281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389,
-        397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499,
-        503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617,
-        619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719,
+        2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89,
+        97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181,
+        191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281,
+        283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397,
+        401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503,
+        509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619,
+        631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719,
     ];
     let idx = (digest[0] as usize) % TOKEN_PRIMES.len();
     TOKEN_PRIMES[idx]
 }
-
-
 
 fn has_write_before_read(ops: &[Operation]) -> bool {
     let mut seen_read = false;
@@ -478,7 +504,9 @@ fn op_label(op: &Operation) -> String {
         Operation::HttpGet { url, .. } => format!("http.get:{}", url),
         Operation::GitPatch { repo_path, .. } => format!("git.patch:{}", repo_path),
         Operation::AssertFileExists { path } => format!("assert.file_exists:{}", path),
-        Operation::AssertShellSuccess { command, .. } => format!("assert.shell_success:{}", command),
+        Operation::AssertShellSuccess { command, .. } => {
+            format!("assert.shell_success:{}", command)
+        }
         Operation::Attempt { .. } => "attempt".to_string(),
         Operation::Sequence { .. } => "sequence".to_string(),
         Operation::Parallel { .. } => "parallel".to_string(),
@@ -491,7 +519,9 @@ fn flatten_ops<F: FnMut(&Operation)>(ops: &[Operation], f: &mut F) {
     for op in ops {
         f(op);
         match op {
-            Operation::Attempt { operation } => flatten_ops(std::slice::from_ref(operation.as_ref()), f),
+            Operation::Attempt { operation } => {
+                flatten_ops(std::slice::from_ref(operation.as_ref()), f)
+            }
             Operation::Sequence { steps } => flatten_ops(steps, f),
             Operation::Parallel { steps, .. } => flatten_ops(steps, f),
             Operation::Conditional {
@@ -505,7 +535,9 @@ fn flatten_ops<F: FnMut(&Operation)>(ops: &[Operation], f: &mut F) {
                     flatten_ops(std::slice::from_ref(else_op.as_ref()), f);
                 }
             }
-            Operation::Retry { operation, .. } => flatten_ops(std::slice::from_ref(operation.as_ref()), f),
+            Operation::Retry { operation, .. } => {
+                flatten_ops(std::slice::from_ref(operation.as_ref()), f)
+            }
             _ => {}
         }
     }

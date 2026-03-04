@@ -6,8 +6,8 @@
 //! Unlike the fixed 9-bit `ExtendedBits { a, u, p, e, d, i, r, t, m }`,
 //! NstarBit is dynamic in n — predicates are discovered, not designed.
 
-pub mod receipt;
+pub mod canonical;
 pub mod lm;
+pub mod receipt;
 pub mod utir;
 pub mod utir_exec;
-pub mod canonical;
