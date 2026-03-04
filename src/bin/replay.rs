@@ -56,7 +56,7 @@ fn main() -> Result<()> {
     let guard = GuardConfig::from_env();
     let mut success_count = 0;
 
-    for (i, rec) in recorded_receipts.iter().enumerate() {
+    for rec in recorded_receipts.iter() {
         if args.verbose {
             println!("REPLAY TURN {}: hash={}", rec.turn, rec.hash);
         }

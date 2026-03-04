@@ -23,6 +23,12 @@ pub struct CanonicalCore {
     pub state: CanonicalState,
 }
 
+impl Default for CanonicalCore {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl CanonicalCore {
     pub fn new() -> Self {
         Self {

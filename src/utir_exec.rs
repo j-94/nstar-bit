@@ -220,13 +220,7 @@ fn execute_operation(op: &Operation, ctx: &ExecContext) -> Outcome {
                     };
                 }
             }
-            let (ok, stdout, stderr, status) = run_shell(
-                command,
-                timeout,
-                work_dir.as_ref().map(|p| p.as_path()),
-                env,
-                *capture_output,
-            );
+            let (ok, stdout, stderr, status) = run_shell(command, timeout, work_dir.as_deref(), env, *capture_output);
             let effect = Effect::Exec {
                 cmd: command.to_string(),
                 ok,
@@ -418,7 +412,7 @@ fn execute_operation(op: &Operation, ctx: &ExecContext) -> Outcome {
                                     success: false,
                                 };
                             }
-                            let ok = status >= 200 && status < 300;
+                            let ok = (200..300).contains(&status);
                             Outcome {
                                 effects: vec![Effect::HttpGet {
                                     url: url.to_string(),
@@ -621,7 +615,7 @@ fn execute_operation(op: &Operation, ctx: &ExecContext) -> Outcome {
             Outcome {
                 effects: vec![Effect::Assert {
                     assert_kind: "shell_success".to_string(),
-                    ok: ok,
+                    ok,
                     message: format!("status={:?}", status),
                 }],
                 success: ok,

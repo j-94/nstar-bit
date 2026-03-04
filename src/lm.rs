@@ -80,7 +80,7 @@ fn api_key() -> Option<String> {
     // Fallback: try macOS keychain
     if cfg!(target_os = "macos") {
         let output = std::process::Command::new("security")
-            .args(&["find-generic-password", "-s", "OPENROUTER_API_KEY", "-w"])
+            .args(["find-generic-password", "-s", "OPENROUTER_API_KEY", "-w"])
             .output()
             .ok()?;
 
@@ -192,11 +192,8 @@ impl LmClient {
                         if let Ok(chunk) = chunk_res {
                             let text = String::from_utf8_lossy(&chunk);
                             for line in text.lines() {
-                                if line.starts_with("data: ") {
-                                    let data = &line[6..];
-                                    if data == "[DONE]" {
-                                        continue;
-                                    }
+                                if let Some(data) = line.strip_prefix("data: ") {
+                                    if data == "[DONE]" { continue; }
                                     if let Ok(v) = serde_json::from_str::<Value>(data) {
                                         if let Some(content) = v
                                             .pointer("/choices/0/delta/content")
@@ -440,11 +437,8 @@ Return JSON ONLY:
                         if let Ok(chunk) = chunk_res {
                             let text = String::from_utf8_lossy(&chunk);
                             for line in text.lines() {
-                                if line.starts_with("data: ") {
-                                    let data = &line[6..];
-                                    if data == "[DONE]" {
-                                        continue;
-                                    }
+                                if let Some(data) = line.strip_prefix("data: ") {
+                                    if data == "[DONE]" { continue; }
                                     if let Ok(v) = serde_json::from_str::<Value>(data) {
                                         if let Some(content) = v
                                             .pointer("/choices/0/delta/content")

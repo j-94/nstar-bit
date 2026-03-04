@@ -66,6 +66,7 @@ impl Default for CanonicalCriteria {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct GraphState {
     pub criteria: CanonicalCriteria,
     pub nodes: Vec<GraphNode>,
@@ -73,16 +74,6 @@ pub struct GraphState {
     pub patterns: Vec<GatePattern>,
 }
 
-impl Default for GraphState {
-    fn default() -> Self {
-        Self {
-            criteria: CanonicalCriteria::default(),
-            nodes: Vec::new(),
-            edges: Vec::new(),
-            patterns: Vec::new(),
-        }
-    }
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NodeObservation {
@@ -244,13 +235,9 @@ pub struct CanonicalReceipt {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct CanonicalConfig {}
 
-impl Default for CanonicalConfig {
-    fn default() -> Self {
-        Self {}
-    }
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CanonicalState {

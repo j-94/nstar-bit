@@ -1,7 +1,7 @@
 use anyhow::{anyhow, Result};
 use clap::Parser;
 use std::io::{self, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use nstar_bit::canonical::core::CanonicalCore;
 use nstar_bit::canonical::types::{
@@ -93,8 +93,8 @@ async fn main() -> Result<()> {
 async fn run_turn(
     prompt: String,
     core: &mut CanonicalCore,
-    state_path: &PathBuf,
-    receipts_path: &PathBuf,
+    state_path: &Path,
+    receipts_path: &Path,
 ) -> Result<()> {
     let lm = LmClient::new().ok_or_else(|| anyhow!("API key is required"))?;
 
