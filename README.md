@@ -6,12 +6,16 @@ A Rust implementation of the N★ protocol — a graph-first, simulation-first c
 
 ---
 
-## Runnable Now
-
-### Canonical Core (the target path)
+## Quick Start
 
 ```bash
-# Interactive session — graph-first, simulation-first pipeline
+# Build
+cargo build --bin canonical
+
+# Run tests
+cargo test
+
+# Interactive session
 cargo run --bin canonical -- --interactive
 
 # Single prompt
@@ -27,41 +31,39 @@ cargo run --bin canonical -- --reset
 cargo run --bin canonical -- --max-risk 0.7 --audit-rate 0.5 --interactive
 ```
 
-### Other Binaries (legacy pipeline)
-
-```bash
-# Interactive REPL via legacy NstarState pipeline
-cargo run -- --interactive
-
-# Autopoietic loop (self-generates tasks)
-cargo run --bin autopoiesis
-
-# Repo grokker (analyze a codebase)
-cargo run --bin grok <path_to_repo> [max_files]
-
-# Stress test (8 fixed prompts)
-cargo run --bin stress
-
-# Python math kernel (autogenesis)
-python3 nstar-autogenesis/engine.py --state nstar-autogenesis/state.json init
-python3 nstar-autogenesis/engine.py --state nstar-autogenesis/state.json turn "<message>"
-python3 nstar-autogenesis/engine.py --state nstar-autogenesis/state.json show
-```
-
-### Tests
-
-```bash
-cargo test
-```
+Requires: `OPENROUTER_API_KEY` environment variable (or macOS Keychain entry).
 
 ---
 
-## Implemented Now
+## How It Works
+
+```
+prompt ──► propose ──► simulate ──► invariant check ──► commit/rollback ──► receipt
+               │            │              │
+               ▼            ▼              ▼
+          graph state   risk score    evidence score
+          activation    write order   contradiction
+          propagation   analysis      detection
+```
+
+Each turn:
+1. **Propose** — LM generates a response + operations from the prompt.
+2. **Observe** — LM evaluates graph nodes against the turn context.
+3. **Discover** — LM reflects on whether new nodes are needed.
+4. **Simulate** — operations are scored for risk and ordering violations.
+5. **Invariants** — evidence coverage and contradictions are checked.
+6. **Decide** — commit, rollback, halt, or escalate.
+7. **Receipt** — append-only hash-chained receipt is written.
+
+---
+
+## Implemented
 
 - Unified graph state (`nodes`, `edges`, `patterns`) — `src/canonical/types.rs`
 - Activation propagation across edges — `src/canonical/graph.rs`
 - Dynamic runtime node discovery with no fixed noun schema
-- Gate evaluation from active nodes + gate patterns
+- Gate evaluation from active nodes + learned gate patterns (Lane C: complete)
+- Risk/quality criteria stored as mutable graph state (Lane D: complete)
 - Simulation-before-materialization (risk + operation ordering checks)
 - Invariant checks (evidence coverage, contradiction score, effect consistency)
 - Stochastic audits (`audit_rate`) per turn
@@ -71,13 +73,9 @@ cargo test
 - UTIR operation executor with guard config (`src/utir_exec.rs`)
 - LM client with OpenRouter + macOS Keychain fallback (`src/lm.rs`)
 
----
-
-## Planned Next (not yet implemented)
+## Planned Next
 
 - **Lane B**: Deterministic replay verifier — same event log → same state hash, 100/100 runs
-- **Lane C**: Replace fixed `GateAction` enum + lexical heuristics with graph-stored control objects
-- **Lane D**: Risk/quality criteria stored as mutable graph state, tracked in receipts
 - **Lane E**: A/B harness — baseline vs learned-criteria path, trend gate (slope ≥ 0.5 over 20 turns)
 - Receipt `version` field + `deterministic: bool` (align with `meta3-graph-core/receipt.rs`)
 
@@ -90,31 +88,31 @@ cargo test
 | `nstar_canonical_state.json` | Canonical core graph state |
 | `canonical_receipts.jsonl` | Canonical core receipt chain |
 
+Both are `.gitignore`d — they are runtime artifacts, not source.
+
 ---
 
 ## Source Map
 
 ```
 src/
-  canonical/         ← THE canonical path (development target)
-    core.rs          ← turn pipeline
-    graph.rs         ← graph mutation + activation + gates
-    invariants.rs    ← invariant evaluator
-    types.rs         ← all data types
+  canonical/         ← canonical path (all development happens here)
+    core.rs          ← turn pipeline: propose → simulate → invariants → decide → receipt
+    graph.rs         ← graph mutation + activation propagation + gate evaluation
+    invariants.rs    ← invariant evaluator (evidence, contradiction, effects)
+    types.rs         ← all data types (state, trace, receipt, config)
+    mod.rs           ← re-exports
   bin/
-    canonical.rs     ← runnable binary (live LM + UTIR)
-    autopoiesis.rs   ← self-generating task loop
-    grok.rs          ← codebase analyzer
-    stress.rs        ← 8-prompt stress test
-  lm.rs              ← LM client (shared)
-  utir.rs            ← UTIR operation types (shared)
-  utir_exec.rs       ← UTIR executor (shared)
-  main.rs            ← legacy CLI binary
-  state.rs           ← legacy NstarState
-  collapse.rs        ← legacy collapse math
-  turn.rs / gate.rs / predicate.rs / receipt.rs  ← legacy pipeline
-nstar-autogenesis/
-  engine.py          ← Python math kernel (highest priority source)
+    canonical.rs     ← CLI binary (interactive + single-prompt modes)
+  lm.rs              ← LM client (OpenRouter API, macOS Keychain fallback)
+  utir.rs            ← UTIR operation types (Shell, FsRead, FsWrite, etc.)
+  utir_exec.rs       ← UTIR executor with sandboxing + guard config
+  receipt.rs         ← Effect types + SHA-256 helpers
+  lib.rs             ← crate root
+
+_legacy/             ← archived code from pre-canonical pipeline (not compiled)
+experiments/         ← experiment harness + prompt sets + output logs
+scripts/             ← report generation scripts (Python)
 ```
 
 ---
