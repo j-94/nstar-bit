@@ -1,16 +1,15 @@
-# experimets
+# experiments
 
 This folder contains a runnable experiment harness for `nstar-bit`.
 
 It runs eight experiment tracks and writes all artifacts to:
 
-- `experimets/output/<timestamp>/`
+- `experiments/output/<timestamp>/`
 
 ## Run
 
 ```bash
-cd /Users/jobs/Developer/nstar-bit
-bash experimets/scripts/run_all.sh
+bash experiments/scripts/run_all.sh
 ```
 
 ## Experiments

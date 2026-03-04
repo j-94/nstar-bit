@@ -10,9 +10,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple
 
-ROOT = Path('/Users/jobs/Developer/nstar-bit')
-PROMPTS_DIR = ROOT / 'experimets' / 'prompts'
-OUT_BASE = ROOT / 'experimets' / 'output_strict'
+ROOT = Path(os.environ.get('NSTAR_ROOT', Path(__file__).resolve().parent.parent.parent))
+PROMPTS_DIR = ROOT / 'experiments' / 'prompts'
+OUT_BASE = ROOT / 'experiments' / 'output_strict'
 
 NSTAR_BIN = ROOT / 'target' / 'debug' / 'nstar-bit'
 CANON_BIN = ROOT / 'target' / 'debug' / 'canonical'

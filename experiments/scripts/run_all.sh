@@ -2,7 +2,7 @@
 set -u -o pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-EXP_DIR="$ROOT/experimets"
+EXP_DIR="$ROOT/experiments"
 PROMPT_DIR="$EXP_DIR/prompts"
 OUT_BASE="$EXP_DIR/output"
 RUN_ID="$(date +"%Y%m%d-%H%M%S")"
