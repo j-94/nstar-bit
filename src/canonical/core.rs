@@ -8,25 +8,31 @@ use sha2::{Digest, Sha256};
 use crate::utir::{Operation, UtirDocument};
 use crate::utir_exec::{execute_utir, GuardConfig};
 
+use crate::lm::OvmOp;
+
 use super::graph::{
     active_nodes, apply_discoveries, apply_observations, evaluate_gates, learn_coactivation_edges,
-    propagate_activations, reinforce_active_nodes,
+    propagate_activations, reinforce_active_nodes, update_hypothesis_substrate, apply_operator,
+    evaluate_rule_heldout,
 };
 use super::invariants::evaluate_invariants;
 use super::types::{
     CanonicalInput, CanonicalProposal, CanonicalReceipt, CanonicalState, CanonicalTurnResult,
-    NodeDiscovery, NodeObservation, Scale, ScaleCoordinate, SimulationReport, TurnDecision,
-    TurnTrace,
+    EdgeKind, NodeDiscovery, NodeObservation, Scale, ScaleCoordinate, SimulationReport,
+    TurnDecision, TurnCost, TurnTrace,
 };
 
 pub struct CanonicalCore {
     pub state: CanonicalState,
+    /// When set, DefineScoringRule OVM ops are ignored and this expression is used instead.
+    pub frozen_rule: Option<String>,
 }
 
 impl CanonicalCore {
     pub fn new() -> Self {
         Self {
             state: CanonicalState::default(),
+            frozen_rule: None,
         }
     }
 
@@ -34,7 +40,7 @@ impl CanonicalCore {
         if path.exists() {
             let data = std::fs::read_to_string(path)?;
             let state: CanonicalState = serde_json::from_str(&data)?;
-            Ok(Self { state })
+            Ok(Self { state, frozen_rule: None })
         } else {
             Ok(Self::new())
         }
@@ -134,7 +140,7 @@ impl CanonicalCore {
         };
 
         let audit_triggered = self.audit_triggered(&input, &proposal);
-        let invariants = evaluate_invariants(
+        let mut invariants = evaluate_invariants(
             &input,
             &proposal,
             &gate,
@@ -143,6 +149,48 @@ impl CanonicalCore {
             &self.state.graph.criteria,
             audit_triggered,
         );
+
+        // Lane D: Apply Operator (OVM) — runs before make_receipt so violations land in the receipt.
+        // Ingest operator definitions from the LM's ovm_ops field.
+        for op in &proposal.ovm_ops {
+            match op {
+                OvmOp::DefineScoringRule { rule } => {
+                    if self.frozen_rule.is_none() {
+                        let old_rule = self.state.graph.scoring_rule.clone();
+                        let new_rule =
+                            rule.trim_start_matches("maximize ").trim().to_string();
+                        self.state.graph.scoring_rule = new_rule.clone();
+                        let trajectory_path =
+                            receipts_path.with_file_name("rule_trajectory.jsonl");
+                        let _ = append_rule_trajectory(
+                            &trajectory_path,
+                            input.turn,
+                            &old_rule,
+                            &new_rule,
+                            &proposal,
+                            &self.state.graph.edges,
+                        );
+                    }
+                }
+                OvmOp::DefineSelectionPredicate { predicate } => {
+                    self.state.graph.selection_predicate = predicate.clone();
+                }
+            }
+        }
+
+        // Internal co-occurrence counting (the substrate).
+        // Tracks which behavioral node: predicates co-activate — not words.
+        update_hypothesis_substrate(
+            &mut self.state.graph,
+            &observations,
+            input.turn,
+        );
+
+        let ovm_violations = apply_operator(&mut self.state.graph);
+        if !ovm_violations.is_empty() {
+            invariants.violations.extend(ovm_violations);
+            invariants.passed = invariants.violations.is_empty();
+        }
 
         let decision = if gate.has_signal("halt") {
             TurnDecision::Halt
@@ -158,6 +206,12 @@ impl CanonicalCore {
             let cutoff = self.state.graph.criteria.activation_cutoff;
             reinforce_active_nodes(&mut self.state.graph, cutoff);
             learn_coactivation_edges(&mut self.state.graph, cutoff);
+        }
+
+        // Every 5 turns, recompute held-out scorecard for the current scoring rule.
+        if input.turn % 5 == 0 && !self.state.graph.scoring_rule.is_empty() {
+            self.state.graph.rule_scorecard =
+                evaluate_rule_heldout(&self.state.graph, &self.state.receipts, 50);
         }
 
         self.update_project_activation();
@@ -361,6 +415,7 @@ impl CanonicalCore {
             evidence_coverage: trace.invariants.evidence_coverage,
             contradiction_score: trace.invariants.contradiction_score,
             coordinates: trace.coordinates.clone(),
+            cost: TurnCost::default(),
             discovered_nodes: discoveries.iter().map(|d| d.id.clone()).collect(),
             violations: trace.invariants.violations.clone(),
             criteria_before: trace.criteria_before.clone(),
@@ -390,10 +445,14 @@ impl CanonicalCore {
         let repeated_failures = self.state.motif_counts.values().sum::<u64>();
         let trend_slope = self.calculate_contradiction_slope();
 
-        // Exit gate: candidate reduces repeated-failure motifs by at least 30% by turn 20
-        // We evaluate if the trend is negative and significant enough
         let turns = self.state.turn_count;
-        let passes_promotion = if turns < 10 {
+
+        // Block promotion if any receipt in the chain has not been replay-verified.
+        let has_unverified = self.state.receipts.iter().any(|r| !r.deterministic);
+
+        let passes_promotion = if has_unverified {
+            false // Replay verifier has not confirmed all receipts — promotion blocked
+        } else if turns < 10 {
             false // Not enough data
         } else {
             // Significant negative slope of contradiction or failures
@@ -619,6 +678,56 @@ fn flatten_ops<F: FnMut(&Operation)>(ops: &[Operation], f: &mut F) {
     }
 }
 
+fn append_rule_trajectory(
+    path: &Path,
+    turn: u64,
+    old_rule: &str,
+    new_rule: &str,
+    proposal: &CanonicalProposal,
+    edges: &[super::types::GraphEdge],
+) -> Result<()> {
+    use std::io::Write;
+
+    let hypothesis_edges: Vec<f32> = edges
+        .iter()
+        .filter(|e| matches!(e.kind, EdgeKind::Hypothesis))
+        .map(|e| e.weight)
+        .collect();
+
+    let hypothesis_count = hypothesis_edges.len();
+    let mean_weight = if hypothesis_edges.is_empty() {
+        0.0_f64
+    } else {
+        let sum: f32 = hypothesis_edges.iter().sum();
+        ((sum / hypothesis_edges.len() as f32) as f64 * 100.0).round() / 100.0
+    };
+
+    let reason = proposal
+        .actions
+        .first()
+        .cloned()
+        .unwrap_or_else(|| proposal.response.chars().take(120).collect());
+
+    let entry = serde_json::json!({
+        "turn": turn,
+        "old_rule": old_rule,
+        "new_rule": new_rule,
+        "hypothesis_count": hypothesis_count,
+        "mean_weight": mean_weight,
+        "reason": reason,
+    });
+
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+    let mut file = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(path)?;
+    writeln!(file, "{}", serde_json::to_string(&entry)?)?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -639,6 +748,7 @@ mod tests {
             errors: vec![],
             quality: 1.0,
             operations: vec![],
+            ovm_ops: vec![],
         };
         assert!(!core.audit_triggered(&input, &proposal));
     }
@@ -670,6 +780,7 @@ mod tests {
             errors: vec![],
             quality: 0.9,
             operations: vec![],
+            ovm_ops: vec![],
         };
         let obs = vec![NodeObservation {
             id: "sig:analysis".to_string(),
@@ -687,6 +798,44 @@ mod tests {
             .process_turn(input, proposal, obs, vec![], &guard, &receipt_path)
             .expect("turn should process");
         assert!(matches!(res.trace.decision, TurnDecision::Commit));
+        assert!(res.trace.invariants.passed);
+        let _ = std::fs::remove_file(&receipt_path);
+    }
+
+    #[test]
+    fn invalid_ovm_rule_forces_rollback() {
+        let mut core = CanonicalCore::new();
+        let input = CanonicalInput {
+            prompt: "compare signal strength".to_string(),
+            context: vec![],
+            turn: 1,
+        };
+        let proposal = CanonicalProposal {
+            response: "signal strength differs".to_string(),
+            actions: vec![],
+            errors: vec![],
+            quality: 0.9,
+            operations: vec![],
+            ovm_ops: vec![OvmOp::DefineScoringRule {
+                rule: "sqrt(".to_string(),
+            }],
+        };
+
+        let guard = GuardConfig::from_env();
+        let receipt_path =
+            std::env::temp_dir().join("canonical_core_invalid_ovm_rule_receipts.jsonl");
+        let _ = std::fs::remove_file(&receipt_path);
+        let res = core
+            .process_turn(input, proposal, vec![], vec![], &guard, &receipt_path)
+            .expect("turn should process");
+        assert!(matches!(res.trace.decision, TurnDecision::Rollback));
+        assert!(
+            res.trace
+                .invariants
+                .violations
+                .iter()
+                .any(|v| v.starts_with("ovm:scoring_eval_failed"))
+        );
         let _ = std::fs::remove_file(&receipt_path);
     }
 }

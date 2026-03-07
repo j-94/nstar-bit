@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+use crate::lm::OvmOp;
 use crate::receipt::Effect;
 use crate::utir::Operation;
 
@@ -21,6 +22,7 @@ pub struct GraphNode {
 pub enum EdgeKind {
     Supports,
     Inhibits,
+    Hypothesis,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -29,6 +31,14 @@ pub struct GraphEdge {
     pub to: String,
     pub weight: f32,
     pub kind: EdgeKind,
+    #[serde(default)]
+    pub c11: u64,
+    #[serde(default)]
+    pub c10: u64,
+    #[serde(default)]
+    pub c01: u64,
+    #[serde(default)]
+    pub c00: u64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -71,6 +81,12 @@ pub struct GraphState {
     pub nodes: Vec<GraphNode>,
     pub edges: Vec<GraphEdge>,
     pub patterns: Vec<GatePattern>,
+    #[serde(default)]
+    pub scoring_rule: String,
+    #[serde(default)]
+    pub selection_predicate: String,
+    #[serde(default)]
+    pub rule_scorecard: Option<RuleScorecard>,
 }
 
 impl Default for GraphState {
@@ -80,8 +96,40 @@ impl Default for GraphState {
             nodes: Vec::new(),
             edges: Vec::new(),
             patterns: Vec::new(),
+            scoring_rule: String::new(),
+            selection_predicate: String::new(),
+            rule_scorecard: None,
         }
     }
+}
+
+/// Held-out prediction scorecard for the current scoring rule.
+/// Computed every N turns and injected into the LM prompt so the rule
+/// can self-improve based on what it mispredicted.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct RuleScorecard {
+    pub rule: String,
+    pub precision_at_k: f32,
+    pub recall_at_k: f32,
+    pub k: usize,
+    pub train_turns: usize,
+    pub test_turns: usize,
+    /// Top edges ranked high by rule but absent in test (false positives)
+    pub top_misses: Vec<ScorecardEdge>,
+    /// Top edges ranked high and present in test (true positives)
+    pub top_hits: Vec<ScorecardEdge>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ScorecardEdge {
+    pub from: String,
+    pub to: String,
+    pub c11: u64,
+    pub c10: u64,
+    pub c01: u64,
+    pub c00: u64,
+    pub score: f32,
+    pub rank: usize,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -123,9 +171,11 @@ pub struct CanonicalProposal {
     pub errors: Vec<String>,
     pub quality: f32,
     pub operations: Vec<Operation>,
+    #[serde(default)]
+    pub ovm_ops: Vec<OvmOp>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Scale {
     Token,
     Turn,
@@ -193,6 +243,13 @@ pub enum TurnDecision {
     Halt,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct TurnCost {
+    pub duration_ms: u64,
+    pub activation_count: u64,
+    pub traversal_depth: u64,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TurnTrace {
     pub input: CanonicalInput,
@@ -237,6 +294,8 @@ pub struct CanonicalReceipt {
     #[serde(default)]
     pub contradiction_score: f32,
     pub coordinates: Vec<ScaleCoordinate>,
+    #[serde(default)]
+    pub cost: TurnCost,
     pub discovered_nodes: Vec<String>,
     pub violations: Vec<String>,
     pub criteria_before: CanonicalCriteria,

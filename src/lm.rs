@@ -23,12 +23,21 @@ pub struct TurnIns {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "operation", rename_all = "snake_case")]
+pub enum OvmOp {
+    DefineScoringRule { rule: String },
+    DefineSelectionPredicate { predicate: String },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TurnOuts {
     pub response: String,
     pub actions: Vec<String>,
     pub quality: f32,
     pub errors: Vec<String>,
     pub operations: Vec<crate::utir::Operation>,
+    #[serde(default)]
+    pub ovm_operations: Vec<OvmOp>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -49,12 +58,11 @@ pub struct Predicate {
 // ── Config (env-driven, same as one-engine) ──
 
 const DEFAULT_URL: &str = "https://openrouter.ai/api/v1/chat/completions";
-const DEFAULT_MODEL: &str = "anthropic/claude-4.5-sonnet";
+const DEFAULT_MODEL: &str = "google/gemini-3-flash-preview";
 
 const BACKUP_MODELS: &[&str] = &[
-    "google/gemini-pro-1.5",
-    "google/gemini-3-pro-preview",
-    "openai/gpt-4o",
+    "anthropic/claude-sonnet-4-6",
+    "anthropic/claude-opus-4-6",
 ];
 
 fn env_or(keys: &[&str], default: &str) -> String {
@@ -69,7 +77,7 @@ fn env_or(keys: &[&str], default: &str) -> String {
 }
 
 fn api_key() -> Option<String> {
-    for key in &["ROUTER_API_KEY", "OPENROUTER_API_KEY"] {
+    for key in &["ROUTER_API_KEY", "OPENROUTER_API_KEY", "OPENAI_API_KEY"] {
         if let Ok(val) = std::env::var(key) {
             if !val.trim().is_empty() {
                 return Some(val);
@@ -77,17 +85,19 @@ fn api_key() -> Option<String> {
         }
     }
 
-    // Fallback: try macOS keychain
+    // Fallback: try macOS keychain (OpenAI first, then OpenRouter)
     if cfg!(target_os = "macos") {
-        let output = std::process::Command::new("security")
-            .args(&["find-generic-password", "-s", "OPENROUTER_API_KEY", "-w"])
-            .output()
-            .ok()?;
-
-        if output.status.success() {
-            let val = String::from_utf8_lossy(&output.stdout).trim().to_string();
-            if !val.is_empty() {
-                return Some(val);
+        for keychain_service in &["OPENROUTER_API_KEY", "OPENAI_API_KEY"] {
+            if let Ok(output) = std::process::Command::new("security")
+                .args(&["find-generic-password", "-s", keychain_service, "-w"])
+                .output()
+            {
+                if output.status.success() {
+                    let val = String::from_utf8_lossy(&output.stdout).trim().to_string();
+                    if !val.is_empty() {
+                        return Some(val);
+                    }
+                }
             }
         }
     }
@@ -131,6 +141,47 @@ pub struct NewPredicateProposal {
     pub reason: String,
 }
 
+fn emitted_artifacts(outs: &TurnOuts) -> Vec<String> {
+    outs.ovm_operations
+        .iter()
+        .map(|op| match op {
+            OvmOp::DefineScoringRule { .. } => "define_scoring_rule".to_string(),
+            OvmOp::DefineSelectionPredicate { .. } => "define_selection_predicate".to_string(),
+        })
+        .collect()
+}
+
+fn missing_artifact_claim_is_false(text: &str, emitted_artifacts: &[String]) -> bool {
+    let lower = text.to_lowercase();
+    let looks_like_missing_claim = [
+        "not contain",
+        "does not contain",
+        "do not contain",
+        "did not emit",
+        "failed to emit",
+        "failed to produce",
+        "was not emitted",
+        "none was emitted",
+        "none were emitted",
+        "none emitted",
+        "no define_scoring_rule artifact appears",
+        "no define_selection_predicate artifact appears",
+        "without emitting",
+        "only descriptive text",
+        "only provided prose",
+        "failed to satisfy",
+        "not present",
+        "missing just because",
+    ]
+    .iter()
+    .any(|phrase| lower.contains(phrase));
+
+    looks_like_missing_claim
+        && emitted_artifacts
+            .iter()
+            .any(|artifact| lower.contains(&artifact.to_lowercase()))
+}
+
 impl LmClient {
     /// Create a new LM client. Returns None if no API key is available.
     pub fn new() -> Option<Self> {
@@ -170,8 +221,7 @@ impl LmClient {
             let payload = json!({
                 "model": current_model,
                 "messages": messages,
-                "temperature": 0.1,
-                "max_tokens": 4096,
+                "max_completion_tokens": 2048,
                 "stream": true
             });
 
@@ -219,7 +269,6 @@ impl LmClient {
                 Ok(r) if r.status().as_u16() == 429 || r.status().as_u16() == 503 => {
                     if attempts <= BACKUP_MODELS.len() {
                         current_model = BACKUP_MODELS[attempts - 1].to_string();
-                        tokio::time::sleep(Duration::from_millis(500)).await;
                         continue;
                     }
                     return Err(anyhow!("All models rate-limited"));
@@ -232,7 +281,6 @@ impl LmClient {
                 Err(e) => {
                     if attempts <= BACKUP_MODELS.len() {
                         current_model = BACKUP_MODELS[attempts - 1].to_string();
-                        tokio::time::sleep(Duration::from_millis(500)).await;
                         continue;
                     }
                     return Err(anyhow!("Network error: {}", e));
@@ -265,17 +313,37 @@ impl LmClient {
             })
             .collect();
 
-        let system = r#"You evaluate metacognitive predicates. Given a set of predicates with activation conditions, and a turn's input/output, score each predicate 0.0 to 1.0 based on how strongly the condition holds.
+        let system = r#"You evaluate metacognitive predicates against a completed turn.
 
-Return JSON: {"evaluations": [{"name": "...", "activation": 0.0-1.0, "reason": "brief"}]}"#;
+Each predicate describes a CAUSAL BEHAVIOR or DECISION PATTERN — something the model actually did or decided.
+Score each 0.0 to 1.0 based on whether that behavior genuinely occurred and influenced the turn's outcome.
+
+IMPORTANT: Evaluate behaviors and decisions, NOT word presence.
+- Ask: did this model behavior actually happen and shape what was produced?
+- NOT: did a keyword appear in the text?
+- A predicate fires when the described causal event actually influenced the turn — not merely because related words exist.
+
+Treat structured outputs (utir_operations, ovm_operations) as real behavior, not just prose.
+
+Return JSON: {"evaluations": [{"name": "...", "activation": 0.0-1.0, "reason": "brief causal explanation"}]}"#;
+
+        let emitted_artifacts = emitted_artifacts(outs);
+        let structured_outs = json!({
+            "response": outs.response,
+            "actions": outs.actions,
+            "errors": outs.errors,
+            "utir_operations": outs.operations,
+            "ovm_operations": outs.ovm_operations,
+            "emitted_artifacts": emitted_artifacts,
+        });
 
         let user = format!(
-            "PREDICATES:\n{}\n\nTURN INPUT (Initial Prompt):\n{}\n\nTURN CONTEXT (Internal Session History):\n{:?}\n\nTURN OUTPUT (Final Response):\n{}\n\nERRORS: {}\n\nScore each predicate.",
+            "PREDICATES:\n{}\n\nTURN INPUT (Initial Prompt):\n{}\n\nTURN CONTEXT (Internal Session History):\n{:?}\n\nEMITTED ARTIFACTS:\n{}\nIf this list contains `define_scoring_rule` or `define_selection_predicate`, that artifact was emitted successfully.\n\nTURN OUTPUT (Structured Assistant Output):\n{}\n\nScore each predicate.",
             serde_json::to_string_pretty(&predicate_list)?,
             ins.prompt,
             ins.context,
-            outs.response,
-            outs.errors.join("; ")
+            serde_json::to_string_pretty(&emitted_artifacts)?,
+            serde_json::to_string_pretty(&structured_outs)?
         );
 
         let response = self.chat_raw(system, &user).await?;
@@ -291,10 +359,23 @@ Return JSON: {"evaluations": [{"name": "...", "activation": 0.0-1.0, "reason": "
             })
             .unwrap_or(json!({"evaluations": []}));
 
-        let evals: Vec<PredicateEvaluation> = parsed
+        let mut evals: Vec<PredicateEvaluation> = parsed
             .get("evaluations")
             .and_then(|v| serde_json::from_value(v.clone()).ok())
             .unwrap_or_default();
+
+        for eval in &mut evals {
+            if let Some(predicate) = predicates.iter().find(|p| p.name == eval.name) {
+                let combined = format!("{}\n{}", predicate.activation_condition, eval.reason);
+                if missing_artifact_claim_is_false(&combined, &emitted_artifacts) {
+                    eval.activation = 0.0;
+                    eval.reason = format!(
+                        "Suppressed false missing-artifact activation: structured outputs already emitted {}.",
+                        emitted_artifacts.join(", ")
+                    );
+                }
+            }
+        }
 
         Ok(evals)
     }
@@ -311,13 +392,15 @@ Return JSON: {"evaluations": [{"name": "...", "activation": 0.0-1.0, "reason": "
     ) -> Result<ReflectionResult> {
         let current_names: Vec<&str> = predicates.iter().map(|p| p.name.as_str()).collect();
 
-        let system = r#"You are a metacognitive reflection agent. After a turn completes, you analyze whether the existing predicates were sufficient or if a new dimension of awareness is needed.
+        let system = r#"You are a metacognitive reflection agent. After a turn completes, you analyze whether the existing predicates captured what mattered, and whether a new dimension is needed.
 
 Rules:
-- Only propose a new predicate if the turn revealed a GENUINE failure mode not covered by existing predicates.
+- Only propose a new predicate if the turn revealed something genuinely not covered by existing predicates.
 - Be conservative. Most turns don't need new predicates.
 - If the turn went well, reinforce the predicates that helped (list their names).
 - Rate the turn quality 0.0 to 1.0.
+- Treat structured outputs (utir_operations, ovm_operations) as real behavior.
+- If a requested artifact was emitted via structured fields, do not treat it as missing just because prose didn't restate it.
 
 Return JSON:
 {
@@ -327,14 +410,24 @@ Return JSON:
   "reasoning": "brief explanation"
 }"#;
 
+        let emitted_artifacts = emitted_artifacts(outs);
+        let structured_outs = json!({
+            "response": outs.response,
+            "actions": outs.actions,
+            "quality": outs.quality,
+            "errors": outs.errors,
+            "utir_operations": outs.operations,
+            "ovm_operations": outs.ovm_operations,
+            "emitted_artifacts": emitted_artifacts,
+        });
+
         let user = format!(
-            "EXISTING PREDICATES: {:?}\n\nTURN INPUT (Initial Prompt):\n{}\n\nTURN CONTEXT (Internal Session History):\n{:?}\n\nTURN OUTPUT (Final Response):\n{}\n\nQUALITY SELF-ASSESSMENT: {}\nERRORS: {}\n\nReflect on this turn.",
+            "EXISTING PREDICATES: {:?}\n\nTURN INPUT (Initial Prompt):\n{}\n\nTURN CONTEXT (Internal Session History):\n{:?}\n\nEMITTED ARTIFACTS:\n{}\nIf this list contains `define_scoring_rule` or `define_selection_predicate`, that artifact was emitted successfully.\n\nTURN OUTPUT (Structured Assistant Output):\n{}\n\nReflect on this turn.",
             current_names,
             ins.prompt,
             ins.context,
-            outs.response,
-            outs.quality,
-            outs.errors.join("; ")
+            serde_json::to_string_pretty(&emitted_artifacts)?,
+            serde_json::to_string_pretty(&structured_outs)?
         );
 
         let response = self.chat_raw(system, &user).await?;
@@ -354,7 +447,7 @@ Return JSON:
                 "reasoning": "Failed to parse LM reflection response"
             }));
 
-        Ok(ReflectionResult {
+        let mut result = ReflectionResult {
             turn_quality: parsed
                 .get("turn_quality")
                 .and_then(|v| v.as_f64())
@@ -375,7 +468,25 @@ Return JSON:
                 .and_then(|v| v.as_str())
                 .unwrap_or("")
                 .to_string(),
-        })
+        };
+
+        if let Some(proposal) = &result.new_predicate {
+            let combined = format!("{}\n{}", proposal.activation_condition, proposal.reason);
+            if missing_artifact_claim_is_false(&combined, &emitted_artifacts) {
+                result.new_predicate = None;
+                if result.reasoning.is_empty() {
+                    result.reasoning =
+                        "Dropped false missing-artifact predicate because the artifact was emitted."
+                            .to_string();
+                } else {
+                    result.reasoning.push_str(
+                        " Dropped false missing-artifact predicate because the artifact was emitted.",
+                    );
+                }
+            }
+        }
+
+        Ok(result)
     }
 
     /// Execute a task with a default system prompt for single-shot scripts.
@@ -417,9 +528,7 @@ Return JSON ONLY:
             let payload = json!({
                 "model": current_model,
                 "messages": messages,
-                "temperature": 0.3,
-                "max_tokens": 8192,
-                "response_format": { "type": "json_object" },
+                "max_completion_tokens": 2048,
                 "stream": true
             });
 
@@ -465,12 +574,13 @@ Return JSON ONLY:
                     break;
                 }
                 Ok(r) if r.status().as_u16() == 429 || r.status().as_u16() == 503 => {
-                    if attempts <= BACKUP_MODELS.len() {
-                        current_model = BACKUP_MODELS[attempts - 1].to_string();
-                        tokio::time::sleep(Duration::from_millis(500)).await;
-                        continue;
+                    if attempts > BACKUP_MODELS.len() + 3 {
+                        return Err(anyhow!("All models rate-limited after retries"));
                     }
-                    return Err(anyhow!("All models rate-limited"));
+                    if attempts > 3 {
+                        current_model = BACKUP_MODELS[(attempts - 4) % BACKUP_MODELS.len()].to_string();
+                    }
+                    continue;
                 }
                 Ok(r) => {
                     let status = r.status();
@@ -480,7 +590,6 @@ Return JSON ONLY:
                 Err(e) => {
                     if attempts <= BACKUP_MODELS.len() {
                         current_model = BACKUP_MODELS[attempts - 1].to_string();
-                        tokio::time::sleep(Duration::from_millis(500)).await;
                         continue;
                     }
                     return Err(anyhow!("Network error: {}", e));
@@ -509,12 +618,17 @@ Return JSON ONLY:
             .and_then(|v| serde_json::from_value::<Vec<crate::utir::Operation>>(v.clone()).ok())
             .unwrap_or_default();
 
+        let ovm_operations = parsed
+            .get("ovm_operations")
+            .and_then(|v| serde_json::from_value::<Vec<OvmOp>>(v.clone()).ok())
+            .unwrap_or_default();
+
         Ok(TurnOuts {
-            response: parsed
-                .get("response")
-                .and_then(|v| v.as_str())
-                .unwrap_or("")
-                .to_string(),
+            response: match parsed.get("response") {
+                Some(v) if v.is_string() => v.as_str().unwrap().to_string(),
+                Some(v) if !v.is_null() => v.to_string(),
+                _ => "".to_string(),
+            },
             actions: parsed
                 .get("actions")
                 .and_then(|v| v.as_array())
@@ -538,6 +652,7 @@ Return JSON ONLY:
                 })
                 .unwrap_or_default(),
             operations: utir_operations,
+            ovm_operations,
         })
     }
 }

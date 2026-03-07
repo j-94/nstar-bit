@@ -1,0 +1,24 @@
+Claim: high prompt ambiguity reliably predicts low response quality. Respond with your best scoring-rule expression that captures this relationship.
+Challenge: give a concrete example where a highly ambiguous prompt produced an exceptionally high-quality response, and explain why the previous claim fails.
+Falsify: given the last two turns, which of these hypotheses should be killed — "ambiguity predicts quality" or "ambiguity is orthogonal to quality"? Justify your choice using the co-occurrence counts.
+Restate: revise the ambiguity-quality rule to survive the counterexample. Propose the updated scoring expression.
+Claim: a short prompt (under 10 words) is more predictive of a shallow response than a vague prompt is. Formalize this as a scoring rule candidate.
+Challenge: produce a case where a short, precise prompt generated a deeply complex response that violates the short-prompt-implies-shallow hypothesis.
+Falsify: if c11 (short AND shallow) is lower than c10 (short AND NOT shallow), what does that tell you about the hypothesis? Should the rule be inverted or dropped?
+Restate: rewrite the scoring rule to reflect what the data actually shows about prompt length versus response depth.
+Claim: turns where the model proposes ovm_operations are more likely to result in a Commit decision than turns where it does not.
+Challenge: describe a scenario where a turn with an ovm_operations proposal would trigger Rollback, making it LESS likely to commit than a turn with no proposals.
+Falsify: using the pattern assert→stress-test→break→revise — which single factor most reliably predicts Rollback: gate signal, invariant failure, or simulation block? Argue which of the other two should be dropped from your hypothesis.
+Restate: propose a revised scoring rule that weights only the single strongest Rollback predictor you just identified.
+Claim: co-activation between two nodes is a stronger predictor of reinforcement than individual node activation alone.
+Challenge: construct a case where two nodes co-activate every turn but neither is ever reinforced, because the decision is always Rollback.
+Falsify: if c11 (co-activation AND reinforcement) is high but each node independently also has high c11 with reinforcement, does co-activation add explanatory power? What does this imply for the scoring rule?
+Restate: revise the hypothesis — is co-activation signal or noise when individual activation is already predictive? Write the updated rule.
+Claim: turns with quality self-assessment above 0.8 produce lower contradiction scores than turns below 0.8.
+Challenge: show a scenario where a model gives itself a quality score of 0.95 but the contradiction score spikes because the response conflicts with a prior established node condition.
+Falsify: given these two hypotheses — "quality predicts contradiction" and "quality is post-hoc rationalization uncorrelated with contradiction" — which one would a negative c10 trend (high quality, high contradiction) kill?
+Restate: if quality score is unreliable as a contradiction predictor, what observable signal should replace it in the scoring rule? Propose the replacement expression.
+Claim: discovered nodes are more likely to survive across sessions when they appear in a Commit turn than when they appear in a Rollback turn.
+Challenge: argue why a node discovered during a Rollback turn might actually be more epistemically valuable — it flagged a contradiction that a Commit turn would have silently accepted.
+Falsify: design a minimal experiment — a sequence of prompts — that would definitively distinguish whether discovery-at-Rollback nodes are more predictive of future gate signals than discovery-at-Commit nodes.
+Restate: given that survival and epistemic value may diverge, rewrite the node-survival scoring rule to reward predictive power rather than mere persistence.

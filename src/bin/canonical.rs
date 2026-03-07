@@ -38,6 +38,9 @@ struct Args {
     #[arg(long, default_value_t = 0.33)]
     audit_rate: f32,
 
+    #[arg(long)]
+    frozen_rule: Option<String>,
+
     prompt: Option<String>,
 }
 
@@ -57,6 +60,11 @@ async fn main() -> Result<()> {
     let mut core = CanonicalCore::load_or_create(&state_path)?;
     core.state.graph.criteria.max_risk = args.max_risk;
     core.state.graph.criteria.audit_rate = args.audit_rate;
+
+    if let Some(ref rule) = args.frozen_rule {
+        core.state.graph.scoring_rule = rule.clone();
+        core.frozen_rule = Some(rule.clone());
+    }
 
     if args.state {
         println!("{}", core.summary());
@@ -109,11 +117,77 @@ async fn run_turn(
         .collect::<Vec<_>>()
         .join("\n");
 
+    let scoring_rule_status = if core.state.graph.scoring_rule.is_empty() {
+        "(not yet defined)".to_string()
+    } else {
+        let rule = &core.state.graph.scoring_rule;
+        if rule.len() > 80 {
+            // Truncate cleanly: find last operator boundary before char 80
+            let boundary = rule[..80]
+                .rfind(|c: char| matches!(c, '+' | '-' | '*' | '/' | '&' | '|' | '(' | ')'))
+                .map(|i| i + 1)
+                .unwrap_or(80);
+            format!("{}… (truncated)", &rule[..boundary])
+        } else {
+            rule.clone()
+        }
+    };
+
     let system = format!(
         "You are an execution model inside a canonical n* core.\n\
-         Return JSON ONLY with keys: response, utir_operations, actions, quality, errors.\n\
+         \n\
+         Return JSON ONLY with these keys:\n\
+           response         — your answer to the user\n\
+           utir_operations  — file/shell/http operations (typed UTIR objects)\n\
+           actions          — human-readable list of actions taken\n\
+           quality          — float 0.0-1.0 self-assessment\n\
+           errors           — any errors or missing information\n\
+           ovm_operations   — operator definitions for the scoring substrate (see below)\n\
+         \n\
+         ovm_operations is an optional array. Use it when you want to define or update\n\
+         the scoring rule the system uses to weight co-occurrence hypotheses. Each entry\n\
+         is one of:\n\
+         \n\
+           {{\"operation\": \"define_scoring_rule\", \"rule\": \"<evalexpr expression>\"}}\n\
+           {{\"operation\": \"define_selection_predicate\", \"predicate\": \"<evalexpr boolean>\"}}\n\
+         \n\
+         The rule expression has variables: c11, c10, c01, c00, t (total observations).\n\
+         Functions available: log(x), sqrt(x), abs(x).\n\
+         Example rule:      \"c11 / (c10 + c01 + 1)\"\n\
+         Example predicate: \"score > 0 && c11 >= 3\"\n\
+         \n\
+         Only emit ovm_operations if you have a specific operator proposal.\n\
+         Most turns: leave ovm_operations empty or omit it.\n\
+         If no scoring rule exists yet and you omit ovm_operations, hypothesis scoring\n\
+         is skipped for this turn while the substrate continues accumulating counts.\n\
          Do not claim completion unless supported by operations/evidence.\n\
+         \n\
+         Current scoring rule: {}\n\
+         {}\
          Existing runtime dimensions:\n{}",
+        scoring_rule_status,
+        if let Some(sc) = &core.state.graph.rule_scorecard {
+            let misses: Vec<String> = sc.top_misses.iter().map(|e| {
+                format!("  {}+{}: c11={} c10={} c01={} c00={} score={:.3}",
+                    e.from, e.to, e.c11, e.c10, e.c01, e.c00, e.score)
+            }).collect();
+            let hits: Vec<String> = sc.top_hits.iter().map(|e| {
+                format!("  {}+{}: c11={} c10={} c01={} c00={} score={:.3}",
+                    e.from, e.to, e.c11, e.c10, e.c01, e.c00, e.score)
+            }).collect();
+            let header = format!(
+                "Held-out scorecard (train={} turns, test={} turns, P@{}={:.3}, R@{}={:.3}):",
+                sc.train_turns, sc.test_turns, sc.k, sc.precision_at_k, sc.k, sc.recall_at_k,
+            );
+            format!(
+                "{}\nTop misses (ranked high, absent in test — false positives):\n{}\nTop hits (ranked high, present in test — true positives):\n{}\nIf you emit define_scoring_rule, target fewer misses and more hits.\n\n",
+                header,
+                if misses.is_empty() { "  (none)".to_string() } else { misses.join("\n") },
+                if hits.is_empty() { "  (none)".to_string() } else { hits.join("\n") },
+            )
+        } else {
+            String::new()
+        },
         if node_rules.is_empty() {
             "(none yet; discover from turn evidence)".to_string()
         } else {
@@ -134,6 +208,7 @@ async fn run_turn(
         errors: outs.errors.clone(),
         quality: outs.quality,
         operations: outs.operations.clone(),
+        ovm_ops: outs.ovm_operations.clone(),
     };
 
     let input = CanonicalInput {
@@ -238,6 +313,7 @@ async fn evaluate_existing_nodes(
         quality: proposal.quality,
         errors: proposal.errors.clone(),
         operations: proposal.operations.clone(),
+        ovm_operations: proposal.ovm_ops.clone(),
     };
 
     let evals = lm.evaluate_predicates(&predicates, &ins, &outs).await?;
@@ -283,6 +359,7 @@ async fn reflect_new_nodes(
         quality: proposal.quality,
         errors: proposal.errors.clone(),
         operations: proposal.operations.clone(),
+        ovm_operations: proposal.ovm_ops.clone(),
     };
 
     let reflection = lm.reflect(&predicates, &ins, &outs).await?;

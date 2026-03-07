@@ -1,0 +1,7 @@
+turn	task	decision	inv_pass	cov	con	violations	discovered	ovm_rule	hash
+1	1	Commit	True	1.00	0.00	—	node:formal_symbolic_mapping	rule:(c11 * t - (c11 + c10) * (c11 + c01)) / sqrt((c11 + c10 | pred:c11 >= 5 && score > 0.3	0891a15d844c1106
+2	2	Rollback	False	0.00	0.70	insufficient_evidence_coverage:0.00, contradiction_score_exceeded:0.70	node:node_generative_latent_navigation	rule:(c11 / (t + 1)) * log(c11 + 1) / (abs(c10 - c01) + 1) | pred:score > 0.5 && t > 10	6fb96ce5d727a336
+3	3	Rollback	False	0.00	0.70	insufficient_evidence_coverage:0.00, contradiction_score_exceeded:0.70	—	rule:(c11 / (t + 1)) * log(c11 + 1) / (abs(c10 - c01) + 1) | pred:c11 > (t * 0.5) && score > 0.1	394cbd8e2581898b
+4	4	Rollback	False	0.00	0.70	insufficient_evidence_coverage:0.00, contradiction_score_exceeded:0.70	—	rule:(c11 / (c11 + c10 + c01 + 1)) * log(c11 + 1) / (sqrt(ab | pred:score > 0.05 && c11 > 1	d828d4a7eaf40e68
+5	5	Rollback	False	0.00	0.70	insufficient_evidence_coverage:0.00, contradiction_score_exceeded:0.70	—	rule:(c11 / (c11 + c10 + 1)) * log(t + 1) / (abs(c10 - c01)  | pred:score > 0.5 && c11 > c10	3253a1a2bd5602d5
+5	6	Rollback	False	0.00	0.70	insufficient_evidence_coverage:0.00, contradiction_score_exceeded:0.70	—	rule:(c11 / (c11 + c10 + 1)) * log(t + 1) / (abs(c10 - c01)  | pred:score > 0.5 && c11 > c10	3253a1a2bd5602d5

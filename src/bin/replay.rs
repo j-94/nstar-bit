@@ -26,6 +26,7 @@ fn main() -> Result<()> {
     let args = Args::parse();
     
     let receipts_path = PathBuf::from(&args.receipts_file);
+    let state_path = PathBuf::from(&args.state_file);
     if !receipts_path.exists() {
         return Err(anyhow!("Receipts file does not exist: {}", args.receipts_file));
     }
@@ -46,7 +47,7 @@ fn main() -> Result<()> {
     println!("Loaded {} receipts for deterministic replay verification.", recorded_receipts.len());
 
     let mut core = CanonicalCore::new();
-    
+
     // We use a temporary receipts file for the replay turns
     let temp_receipts = std::env::temp_dir().join("nstar_replay_receipts.jsonl");
     if temp_receipts.exists() {
@@ -55,8 +56,11 @@ fn main() -> Result<()> {
 
     let guard = GuardConfig::from_env();
     let mut success_count = 0;
+    // Track which turn numbers were verified so we can mark them in the source file.
+    let mut verified_turns = std::collections::HashSet::<u64>::new();
+    let mut verified_receipts = std::collections::HashSet::<(u64, String)>::new();
 
-    for (i, rec) in recorded_receipts.iter().enumerate() {
+    for rec in recorded_receipts.iter() {
         if args.verbose {
             println!("REPLAY TURN {}: hash={}", rec.turn, rec.hash);
         }
@@ -74,37 +78,85 @@ fn main() -> Result<()> {
             &temp_receipts,
         )?;
 
-        // Verify hash match
-        // Note: The original implementation in core.rs uses Utc::now() for timestamp
-        // which makes the hash non-deterministic if timestamp is hashed.
-        // Let's check make_receipt to see what's hashed.
-        
         if result.receipt.hash == rec.hash {
             success_count += 1;
+            verified_turns.insert(rec.turn);
+            verified_receipts.insert((rec.turn, rec.hash.clone()));
             if args.verbose {
-                println!("  ✅ MATCH");
+                println!("  ✅ MATCH turn={}", rec.turn);
             }
         } else {
             println!("  ❌ MISMATCH in turn {}", rec.turn);
             println!("     Recorded: {}", rec.hash);
             println!("     Replayed: {}", result.receipt.hash);
-            
-            // If mismatch, we might want to stop or continue
-            // For now let's continue to see aggregate results.
         }
     }
 
+    let total = recorded_receipts.len();
     println!("\nVerification Summary:");
-    println!("Total Receipts: {}", recorded_receipts.len());
+    println!("Total Receipts: {}", total);
     println!("Matches:        {}", success_count);
-    println!("Mismatches:     {}", recorded_receipts.len() - success_count);
+    println!("Mismatches:     {}", total - success_count);
 
-    if success_count == recorded_receipts.len() {
-        println!("\nPASS: Deterministic replay verified 100/100.");
+    // Write back deterministic: true for all verified receipts.
+    if !verified_turns.is_empty() {
+        let mut updated_lines = Vec::new();
+        for mut rec in recorded_receipts.drain(..) {
+            if verified_turns.contains(&rec.turn) {
+                rec.deterministic = true;
+            }
+            updated_lines.push(serde_json::to_string(&rec)?);
+        }
+        std::fs::write(&receipts_path, updated_lines.join("\n") + "\n")?;
+        println!("Wrote deterministic=true for {} verified receipt(s).", verified_turns.len());
+    }
+
+    if !verified_receipts.is_empty() {
+        for rec in &mut core.state.receipts {
+            if verified_receipts.contains(&(rec.turn, rec.hash.clone())) {
+                rec.deterministic = true;
+            }
+        }
+
+        if state_path.exists() {
+            let mut persisted = CanonicalCore::load_or_create(&state_path)?;
+            let mut updated = 0usize;
+            for rec in &mut persisted.state.receipts {
+                if verified_receipts.contains(&(rec.turn, rec.hash.clone())) && !rec.deterministic {
+                    rec.deterministic = true;
+                    updated += 1;
+                }
+            }
+
+            if persisted.state.receipts.is_empty() && !core.state.receipts.is_empty() {
+                core.save(&state_path)?;
+                println!(
+                    "Wrote replay-verified receipts into state file {}.",
+                    state_path.display()
+                );
+            } else {
+                persisted.save(&state_path)?;
+                println!(
+                    "Updated deterministic flags for {} receipt(s) in state file {}.",
+                    updated,
+                    state_path.display()
+                );
+            }
+        } else {
+            core.save(&state_path)?;
+            println!(
+                "Created state file {} from replayed canonical state.",
+                state_path.display()
+            );
+        }
+    }
+
+    if success_count == total {
+        println!("\nPASS: Deterministic replay verified {0}/{0}.", success_count);
     } else {
         println!("\nFAIL: Replay non-determinism detected.");
-        if !recorded_receipts.is_empty() {
-             std::process::exit(1);
+        if total > 0 {
+            std::process::exit(1);
         }
     }
 
