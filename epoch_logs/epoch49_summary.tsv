@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+649	1	ok	650	653	1081	850	alias_deduplication_layer,cosine_similarity_gate	2	1	no_evidence_at_declaration_or_missing_dialogue
+649	2	ok	651	654	1083	851	alias_deduplication_layer,ambiguity_weakens_recovery,recover	2	1	no_evidence_at_declaration_or_missing_dialogue
+649	3	ok	652	655	1084	853	causal_anchor,interpretation_ambiguity,recovery_protocol	2	1	no_evidence_at_declaration_or_missing_dialogue
+649	4	ok	653	655	1086	854	alias_deduplication_layer,cosine_similarity_gate,performativ	2	1	no_evidence_at_declaration_or_missing_dialogue
+649	5	ok	654	655	1087	855	architecture,causal_anchor	2	2	no_evidence_at_declaration_or_missing_dialogue
+649	6	ok	655	655	1088	856	cosine_similarity_gate,recovery_protocol,stratified_certaint	2	1	no_evidence_at_declaration_or_missing_dialogue
+649	7	ok	656	656	1089	856	causal_anchor,recovery_protocol	2	2	no_evidence_at_declaration_or_missing_dialogue
+649	8	ok	657	657	1089	859	ambiguity_weakens_recovery,audit_as_validator,complexity_sta	2	2	no_evidence_at_declaration_or_missing_dialogue
+649	9	ok	658	658	1089	860	alias_deduplication_layer,cosine_similarity_gate,performativ	1	1	no_evidence_at_declaration_or_missing_dialogue
+649	10	ok	659	659	1091	862	audit_paralysis_reduction,cosine_similarity_gate,stratified_	2	2	no_evidence_at_declaration_or_missing_dialogue
+649	11	ok	660	660	1093	863	ambiguity_weakens_recovery,cosine_similarity_gate,gate_circu	2	2	no_evidence_at_declaration_or_missing_dialogue
+649	12	ok	661	661	1094	864	cosine_similarity_gate,gate_circularity_risk	1	1	no_evidence_at_declaration_or_missing_dialogue

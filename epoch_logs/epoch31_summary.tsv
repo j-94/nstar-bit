@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+456	1	ok	457	464	762	621	foundational_axiom,grounding_ratio,immutable_linking	2	2	no_evidence_at_declaration_or_missing_dialogue
+456	2	ok	458	464	764	622	foundational_axiom,grounding_ratio,performative_stability	2	2	no_evidence_at_declaration_or_missing_dialogue
+456	3	ok	459	465	767	623	decay_modulation,foundational_axiom,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+456	4	ok	460	466	768	624	generator_bypasses_evidence,immutable_linking,retroactive_gr	2	2	no_evidence_at_declaration_or_missing_dialogue
+456	5	ok	461	466	769	625	dependency_weighted_quarantine,grounding_ratio,phantom_persi	2	2	no_evidence_at_declaration_or_missing_dialogue
+456	6	ok	462	468	771	626	grounding_ratio_inflation,scaling_efficiency	2	2	no_evidence_at_declaration_or_missing_dialogue
+456	7	ok	463	468	774	627	audit_as_generator,performative_stability,self_shrouding_top	2	2	no_evidence_at_declaration_or_missing_dialogue
+456	8	ok	464	468	775	629	audit_as_validator,origin_gated_delta,stratified_certainty	1	1	no_evidence_at_declaration_or_missing_dialogue
+456	9	ok	465	469	777	631	adversarial_equivalence,grounding_ratio,visibility_paradox	2	1	no_evidence_at_declaration_or_missing_dialogue
+456	10	ok	466	471	779	632	foundational_axiom,grounding_starvation,threshold_collapse	2	2	no_evidence_at_declaration_or_missing_dialogue
+456	11	ok	467	473	781	633	archetype_limitation,grounding_ratio,superlinear_attack_cost	2	2	no_evidence_at_declaration_or_missing_dialogue

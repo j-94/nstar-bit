@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+966	1	ok	967	861	1452	1191	piv_baseline_t961,stratified_certainty,sustained_presence_re	2	1	no_evidence_at_declaration_or_missing_dialogue
+966	2	ok	968	863	1454	1192	evidence_cluster_violation,iase_refines_pdg,provenance_indep	2	2	no_evidence_at_declaration_or_missing_dialogue
+966	3	ok	969	864	1455	1192	evidence_cluster_violation,piv_rule	2	1	no_evidence_at_declaration_or_missing_dialogue
+966	4	ok	970	865	1456	1193	iase_refines_pdg,piv_rule,temporal_diversity_constraint	2	2	no_evidence_at_declaration_or_missing_dialogue
+966	5	ok	971	865	1458	1194	causal_anchor,evidence_cluster_violation,piv_rule	2	2	no_evidence_at_declaration_or_missing_dialogue
+966	6	ok	972	866	1460	1195	piv_retroactive_catch_rate,piv_rule,representation_disambigu	1	1	no_evidence_at_declaration_or_missing_dialogue
+966	7	ok	973	867	1462	1196	audit_blindness,piv_rule,representation_disambiguation_layer	1	1	no_evidence_at_declaration_or_missing_dialogue
+966	8	ok	974	869	1464	1197	iase_refines_pdg,second_wave_casualty,stratified_certainty	2	1	no_evidence_at_declaration_or_missing_dialogue
+966	9	ok	975	872	1466	1198	architecture,audit_as_validator,piv_active_conditions,strati	2	2	no_evidence_at_declaration_or_missing_dialogue
+966	10	ok	976	874	1468	1199	architecture,demotion_cascade,overlap_validator,stratified_c	2	2	no_evidence_at_declaration_or_missing_dialogue
+966	11	ok	977	876	1470	1200	architecture,piv_active_metric,piv_failure_mode	2	2	no_evidence_at_declaration_or_missing_dialogue
+966	12	ok	978	879	1471	1200	hub_node_overlap_immunity,topology_aware_verification	2	2	no_evidence_at_declaration_or_missing_dialogue

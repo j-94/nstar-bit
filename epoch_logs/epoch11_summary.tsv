@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+233	1	ok	234	247	396	360	causal_anchor_freshness,disconfirming_evidence,graph_memory	2	2	The system has added a specific operational metric (freshness) to address the 'C
+233	2	ok	235	248	397	362	anchors_rederive_routing,arch_depends_on_memory,quarantine_s	2	2	The quarantine threshold is now a functional part of the audit protocol.
+233	3	ok	236	248	399	363	provenance_ceiling_5,quarantine_status,ungrounded_connectivi	1	2	The simulation results for the 10-turn window are required to confirm if quarant
+233	4	ok	237	250	400	364	arch_depends_on_memory,metadata_density_signals,routing_logi	2	2	The disconfirming evidence successfully weakened a core axiom, but we must now o
+233	5	ok	238	253	403	365	anchors_rederive_routing,evidence_ledger,phantom_relations	2	2	The core of the graph's evidentiary integrity is under question; we must determi
+233	6	ok	239	255	404	366	foundational_axiom,quarantine_status,sunset_governs_axioms	2	2	The simulation provided clear, quantifiable evidence of a failure mode in the cu
+233	7	ok	240	257	406	367	audit_as_generator,freshness_metric,performative_stability	2	2	The quarantine mechanism is compromised by internal feedback loops; the 'freshne
+233	8	ok	241	258	408	369	confidence_drift,monitored_cohort,quarantine_status	2	2	The audit results successfully discriminated between the performance of the two 
+233	9	ok	242	260	411	370	information_loss,performative_stability	1	2	The system has quantified the failure modes of both forks (phantoms vs. loss) bu
+233	10	ok	243	262	414	371	ceiling_fork,evidence_ledger	1	1	The functional independence of the two mechanisms has been established and the '
+233	11	ok	244	264	415	373	amnesiac_floor,evidence_ledger,foundational_axiom	1	1	The Epoch 9 verdict is delivered and the graph has successfully integrated the '

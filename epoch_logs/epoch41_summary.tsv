@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+567	1	ok	568	590	961	743	performative_stability,persistence_cost_ratio,stratified_cer	2	2	no_evidence_at_declaration_or_missing_dialogue
+567	2	ok	569	590	963	744	immutable_linking,persistence_cost_ratio,zombie_maintenance_	1	2	no_evidence_at_declaration_or_missing_dialogue
+567	3	ok	570	591	965	746	escrow_reconstruction_cost,immutable_linking,persistence_cos	2	2	no_evidence_at_declaration_or_missing_dialogue
+567	4	ok	571	592	967	747	non_triviality_requirement,persistence_cost_ratio,stratified	2	2	no_evidence_at_declaration_or_missing_dialogue
+567	5	ok	572	593	968	748	hollowing_tolerance,persistence_cost_ratio,stratified_certai	2	2	no_evidence_at_declaration_or_missing_dialogue
+567	6	ok	573	595	969	749	economic_irrationality,governance_resets_confidence,persiste	2	2	no_evidence_at_declaration_or_missing_dialogue
+567	7	ok	574	597	970	750	anchor_depends_on_architecture,hollowed_node,persistence_cos	2	2	no_evidence_at_declaration_or_missing_dialogue
+567	8	ok	575	598	971	751	immune_privileged,persistence_cost_ratio,stratified_certaint	2	2	no_evidence_at_declaration_or_missing_dialogue
+567	9	ok	576	600	971	753	governance_resets_confidence,hollowing_preference,persistenc	1	2	no_evidence_at_declaration_or_missing_dialogue
+567	10	ok	577	602	973	754	discriminatory_power,hollowing_regime,persistence_cost_ratio	2	2	no_evidence_at_declaration_or_missing_dialogue
+567	11	ok	578	602	974	756	anchor_depends_on_architecture,hollowing_regime,persistence_	2	2	no_evidence_at_declaration_or_missing_dialogue

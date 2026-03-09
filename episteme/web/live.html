@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Episteme — Live Autogenesis Core</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030712;
+            --surface: #0f172a;
+            --surface-hover: #1e293b;
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+            --text-dimmer: #475569;
+            --accent: #38bdf8;
+            --red: #f43f5e;
+            --amber: #fbbf24;
+            --green: #22c55e;
+            --purple: #a855f7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 32px;
+            font-size: 14px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 24px;
+        }
+
+        .title-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 12px var(--green);
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .grid-top {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-dimmer);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-sub {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        .grid-main {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        h2 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        /* Relations Table */
+        .relation-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 2fr 80px 80px;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+        }
+
+        .relation-row:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .entity {
+            font-weight: 500;
+        }
+
+        .predicate {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--accent);
+        }
+
+        .conf-bar-bg {
+            height: 4px;
+            background: var(--text-dimmer);
+            border-radius: 2px;
+            width: 100%;
+            position: relative;
+            margin-top: 6px;
+        }
+
+        .conf-bar-fill {
+            height: 100%;
+            background: var(--green);
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+
+        .mono-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            text-align: right;
+        }
+
+        /* Events list */
+        .event-item {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .event-turn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-dimmer);
+            margin-bottom: 4px;
+        }
+
+        .event-focus {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .focus-tag {
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: var(--text-dim);
+        }
+
+        /* Health */
+        .health-ok {
+            color: var(--green);
+        }
+
+        .health-warn {
+            color: var(--amber);
+        }
+
+        .health-err {
+            color: var(--red);
+        }
+
+        .violation {
+            background: rgba(244, 63, 94, 0.1);
+            border-left: 2px solid var(--red);
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--red);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="title-group">
+            <div class="pulse" id="pulseIndicator"></div>
+            <h1>Episteme Core</h1>
+            <span style="color:var(--text-dimmer); font-family:'JetBrains Mono'" id="runIdDisplay">Waiting for
+                data...</span>
+        </div>
+        <div style="text-align: right">
+            <div style="font-family:'JetBrains Mono'; color:var(--text-dim);" id="turnDisplay">Turn: -- | Epoch: --
+            </div>
+            <div id="gateDisplay" style="margin-top:4px; font-size:12px"></div>
+        </div>
+    </div>
+
+    <div class="grid-top">
+        <div class="card">
+            <div class="stat-label">Graph Size</div>
+            <div class="stat-value" id="valConcepts">--</div>
+            <div class="stat-sub"><span id="valRelations" style="color:var(--text)">--</span> live relations</div>
+        </div>
+        <div class="card">
+            <div class="stat-label">Evidence Total</div>
+            <div class="stat-value" id="valEvidence">--</div>
+            <div class="stat-sub">citations / extracts recorded</div>
+        </div>
+        <div class="card">
+            <div class="stat-label">Epistemic Health</div>
+            <div class="stat-value" id="valHealthy">--</div>
+            <div class="stat-sub"><span id="valViolations" style="color:var(--text)">--</span> violations</div>
+        </div>
+        <div class="card">
+            <div class="stat-label">Inflation Drift</div>
+            <div class="stat-value" id="valInflation">--</div>
+            <div class="stat-sub">mean delta (declared vs computed)</div>
+        </div>
+    </div>
+
+    <div class="grid-main">
+        <div>
+            <h2>Strongest Held Beliefs (Live Relations)</h2>
+            <div class="relation-row"
+                style="color:var(--text-dimmer); font-size:11px; text-transform:uppercase; font-weight:600; padding-bottom:8px; border-bottom: 1px solid var(--text-dimmer);">
+                <div>Source Context</div>
+                <div>Relation</div>
+                <div>Target Focus</div>
+                <div style="text-align:right">Confidence</div>
+                <div style="text-align:right">Evidence</div>
+            </div>
+            <div id="relationsList"></div>
+
+            <h2 style="margin-top: 40px;">System Health Violations</h2>
+            <div id="violationsList">
+                <div style="color:var(--text-dimmer);font-style:italic">No live violations.</div>
+            </div>
+        </div>
+
+        <div>
+            <h2>Recent Actuations (Focus Shifts)</h2>
+            <div id="eventsList"></div>
+        </div>
+    </div>
+
+    <script>
+        async function pollData() {
+            try {
+                const res = await fetch('data/live.json?t=' + Date.now());
+                if (!res.ok) return;
+                const data = await res.json();
+                renderData(data);
+            } catch (e) {
+                console.warn("Poll failed", e);
+            }
+        }
+
+        function renderData(data) {
+            // Pulse
+            const pulse = document.getElementById('pulseIndicator');
+            pulse.style.background = data.health.healthy ? 'var(--green)' : 'var(--red)';
+            pulse.style.boxShadow = `0 0 12px ${data.health.healthy ? 'var(--green)' : 'var(--red)'}`;
+
+            document.getElementById('runIdDisplay').innerText = `${data.run_id}`;
+            document.getElementById('turnDisplay').innerText = `Turn: ${data.turn} | Epoch: ${data.epoch} | Task: ${data.task}/${data.tasks_total}`;
+
+            // Gate
+            const gateEl = document.getElementById('gateDisplay');
+            if (data.gate.allow_act) {
+                gateEl.innerHTML = `<span style="color:var(--green)">Gate: ALLOW (Actuating)</span>`;
+            } else {
+                gateEl.innerHTML = `<span style="color:var(--amber)">Gate: BLOCK</span> - ${data.gate.reason}`;
+            }
+
+            // Stats
+            document.getElementById('valConcepts').innerText = data.metrics.concepts;
+            document.getElementById('valRelations').innerText = data.metrics.live_relations;
+            document.getElementById('valEvidence').innerText = data.metrics.evidence;
+
+            const hEl = document.getElementById('valHealthy');
+            if (data.health.violation_count > 0) {
+                hEl.innerText = 'WAITING';
+                hEl.className = 'stat-value health-warn';
+            } else {
+                hEl.innerText = 'HONEST';
+                hEl.className = 'stat-value health-ok';
+            }
+            document.getElementById('valViolations').innerText = data.health.violation_count;
+
+            const inf = data.health.inflation_score;
+            const infEl = document.getElementById('valInflation');
+            infEl.innerText = inf.toFixed(4);
+            infEl.className = 'stat-value ' + (inf > 0.1 ? 'health-warn' : (inf > 0.5 ? 'health-err' : 'health-ok'));
+
+            // Top Relations
+            const relHtml = data.top_relations.map(r => `
+    <div class="relation-row">
+      <div class="entity" title="${r.source}">${r.source.length > 40 ? r.source.substring(0, 37) + '...' : r.source}</div>
+      <div class="predicate">${r.relation}</div>
+      <div class="entity" title="${r.target}">${r.target.length > 40 ? r.target.substring(0, 37) + '...' : r.target}</div>
+      <div>
+        <div class="mono-val">${r.confidence.toFixed(2)}</div>
+        <div class="conf-bar-bg"><div class="conf-bar-fill" style="width:${r.confidence * 100}%; background: ${r.confidence < 0.2 ? 'var(--amber)' : 'var(--green)'}"></div></div>
+      </div>
+      <div class="mono-val" style="color:var(--text-dim)">${r.evidence_for} doc${r.evidence_for !== 1 ? 's' : ''}</div>
+    </div>
+  `).join('');
+            document.getElementById('relationsList').innerHTML = relHtml || '<div style="color:var(--text-dimmer);padding:12px;">No relations with confidence > 0.</div>';
+
+            // Recent Events
+            const evHtml = data.recent_events.reverse().map(ev => `
+    <div class="event-item">
+      <div class="event-turn">Turn ${ev.turn} &mdash; Found ${ev.symbols} exact concepts</div>
+      <div class="event-focus">
+        ${(ev.focus || []).map(f => `<span class="focus-tag">${f}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+            document.getElementById('eventsList').innerHTML = evHtml;
+
+            // Violations
+            if (data.health.violations && data.health.violations.length > 0) {
+                document.getElementById('violationsList').innerHTML = data.health.violations.map(v =>
+                    `<div class="violation">[${v.entity_id}] ${v.detail}</div>`
+                ).join('');
+            } else {
+                document.getElementById('violationsList').innerHTML = '<div style="color:var(--text-dimmer);font-style:italic">No live violations.</div>';
+            }
+        }
+
+        // Poll every 2 seconds
+        setInterval(pollData, 2000);
+        pollData();
+
+    </script>
+</body>
+
+</html>

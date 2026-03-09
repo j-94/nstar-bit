@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+600	1	ok	601	618	1013	791	graduated_recovery_threshold,hollowing_ratchet	2	2	no_evidence_at_declaration_or_missing_dialogue
+600	2	ok	602	618	1013	792	architecture,baseline_constrains_test,recovery_protocol	1	2	no_evidence_at_declaration_or_missing_dialogue
+600	3	ok	603	618	1014	793	architecture,graduated_recovery_threshold	2	1	no_evidence_at_declaration_or_missing_dialogue
+600	4	ok	604	618	1016	794	architecture,causal_anchor,graduated_recovery_threshold	2	1	no_evidence_at_declaration_or_missing_dialogue
+600	5	ok	605	619	1017	795	evidence_chaining,graduated_recovery_threshold,hollowing_rat	2	2	no_evidence_at_declaration_or_missing_dialogue
+600	6	ok	606	619	1018	796	graduated_recovery_threshold,hollowing_ratchet,performative_	2	2	no_evidence_at_declaration_or_missing_dialogue
+600	7	ok	607	620	1019	797	graduated_recovery_threshold,safety_upgrade,self_citation_fi	1	2	no_evidence_at_declaration_or_missing_dialogue
+600	8	ok	608	620	1021	798	architecture,causal_anchor	2	2	no_evidence_at_declaration_or_missing_dialogue
+600	9	ok	609	621	1021	800	bidirectional_leakage,buffer_isolates_anchor,causal_anchor	2	2	no_evidence_at_declaration_or_missing_dialogue
+600	10	ok	610	622	1023	802	architecture,inflation_leak_metric,self_citation_firewall	2	2	no_evidence_at_declaration_or_missing_dialogue
+600	11	ok	611	623	1024	803	firewall_adequacy,self_citation_firewall,stratified_certaint	2	1	no_evidence_at_declaration_or_missing_dialogue

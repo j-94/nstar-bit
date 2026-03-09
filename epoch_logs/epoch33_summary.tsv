@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+478	1	ok	479	487	803	645	grounding_ratio,semantic_utility_probe	2	2	no_evidence_at_declaration_or_missing_dialogue
+478	2	ok	480	487	805	646	archetype_limitation,semantic_utility_probe,vestigial_struct	2	2	no_evidence_at_declaration_or_missing_dialogue
+478	3	ok	481	488	807	648	foundational_axiom,routing_contribution_score,semantic_utili	1	1	no_evidence_at_declaration_or_missing_dialogue
+478	4	ok	482	488	809	649	semantic_utility_probe,stratified_certainty,vestigial_struct	2	1	no_evidence_at_declaration_or_missing_dialogue
+478	5	ok	483	489	811	650	foundational_axiom,semantic_utility_probe,transient_orphanin	2	2	no_evidence_at_declaration_or_missing_dialogue
+478	6	ok	484	492	812	650	attack_cost,path_exclusion_logic	2	2	no_evidence_at_declaration_or_missing_dialogue
+478	7	ok	485	494	814	651	audit_as_validator,probe_load,window_shopping	2	2	no_evidence_at_declaration_or_missing_dialogue
+478	8	ok	486	495	816	652	audit_as_generator,performative_stability,semantic_utility_p	2	2	no_evidence_at_declaration_or_missing_dialogue
+478	9	ok	487	496	817	652	audit_as_validator,superlinear_attack_cost,vestigial_structu	2	1	no_evidence_at_declaration_or_missing_dialogue
+478	10	ok	488	498	819	653	structural_position_bias,sufficiency_criterion,validation_su	2	1	no_evidence_at_declaration_or_missing_dialogue
+478	11	ok	489	500	820	653	counterfactual_gaming_surface,foundational_axiom,semantic_ut	2	1	no_evidence_at_declaration_or_missing_dialogue

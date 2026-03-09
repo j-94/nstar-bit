@@ -8,13 +8,17 @@ use sha2::{Digest, Sha256};
 use crate::utir::{Operation, UtirDocument};
 use crate::utir_exec::{execute_utir, GuardConfig};
 
-use crate::lm::OvmOp;
-
+use super::promotion::{
+    apply_governance_update, build_benchmark_report, build_derived_artifacts,
+    build_runtime_execution_record, evaluate_promotion as evaluate_runtime_promotion,
+    extract_policy_candidate, validate_policy_candidate,
+};
 use super::graph::{
     active_nodes, apply_discoveries, apply_observations, evaluate_gates, learn_coactivation_edges,
     propagate_activations, reinforce_active_nodes, update_hypothesis_substrate, apply_operator,
     evaluate_rule_heldout,
 };
+use super::eval_loop::{adaptive_cutoff, apply_activation_decay};
 use super::invariants::evaluate_invariants;
 use super::types::{
     CanonicalInput, CanonicalProposal, CanonicalReceipt, CanonicalState, CanonicalTurnResult,
@@ -52,6 +56,7 @@ impl CanonicalCore {
         }
         let data = serde_json::to_string_pretty(&self.state)?;
         std::fs::write(path, data)?;
+        self.write_generated_views(path)?;
         Ok(())
     }
 
@@ -100,6 +105,18 @@ impl CanonicalCore {
             "promotion_eligible={} slope={:.3} failures={}\n",
             promo.passes_promotion, promo.trend_slope, promo.repeated_failures
         ));
+        if let Some(champion) = &self.state.live_control.active_champion {
+            out.push_str(&format!(
+                "active_champion={} macro_score={:.1}\n",
+                champion.id, champion.macro_score
+            ));
+        }
+        if !self.state.live_control.failing_action_gates.is_empty() {
+            out.push_str(&format!(
+                "failing_action_gates={}\n",
+                self.state.live_control.failing_action_gates.join(", ")
+            ));
+        }
 
         out
     }
@@ -114,8 +131,16 @@ impl CanonicalCore {
         receipts_path: &Path,
     ) -> Result<CanonicalTurnResult> {
         input.turn = self.state.turn_count + 1;
+        let policy_candidate = extract_policy_candidate(&self.state.graph, &proposal.ovm_ops, input.turn);
+        let candidate_violations = policy_candidate
+            .as_ref()
+            .map(validate_policy_candidate)
+            .unwrap_or_default();
 
         let discovered_nodes = apply_discoveries(&mut self.state.graph, &discoveries, input.turn);
+        // Decay before seeding — breaks fixed-point attractors where high-reinforcement
+        // nodes lock to 1.0 and permanently dominate coactivation learning.
+        apply_activation_decay(&mut self.state.graph, 0.20);
         apply_observations(&mut self.state.graph, &observations, input.turn);
         let criteria_before = self.state.graph.criteria.clone();
         let propagation_steps = self.state.graph.criteria.propagation_steps;
@@ -150,32 +175,9 @@ impl CanonicalCore {
             audit_triggered,
         );
 
-        // Lane D: Apply Operator (OVM) — runs before make_receipt so violations land in the receipt.
-        // Ingest operator definitions from the LM's ovm_ops field.
-        for op in &proposal.ovm_ops {
-            match op {
-                OvmOp::DefineScoringRule { rule } => {
-                    if self.frozen_rule.is_none() {
-                        let old_rule = self.state.graph.scoring_rule.clone();
-                        let new_rule =
-                            rule.trim_start_matches("maximize ").trim().to_string();
-                        self.state.graph.scoring_rule = new_rule.clone();
-                        let trajectory_path =
-                            receipts_path.with_file_name("rule_trajectory.jsonl");
-                        let _ = append_rule_trajectory(
-                            &trajectory_path,
-                            input.turn,
-                            &old_rule,
-                            &new_rule,
-                            &proposal,
-                            &self.state.graph.edges,
-                        );
-                    }
-                }
-                OvmOp::DefineSelectionPredicate { predicate } => {
-                    self.state.graph.selection_predicate = predicate.clone();
-                }
-            }
+        if !candidate_violations.is_empty() {
+            invariants.violations.extend(candidate_violations);
+            invariants.passed = false;
         }
 
         // Internal co-occurrence counting (the substrate).
@@ -203,9 +205,9 @@ impl CanonicalCore {
         };
 
         if matches!(decision, TurnDecision::Commit) {
-            let cutoff = self.state.graph.criteria.activation_cutoff;
+            let cutoff = adaptive_cutoff(&self.state.graph, self.state.graph.criteria.activation_cutoff);
             reinforce_active_nodes(&mut self.state.graph, cutoff);
-            learn_coactivation_edges(&mut self.state.graph, cutoff);
+            learn_coactivation_edges(&mut self.state.graph, cutoff, input.turn);
         }
 
         // Every 5 turns, recompute held-out scorecard for the current scoring rule.
@@ -216,12 +218,29 @@ impl CanonicalCore {
 
         self.update_project_activation();
         let coordinates = self.compute_coordinates(&input, &proposal);
+        let runtime_execution = build_runtime_execution_record(&TurnTrace {
+            input: input.clone(),
+            proposal: proposal.clone(),
+            gate: gate.clone(),
+            simulation: simulation.clone(),
+            runtime_execution: super::schema::RuntimeExecutionRecord::default(),
+            execution_effects: execution_effects.clone(),
+            invariants: invariants.clone(),
+            coordinates: coordinates.clone(),
+            audit_triggered,
+            decision: decision.clone(),
+            criteria_before: criteria_before.clone(),
+            criteria_after: self.state.graph.criteria.clone(),
+            benchmark_report: None,
+            promotion_decision: None,
+        }, proposal.operations.len());
 
-        let trace = TurnTrace {
+        let mut trace = TurnTrace {
             input,
             proposal,
             gate,
             simulation,
+            runtime_execution,
             execution_effects,
             invariants,
             coordinates: coordinates.clone(),
@@ -229,7 +248,28 @@ impl CanonicalCore {
             decision: decision.clone(),
             criteria_before,
             criteria_after: self.state.graph.criteria.clone(),
+            benchmark_report: None,
+            promotion_decision: None,
         };
+
+        let benchmark_report = build_benchmark_report(&self.state, &trace, &trace.runtime_execution);
+        let promotion_decision = evaluate_runtime_promotion(
+            &self.state,
+            &self.state.graph,
+            &trace,
+            &benchmark_report,
+            policy_candidate.clone(),
+        );
+
+        if matches!(promotion_decision.action, super::schema::PromotionAction::Promote) {
+            if let Some(candidate) = &policy_candidate {
+                self.promote_policy_candidate(receipts_path, trace.input.turn, &trace.proposal, candidate);
+            }
+        }
+
+        trace.benchmark_report = Some(benchmark_report.clone());
+        trace.promotion_decision = Some(promotion_decision.clone());
+        trace.criteria_after = self.state.graph.criteria.clone();
 
         let receipt = self.make_receipt(&trace, &observations, &discoveries);
         self.append_receipt(receipts_path, &receipt)?;
@@ -243,6 +283,23 @@ impl CanonicalCore {
             .map(|n| (n.id.clone(), n.activation))
             .collect();
         self.state.receipts.push(receipt.clone());
+        let deterministic_ratio = if self.state.receipts.is_empty() {
+            0.0
+        } else {
+            self.state
+                .receipts
+                .iter()
+                .filter(|r| r.deterministic)
+                .count() as f32
+                / self.state.receipts.len() as f32
+        };
+        apply_governance_update(
+            &mut self.state.live_control,
+            promotion_decision,
+            benchmark_report,
+            &trace,
+            deterministic_ratio,
+        );
 
         // Lane E: Track motifs and trends
         self.track_motifs(&trace);
@@ -409,6 +466,9 @@ impl CanonicalCore {
             proposal_quality: trace.proposal.quality,
             decision: trace.decision.clone(),
             gate_summary: trace.gate.summary(),
+            runtime_execution: trace.runtime_execution.clone(),
+            benchmark_report: trace.benchmark_report.clone(),
+            promotion_decision: trace.promotion_decision.clone(),
             audit_triggered: trace.audit_triggered,
             simulation_max_risk: trace.simulation.max_risk,
             invariant_passed: trace.invariants.passed,
@@ -506,6 +566,65 @@ impl CanonicalCore {
             .append(true)
             .open(receipts_path)?;
         writeln!(file, "{}", serde_json::to_string(receipt)?)?;
+        Ok(())
+    }
+
+    fn promote_policy_candidate(
+        &mut self,
+        receipts_path: &Path,
+        turn: u64,
+        proposal: &CanonicalProposal,
+        candidate: &super::schema::RuntimePolicyCandidate,
+    ) {
+        if self.frozen_rule.is_none() && self.state.graph.scoring_rule != candidate.scoring_rule {
+            let old_rule = self.state.graph.scoring_rule.clone();
+            self.state.graph.scoring_rule = candidate.scoring_rule.clone();
+            let trajectory_path = receipts_path.with_file_name("rule_trajectory.jsonl");
+            let _ = append_rule_trajectory(
+                &trajectory_path,
+                turn,
+                &old_rule,
+                &candidate.scoring_rule,
+                proposal,
+                &self.state.graph.edges,
+            );
+        }
+
+        if !candidate.selection_predicate.is_empty() {
+            self.state.graph.selection_predicate = candidate.selection_predicate.clone();
+        }
+    }
+
+    fn write_generated_views(&self, state_path: &Path) -> Result<()> {
+        let stem = state_path
+            .file_stem()
+            .and_then(|s| s.to_str())
+            .unwrap_or("canonical_state");
+        let parent = state_path.parent().unwrap_or_else(|| Path::new("."));
+        let out_dir = parent.join(format!("{}_derived", stem));
+        std::fs::create_dir_all(&out_dir)?;
+
+        let derived = build_derived_artifacts(&self.state);
+        std::fs::write(
+            out_dir.join("war_room.json"),
+            serde_json::to_string_pretty(&derived.war_room)?,
+        )?;
+        std::fs::write(
+            out_dir.join("capability_ledger.json"),
+            serde_json::to_string_pretty(&derived.capability_ledger)?,
+        )?;
+        std::fs::write(
+            out_dir.join("requirements_lock.json"),
+            serde_json::to_string_pretty(&derived.requirements_lock)?,
+        )?;
+        std::fs::write(
+            out_dir.join("graph_projection.json"),
+            serde_json::to_string_pretty(&derived.graph_projection)?,
+        )?;
+        std::fs::write(
+            out_dir.join("repo_absorption.json"),
+            serde_json::to_string_pretty(&derived.repo_absorption)?,
+        )?;
         Ok(())
     }
 }
@@ -731,6 +850,7 @@ fn append_rule_trajectory(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::lm::OvmOp;
     use crate::canonical::types::NodeObservation;
 
     #[test]

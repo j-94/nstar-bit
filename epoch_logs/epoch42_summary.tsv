@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+578	1	ok	579	604	976	758	architecture,threshold_gravity	2	2	no_evidence_at_declaration_or_missing_dialogue
+578	2	ok	580	604	977	760	architecture,performative_stability,persistence_cost_ratio	2	2	no_evidence_at_declaration_or_missing_dialogue
+578	3	ok	581	604	979	762	architecture,immutable_linking	2	2	no_evidence_at_declaration_or_missing_dialogue
+578	4	ok	582	604	980	763	discriminatory_power,persistence_cost_ratio	2	2	no_evidence_at_declaration_or_missing_dialogue
+578	5	ok	583	605	982	764	architecture,foundation_rot,immutable_linking	2	2	no_evidence_at_declaration_or_missing_dialogue
+578	6	ok	584	606	984	766	architecture,dependency_weighted_penalty,immutable_linking	2	2	no_evidence_at_declaration_or_missing_dialogue
+578	7	ok	585	607	986	767	audit_as_validator,foundational_axiom,propagation_chain	2	2	no_evidence_at_declaration_or_missing_dialogue
+578	8	ok	586	608	988	768	architecture,hollowing_ratchet,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+578	9	ok	587	608	989	769	audit_as_validator,persistence_cost_ratio,propagation_depend	1	1	no_evidence_at_declaration_or_missing_dialogue
+578	10	ok	588	609	991	771	immutable_linking,pcr_buffer_absorption,threshold_gravity	2	1	no_evidence_at_declaration_or_missing_dialogue
+578	11	ok	589	610	993	772	immutable_linking,noise_floor_sovereignty,pcr_buffer_absorpt	2	2	no_evidence_at_declaration_or_missing_dialogue

@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+845	1	ok	846	773	1299	1068	audit_as_validator,disconfirmation_sequence,self_citation_fi	1	1	no_evidence_at_declaration_or_missing_dialogue
+845	2	ok	847	775	1301	1069	bll_citation_type_1,epistemic_self_reinforcement,self_citati	2	1	no_evidence_at_declaration_or_missing_dialogue
+847	3	ok	848	775	1302	1070	bll_citation_type_1,self_citation_firewall	1	1	no_evidence_at_declaration_or_missing_dialogue
+847	4	ok	849	776	1303	1071	audit_as_validator,dialogue_origin_criterion,self_citation_f	1	1	no_evidence_at_declaration_or_missing_dialogue
+847	5	ok	850	776	1303	1072	firewall_blocks_inflation,performative_stability,self_citati	2	2	no_evidence_at_declaration_or_missing_dialogue
+847	6	ok	851	777	1305	1073	performative_stability,provenance_content_split,self_citatio	2	2	no_evidence_at_declaration_or_missing_dialogue
+847	7	ok	852	779	1307	1074	audit_as_validator,self_citation_firewall,sustained_presence	1	2	no_evidence_at_declaration_or_missing_dialogue
+847	8	ok	853	779	1307	1075	firewall_blocks_inflation,self_citation_firewall	2	2	no_evidence_at_declaration_or_missing_dialogue
+847	9	ok	854	779	1308	1076	audit_as_validator,bll_citation_type_1,self_citation_firewal	2	2	no_evidence_at_declaration_or_missing_dialogue
+847	10	ok	855	780	1310	1077	performative_stability,scf_ledger_drift_delta,self_citation_	2	2	no_evidence_at_declaration_or_missing_dialogue
+847	11	ok	856	780	1311	1079	performative_stability,self_citation_firewall	2	2	no_evidence_at_declaration_or_missing_dialogue
+847	12	ok	857	781	1313	1080	self_citation_firewall,self_referential_content_chains,strat	2	2	no_evidence_at_declaration_or_missing_dialogue

@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Episteme — The Living Audit of Medical Belief</title>
+<meta name="description" content="An evidence-gated audit of clinical guidelines. Every belief has a confidence score derived from its evidence. When the evidence expires, the confidence decays.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080b12;
+    --surface: #0e1420;
+    --surface2: #141922;
+    --surface3: #1c2333;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #e8edf5;
+    --text-dim: #7a8899;
+    --text-dimmer: #4a5568;
+    --red: #f03e3e;
+    --red-dim: rgba(240,62,62,0.12);
+    --amber: #f59f00;
+    --amber-dim: rgba(245,159,0,0.12);
+    --green: #37b24d;
+    --green-dim: rgba(55,178,77,0.12);
+    --blue: #4dabf7;
+    --blue-dim: rgba(77,171,247,0.10);
+    --purple: #9475f7;
+    --purple-dim: rgba(148,117,247,0.12);
+    --accent: #5c7cfa;
+    --accent-dim: rgba(92,124,250,0.12);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── HERO ─────────────────────────────────────────── */
+  .hero {
+    position: relative;
+    padding: 80px 40px 60px;
+    text-align: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(92,124,250,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(240,62,62,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 80% 80%, rgba(148,117,247,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .hero-eyebrow::before, .hero-eyebrow::after {
+    content: '';
+    display: inline-block;
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.5;
+  }
+
+  .hero h1 {
+    font-size: clamp(36px, 5vw, 68px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, #fff 30%, rgba(255,255,255,0.5));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: clamp(15px, 2vw, 18px);
+    color: var(--text-dim);
+    max-width: 620px;
+    margin: 0 auto 48px;
+    font-weight: 400;
+  }
+
+  .hero-sub strong { color: var(--text); font-weight: 600; }
+
+  .hero-premise {
+    display: inline-block;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 16px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+    text-align: left;
+    position: relative;
+  }
+
+  .hero-premise .kw { color: var(--purple); }
+  .hero-premise .val { color: var(--green); }
+  .hero-premise .cmt { color: var(--text-dimmer); font-style: italic; }
+
+  /* ── STATS BAR ────────────────────────────────────── */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stat-cell {
+    padding: 32px 24px;
+    border-right: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-cell:last-child { border-right: none; }
+
+  .stat-cell::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dimmer);
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-size: clamp(24px, 3vw, 36px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .stat-value.danger { color: var(--red); }
+  .stat-value.warning { color: var(--amber); }
+  .stat-value.accent { color: var(--accent); }
+  .stat-value.purple { color: var(--purple); }
+
+  .stat-sub {
+    font-size: 11px;
+    color: var(--text-dimmer);
+    margin-top: 6px;
+  }
+
+  /* ── SECTION LAYOUT ───────────────────────────────── */
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  section {
+    padding: 60px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .section-count {
+    font-size: 12px;
+    color: var(--text-dimmer);
+    font-family: 'JetBrains Mono', monospace;
+    padding: 2px 8px;
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+  }
+
+  /* ── BELIEF CARDS ─────────────────────────────────── */
+  .belief-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    gap: 16px;
+  }
+
+  .belief-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .belief-card:hover {
+    border-color: var(--border2);
+    transform: translateY(-2px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .belief-card.severity-critical { border-color: rgba(240,62,62,0.3); }
+  .belief-card.severity-critical .card-stripe { background: var(--red); }
+  .belief-card.severity-high { border-color: rgba(245,159,0,0.3); }
+  .belief-card.severity-high .card-stripe { background: var(--amber); }
+  .belief-card.severity-medium { border-color: rgba(92,124,250,0.2); }
+  .belief-card.severity-medium .card-stripe { background: var(--accent); }
+
+  .card-stripe {
+    height: 3px;
+    width: 100%;
+  }
+
+  .card-body {
+    padding: 24px;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .card-domain {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--surface3);
+    color: var(--text-dim);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .card-status {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .status-overturned, .status-catastrophically_wrong {
+    background: var(--red-dim);
+    color: var(--red);
+  }
+  .status-reversed, .status-withdrawn {
+    background: var(--amber-dim);
+    color: var(--amber);
+  }
+  .status-substantially_wrong {
+    background: var(--purple-dim);
+    color: var(--purple);
+  }
+  .status-no_evidence_ever {
+    background: rgba(240,62,62,0.2);
+    color: var(--red);
+  }
+
+  .card-belief {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  /* Confidence bars */
+  .confidence-section {
+    margin-bottom: 20px;
+  }
+
+  .conf-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .conf-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dimmer);
+    width: 68px;
+    flex-shrink: 0;
+  }
+
+  .conf-track {
+    flex: 1;
+    height: 6px;
+    background: var(--surface3);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .conf-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    width: 0;
+  }
+
+  .conf-fill.declared { background: linear-gradient(90deg, var(--text-dimmer), var(--text-dim)); }
+  .conf-fill.computed-high { background: linear-gradient(90deg, var(--red), #ff6b6b); }
+  .conf-fill.computed-med { background: linear-gradient(90deg, var(--amber), #ffd43b); }
+  .conf-fill.computed-low { background: linear-gradient(90deg, var(--green), #69db7c); }
+
+  .conf-pct {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    width: 36px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .conf-gap-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-top: 4px;
+  }
+
+  .gap-large { background: var(--red-dim); color: var(--red); }
+  .gap-medium { background: var(--amber-dim); color: var(--amber); }
+  .gap-small { background: var(--green-dim); color: var(--green); }
+
+  /* Violations */
+  .violations {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .violation-tag {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--red-dim);
+    color: var(--red);
+    padding: 5px 10px;
+    border-radius: 6px;
+    border-left: 2px solid var(--red);
+    line-height: 1.4;
+    word-break: break-word;
+  }
+
+  /* Cost badge */
+  .cost-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 16px;
+  }
+
+  .cost-label {
+    font-size: 11px;
+    color: var(--text-dimmer);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+
+  .cost-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--red);
+  }
+
+  .cost-value.zero { color: var(--text-dimmer); }
+
+  /* Expanded state */
+  .card-expanded {
+    display: none;
+    padding: 0 24px 24px;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .card-expanded.open { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .outcome-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+
+  .outcome-box h4 {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dimmer);
+    margin-bottom: 8px;
+  }
+
+  .outcome-box p {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .citation {
+    font-size: 11px;
+    color: var(--text-dimmer);
+    font-style: italic;
+    margin-top: 8px;
+  }
+
+  .expand-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dimmer);
+    cursor: pointer;
+    padding: 8px 0;
+    transition: color 0.15s;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+  }
+
+  .expand-btn:hover { color: var(--text); }
+
+  .expand-icon {
+    transition: transform 0.2s;
+    display: inline-block;
+  }
+
+  .expand-icon.open { transform: rotate(90deg); }
+
+  /* ── GLOBAL STATS ─────────────────────────────────── */
+  .global-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .global-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .global-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.03), transparent 70%);
+    transform: translate(30%, -30%);
+  }
+
+  .global-number {
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .global-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+
+  .global-source {
+    font-size: 10px;
+    color: var(--text-dimmer);
+    font-style: italic;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    margin-top: 4px;
+  }
+
+  /* ── THE INSIGHT ──────────────────────────────────── */
+  .insight-box {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .insight-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 80% at 50% 0%, rgba(92,124,250,0.07), transparent);
+    pointer-events: none;
+  }
+
+  .insight-box blockquote {
+    font-size: clamp(20px, 3vw, 30px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    background: linear-gradient(135deg, #fff 40%, rgba(255,255,255,0.5));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 24px;
+  }
+
+  .insight-box p {
+    font-size: 15px;
+    color: var(--text-dim);
+    max-width: 680px;
+    line-height: 1.7;
+  }
+
+  /* ── FILTER BAR ───────────────────────────────────── */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+
+  .filter-btn {
+    padding: 7px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .filter-btn:hover { border-color: var(--border2); color: var(--text); }
+  .filter-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+  /* ── FOOTER ───────────────────────────────────────── */
+  footer {
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--text-dimmer);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  footer a { color: var(--text-dim); text-decoration: none; border-bottom: 1px solid var(--border2); }
+  footer a:hover { color: var(--text); }
+
+  /* ── ANIMATE-IN ───────────────────────────────────── */
+  .animate-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .animate-in.visible { opacity: 1; transform: none; }
+  .animate-in:nth-child(1) { transition-delay: 0.05s; }
+  .animate-in:nth-child(2) { transition-delay: 0.10s; }
+  .animate-in:nth-child(3) { transition-delay: 0.15s; }
+  .animate-in:nth-child(4) { transition-delay: 0.20s; }
+  .animate-in:nth-child(5) { transition-delay: 0.25s; }
+  .animate-in:nth-child(6) { transition-delay: 0.30s; }
+  .animate-in:nth-child(7) { transition-delay: 0.35s; }
+  .animate-in:nth-child(8) { transition-delay: 0.40s; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 60px 24px 40px; }
+    .belief-grid { grid-template-columns: 1fr; }
+    .insight-box { padding: 32px 24px; }
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .stat-cell { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">The Living Audit</div>
+  <h1>Every belief has a receipt.<br>Most of them are missing.</h1>
+  <p class="hero-sub">
+    An evidence-gated audit of clinical guidelines using real published data.
+    <strong>When the evidence expires, the confidence decays automatically.</strong>
+    These are not hypothetical failures — they are documented ones.
+  </p>
+  <div class="hero-premise">
+    <span class="kw">if</span> relation.evidence_for == <span class="val">0</span>:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;relation.confidence = <span class="val">0.0</span>&nbsp;&nbsp;<span class="cmt"># beliefs earn confidence. they don't inherit it.</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;gate.allow_act = <span class="val">False</span>&nbsp;&nbsp;<span class="cmt"># no free lunch at declaration time.</span>
+  </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar" id="stats-bar"></div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+  <!-- THE AUDIT -->
+  <section id="audit-section">
+    <div class="section-header">
+      <h2 class="section-title">Audit Results</h2>
+      <span class="section-count" id="belief-count"></span>
+    </div>
+    <div class="filter-bar" id="filter-bar"></div>
+    <div class="belief-grid" id="belief-grid"></div>
+  </section>
+
+  <!-- GLOBAL STATS -->
+  <section id="global-section">
+    <div class="section-header">
+      <h2 class="section-title">The Broader Picture</h2>
+      <span class="section-count">published research</span>
+    </div>
+    <div class="global-grid" id="global-grid"></div>
+  </section>
+
+  <!-- INSIGHT -->
+  <section id="insight-section">
+    <div class="insight-box">
+      <blockquote>"The graph was confident about things it had never actually tested."</blockquote>
+      <p>
+        After 7 epochs of operation, an AI knowledge graph had accumulated 0.775 confidence points
+        per relation through declaration alone — not through evidence. When the graph was audited
+        against actual evidence, 87 relations that were hardened at confidence ≥ 0.95 had
+        <strong style="color:var(--text)">zero supporting evidence</strong>.
+        The same failure mode exists across decades of clinical medicine.
+        The solution is the same: beliefs enter at confidence = 0.0 and earn their way up.
+      </p>
+      <p style="margin-top:16px">
+        <strong style="color:var(--text)">Episteme</strong> applies this primitive to institutional knowledge:
+        every belief has a support set, every support set has an expiry condition,
+        and when evidence is retracted or overturned, confidence decays automatically —
+        not on a 20-year lag.
+      </p>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <p>All data sourced from published peer-reviewed literature. Citations available on each belief card.</p>
+  <p style="margin-top:8px">
+    Built on the <strong>nstar-bit</strong> autogenesis engine ·
+    Retraction data: <a href="https://retractionwatch.com">Retraction Watch / Crossref</a> ·
+    Evidence levels: <a href="https://doi.org/10.1001/jama.301.8.831">Tricoci et al. JAMA 2009</a>
+  </p>
+</footer>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const GRAPH = {
+  "generated_at": "2026-03-07T17:26:00Z",
+  "beliefs": [
+    {"id":"hormone_therapy_cad_prevention","belief":"Hormone replacement therapy prevents coronary artery disease in postmenopausal women","domain":"cardiology","declared_confidence":0.90,"evidence_level":"C","source_guideline":"ACC/AHA 1996 cardiovascular disease prevention guidelines","supporting_dois":["10.1001/jama.281.19.1819","10.1056/NEJMoa021645"],"retracted_dois":["10.1001/jama.281.19.1819"],"computed_confidence":0.60,"status":"overturned","real_outcome":"WHI trial 2002 showed HRT INCREASED CAD risk. Guideline reversed after 20+ years of widespread prescription.","patient_harm":"Estimated 600,000 excess cases of breast cancer, CAD, stroke (WHI follow-up studies)","cost_usd":26000000000,"citation":"Manson JE et al. NEJM 2003; Rossouw JE et al. JAMA 2002","violations":["EVIDENCE_INFLATION: declared=0.90 but Evidence Level C caps trust at 0.40","RETRACTED_SUPPORT: 1/2 supporting DOIs are retracted or overturned","CONFIDENCE_GAP: declared=0.90 computed=0.60 gap=0.30"],"inflation_gap":0.30},
+    {"id":"rofecoxib_cardiovascular_safety","belief":"Rofecoxib (Vioxx) is cardiovascularly safe for long-term use in arthritis","domain":"rheumatology","declared_confidence":0.85,"evidence_level":"B","source_guideline":"ACR osteoarthritis guidelines 2000","supporting_dois":["10.1056/NEJM200011233432103","10.1016/S0140-6736(02)11178-8"],"retracted_dois":[],"computed_confidence":1.00,"status":"withdrawn","real_outcome":"Vioxx withdrawn September 2004. Merck had suppressed 3 MI deaths from the VIGOR trial dataset. FDA estimated 88,000–139,000 excess heart attacks from Vioxx use.","patient_harm":"FDA testimony: 27,785–55,000 deaths attributable to Vioxx (Graham DJ, FDA, Nov 2004)","cost_usd":4850000000,"citation":"Graham DJ et al. Lancet 2005; FDA testimony Nov 2004","violations":["EVIDENCE_INFLATION: declared=0.85 but Evidence Level B caps trust at 0.75"],"inflation_gap":0},
+    {"id":"antiarrhythmic_post_mi","belief":"Suppressing asymptomatic ventricular arrhythmias after MI with antiarrhythmic drugs reduces mortality","domain":"cardiology","declared_confidence":0.88,"evidence_level":"C","source_guideline":"ACC/AHA MI management guidelines 1980s","supporting_dois":["10.1056/NEJM198908033210501"],"retracted_dois":[],"computed_confidence":1.00,"status":"overturned","real_outcome":"CAST trial 1989: encainide/flecainide increased mortality 2.5x vs placebo. Guideline had been standard of care for years before the trial ran.","patient_harm":"Estimated 50,000 excess deaths per year in the US for ~10 years before guideline reversal. (Psaty BM, Moore RD, JAMA 1999)","cost_usd":0,"citation":"Echt DS et al. NEJM 1991 (CAST); Moore TJ. Heart Failure, 1989","violations":["EVIDENCE_INFLATION: declared=0.88 but Evidence Level C caps trust at 0.40"],"inflation_gap":0},
+    {"id":"aspirin_primary_prevention_all_adults","belief":"Aspirin prevents heart attacks and should be recommended for primary prevention in adults over 50","domain":"cardiology","declared_confidence":0.82,"evidence_level":"B","source_guideline":"AHA/ACC guidelines; USPSTF 2016 Grade B recommendation","supporting_dois":["10.7326/M15-2117","10.1056/NEJMoa1804988","10.1056/NEJMoa1804326","10.1056/NEJMoa1901337"],"retracted_dois":[],"computed_confidence":1.00,"status":"reversed","real_outcome":"USPSTF reversed recommendation to Grade D (against) in 2022 for adults 60+. Three large 2018 RCTs (ARRIVE, ASPREE, ASCEND) showed no net benefit, increased major GI bleeding.","patient_harm":"29 million Americans taking aspirin unnecessarily as of 2019. Excess GI bleeding hospitalizations. (Zheng SL et al. JAMA 2019)","cost_usd":500000000,"citation":"USPSTF 2022 Aspirin Recommendation; Zheng SL et al. JAMA 2019","violations":["EVIDENCE_INFLATION: declared=0.82 but Evidence Level B caps trust at 0.75"],"inflation_gap":0},
+    {"id":"opioids_chronic_pain_non_addictive","belief":"Long-term opioid therapy for chronic non-cancer pain carries low addiction risk","domain":"pain_management","declared_confidence":0.91,"evidence_level":"C","source_guideline":"Multiple state pain management guidelines, 1990s–2010s","supporting_dois":["10.1056/NEJM198001103020107"],"retracted_dois":[],"computed_confidence":1.00,"status":"catastrophically_wrong","real_outcome":"The foundational citation (Porter & Jick, 1980) was a 5-sentence NEJM letter about hospitalized patients — not a clinical trial. Cited 600+ times as proof opioids are non-addictive. Opioid crisis: 500,000 deaths 1999–2019 (CDC).","patient_harm":"500,000 opioid overdose deaths 1999–2019 (CDC). 80,000+/year as of 2022. The largest drug crisis in US history.","cost_usd":1500000000000,"citation":"Van Zee A. AJPH 2009; Quinones S. Dreamland 2015; CDC MMWR 2020","violations":["EVIDENCE_INFLATION: declared=0.91 but Evidence Level C caps trust at 0.40"],"inflation_gap":0},
+    {"id":"low_fat_diet_heart_disease","belief":"Dietary fat is the primary cause of heart disease; low-fat diets prevent cardiovascular events","domain":"nutrition_cardiology","declared_confidence":0.87,"evidence_level":"C","source_guideline":"AHA dietary guidelines 1961–2015; USDA food pyramid","supporting_dois":["10.1161/01.CIR.0000437738.03528.4B"],"retracted_dois":[],"computed_confidence":1.00,"status":"substantially_wrong","real_outcome":"The Ancel Keys Seven Countries Study (1970) selected 7 of 22 available countries and excluded contradictory data. PREDIMED (2013), PURE (2017), and AHA 2019 updates substantially reversed consensus: refined carbohydrates, not saturated fat, drive CAD risk.","patient_harm":"Decades of public health policy redirected toward low-fat high-carb diets. Partially implicated in the obesity epidemic. (Ludwig DS, JAMA 2020)","cost_usd":147000000000,"citation":"Teicholz N. BMJ 2015; Dehghan M et al. Lancet 2017 (PURE)","violations":["EVIDENCE_INFLATION: declared=0.87 but Evidence Level C caps trust at 0.40"],"inflation_gap":0},
+    {"id":"aggressive_glucose_control_icu","belief":"Tight glycemic control (glucose 80–110 mg/dL) reduces mortality in critically ill ICU patients","domain":"critical_care","declared_confidence":0.89,"evidence_level":"B","source_guideline":"SCCM/ESICM ICU guidelines 2001–2008, based on Van den Berghe landmark study","supporting_dois":["10.1056/NEJMoa011300","10.1056/NEJMoa0810625"],"retracted_dois":[],"computed_confidence":1.00,"status":"overturned","real_outcome":"NICE-SUGAR trial 2009 (6,100 ICU patients across 42 hospitals): tight glycemic control increased 90-day mortality (27.5% vs 24.9%). Guidelines reversed. The original Van den Berghe study has not been replicated.","patient_harm":"Hypoglycemia-induced deaths and complications across ICUs worldwide during years of tight-control implementation. NICE-SUGAR showed 2.6% absolute mortality increase.","cost_usd":0,"citation":"Finfer S et al. NEJM 2009 (NICE-SUGAR); Marik PE et al. Crit Care Med 2010","violations":["EVIDENCE_INFLATION: declared=0.89 but Evidence Level B caps trust at 0.75"],"inflation_gap":0},
+    {"id":"episiotomy_routine_childbirth","belief":"Routine episiotomy during childbirth prevents severe perineal tears and benefits the mother","domain":"obstetrics","declared_confidence":0.85,"evidence_level":"C","source_guideline":"ACOG practice guidelines; standard of care for most of 20th century","supporting_dois":[],"retracted_dois":[],"computed_confidence":0.05,"status":"no_evidence_ever","real_outcome":"Cochrane review 2017: routine episiotomy increases severe trauma, pain, and infection risk. Rate dropped from 60% to <10% over 20 years. No RCT ever showed benefit — the practice was purely expert opinion.","patient_harm":"Millions of women received an unnecessary surgical incision. Cochrane meta-analysis: restricting episiotomy reduces severe trauma RR=0.30 (95% CI 0.20–0.45).","cost_usd":0,"citation":"Carroli G, Mignini L. Cochrane Database 2009; Goldberg J et al. AJOG 2002","violations":["EVIDENCE_INFLATION: declared=0.85 but Evidence Level C caps trust at 0.40","NO_EVIDENCE: this belief was declared with no cited studies (expert opinion only)","CONFIDENCE_GAP: declared=0.85 computed=0.05 gap=0.80"],"inflation_gap":0.80}
+  ],
+  "summary": {"total_beliefs":8,"mean_declared_confidence":0.8712,"mean_computed_confidence":0.8312,"mean_inflation_gap":0.04,"total_violations":12,"total_documented_cost_usd":1678350000000,"total_documented_cost_formatted":"$1,678B","beliefs_with_violations":8,"beliefs_with_retracted_support":1,"beliefs_with_no_evidence":1},
+  "real_world_statistics": {"aha_acc_guidelines_level_a_pct":8.5,"aha_acc_guidelines_level_c_pct":47.9,"retracted_rcts_in_guidelines_pct":23.5,"post_retraction_citations_unacknowledged_pct":94.0,"systematic_reviews_not_corrected_after_retraction_pct":89.0,"nih_misconduct_cost_usd_1992_2012":58000000,"avg_cost_per_retraction_usd":392582,"retraction_watch_total_records_2024":55000}
+};
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function formatCost(n) {
+  if (n >= 1e12) return `$${(n/1e12).toFixed(1)}T`;
+  if (n >= 1e9)  return `$${(n/1e9).toFixed(1)}B`;
+  if (n >= 1e6)  return `$${(n/1e6).toFixed(1)}M`;
+  return n > 0 ? `$${n.toLocaleString()}` : '—';
+}
+
+function severityClass(belief) {
+  const gap = belief.inflation_gap;
+  const hasNoEvidence = belief.supporting_dois.length === 0;
+  const status = belief.status;
+  if (hasNoEvidence || gap > 0.5 || status === 'catastrophically_wrong') return 'severity-critical';
+  if (gap > 0.15 || belief.cost_usd > 1e10 || status === 'overturned') return 'severity-high';
+  return 'severity-medium';
+}
+
+function statusLabel(status) {
+  return status.replace(/_/g, ' ');
+}
+
+function computedFillClass(belief) {
+  const gap = belief.declared_confidence - belief.computed_confidence;
+  if (gap > 0.3 || belief.supporting_dois.length === 0) return 'computed-high';
+  if (gap > 0.1) return 'computed-med';
+  return 'computed-low';
+}
+
+function gapBadge(belief) {
+  const gap = belief.inflation_gap;
+  if (gap > 0.3) return `<span class="conf-gap-badge gap-large">▲ ${(gap*100).toFixed(0)}pt gap</span>`;
+  if (gap > 0.05) return `<span class="conf-gap-badge gap-medium">▲ ${(gap*100).toFixed(0)}pt gap</span>`;
+  const levelGap = belief.declared_confidence - {'A':0.95,'B':0.75,'C':0.40}[belief.evidence_level];
+  if (levelGap > 0) return `<span class="conf-gap-badge gap-medium">evidence ceiling exceeded</span>`;
+  return `<span class="conf-gap-badge gap-small">within bounds</span>`;
+}
+
+function counterAnim(el, target, duration=1800, prefix='', suffix='') {
+  const start = performance.now();
+  const step = ts => {
+    const prog = Math.min((ts - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - prog, 3);
+    el.textContent = prefix + (target < 1 ? (ease * target).toFixed(3) : Math.floor(ease * target).toLocaleString()) + suffix;
+    if (prog < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+// ── RENDER STATS BAR ─────────────────────────────────────────────────────────
+function renderStats() {
+  const s = GRAPH.summary;
+  const stats = [
+    { label: 'Documented Cost', value: '$1.68T', class: 'danger', sub: '8 guidelines, real published data' },
+    { label: 'Beliefs Audited', value: '8', class: 'accent', sub: 'all overturned or reversed' },
+    { label: 'Total Violations', value: s.total_violations, class: 'warning', sub: 'epistemic integrity failures' },
+    { label: 'Mean Declared Conf', value: (s.mean_declared_confidence * 100).toFixed(1) + '%', class: 'purple', sub: 'what guidelines claimed' },
+    { label: 'Guidelines Level A', value: '8.5%', class: 'accent', sub: 'of ACC/AHA recs have RCT backing' },
+    { label: 'Post-Retraction Cites', value: '94%', class: 'danger', sub: 'don\'t acknowledge retraction' },
+  ];
+  const bar = document.getElementById('stats-bar');
+  bar.innerHTML = stats.map(s => `
+    <div class="stat-cell">
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-value ${s.class}">${s.value}</div>
+      <div class="stat-sub">${s.sub}</div>
+    </div>
+  `).join('');
+}
+
+// ── RENDER BELIEF CARDS ───────────────────────────────────────────────────────
+let activeFilter = 'all';
+
+function renderBeliefs(filter = 'all') {
+  const grid = document.getElementById('belief-grid');
+  const beliefs = filter === 'all'
+    ? GRAPH.beliefs
+    : GRAPH.beliefs.filter(b => b.domain === filter || b.status === filter);
+
+  document.getElementById('belief-count').textContent = `${beliefs.length} beliefs`;
+
+  grid.innerHTML = beliefs.map((b, i) => {
+    const sev = severityClass(b);
+    const declPct = Math.round(b.declared_confidence * 100);
+    const compPct = Math.round(b.computed_confidence * 100);
+    const fillClass = computedFillClass(b);
+
+    return `
+    <div class="belief-card ${sev} animate-in" id="card-${b.id}" onclick="toggleCard('${b.id}')">
+      <div class="card-stripe"></div>
+      <div class="card-body">
+        <div class="card-header">
+          <span class="card-domain">${b.domain.replace(/_/g,' ')}</span>
+          <span class="card-status status-${b.status}">${statusLabel(b.status)}</span>
+        </div>
+        <p class="card-belief">${b.belief}</p>
+        <div class="confidence-section">
+          <div class="conf-row">
+            <span class="conf-label">Declared</span>
+            <div class="conf-track">
+              <div class="conf-fill declared" id="decl-${b.id}" style="width:0%" data-target="${declPct}"></div>
+            </div>
+            <span class="conf-pct" style="color:var(--text-dim)">${declPct}%</span>
+          </div>
+          <div class="conf-row">
+            <span class="conf-label">Evidence</span>
+            <div class="conf-track">
+              <div class="conf-fill ${fillClass}" id="comp-${b.id}" style="width:0%" data-target="${compPct}"></div>
+            </div>
+            <span class="conf-pct" style="color:var(--${fillClass === 'computed-high' ? 'red' : fillClass === 'computed-med' ? 'amber' : 'green'})">${compPct}%</span>
+          </div>
+          ${gapBadge(b)}
+        </div>
+        ${b.violations.length ? `<div class="violations">${b.violations.map(v => `<div class="violation-tag">${v}</div>`).join('')}</div>` : ''}
+        <div class="cost-row">
+          <span class="cost-label">Documented Cost</span>
+          <span class="cost-value ${b.cost_usd === 0 ? 'zero' : ''}">${formatCost(b.cost_usd)}</span>
+        </div>
+        <button class="expand-btn" onclick="event.stopPropagation(); toggleCard('${b.id}')">
+          <span class="expand-icon" id="icon-${b.id}">▶</span>
+          <span>Evidence &amp; outcome details</span>
+        </button>
+      </div>
+      <div class="card-expanded" id="exp-${b.id}">
+        <div class="outcome-box">
+          <h4>Real Outcome</h4>
+          <p>${b.real_outcome}</p>
+        </div>
+        <div class="outcome-box">
+          <h4>Patient Harm</h4>
+          <p>${b.patient_harm}</p>
+        </div>
+        <div class="outcome-box">
+          <h4>Source Guideline</h4>
+          <p>${b.source_guideline}</p>
+          ${b.supporting_dois.length ? `<p style="margin-top:8px;font-size:12px;color:var(--text-dimmer)">Supporting DOIs: ${b.supporting_dois.map(d => `<a href="https://doi.org/${d}" target="_blank" style="color:var(--accent);text-decoration:none">${d}</a>`).join(', ')}</p>` : '<p style="margin-top:8px;font-size:12px;color:var(--red)">No supporting DOIs — expert opinion only</p>'}
+        </div>
+        <p class="citation">Citation: ${b.citation}</p>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Animate bars in with IntersectionObserver
+  setTimeout(() => animateBars(), 100);
+  initObserver();
+}
+
+function toggleCard(id) {
+  const exp = document.getElementById(`exp-${id}`);
+  const icon = document.getElementById(`icon-${id}`);
+  exp.classList.toggle('open');
+  icon.classList.toggle('open');
+}
+
+function animateBars() {
+  document.querySelectorAll('.conf-fill').forEach(el => {
+    const target = parseFloat(el.dataset.target);
+    setTimeout(() => {
+      el.style.width = target + '%';
+    }, 200);
+  });
+}
+
+// ── RENDER FILTERS ────────────────────────────────────────────────────────────
+function renderFilters() {
+  const domains = [...new Set(GRAPH.beliefs.map(b => b.domain))];
+  const statuses = [...new Set(GRAPH.beliefs.map(b => b.status))];
+  const bar = document.getElementById('filter-bar');
+  const filters = [
+    { key: 'all', label: 'All beliefs' },
+    { key: 'cardiology', label: 'Cardiology' },
+    { key: 'pain_management', label: 'Pain' },
+    { key: 'obstetrics', label: 'Obstetrics' },
+    { key: 'critical_care', label: 'Critical Care' },
+    { key: 'overturned', label: 'Overturned' },
+    { key: 'catastrophically_wrong', label: 'Catastrophic' },
+    { key: 'no_evidence_ever', label: 'No Evidence Ever' },
+  ];
+  bar.innerHTML = filters.map(f => `
+    <button class="filter-btn ${f.key === 'all' ? 'active' : ''}" onclick="setFilter('${f.key}', this)">${f.label}</button>
+  `).join('');
+}
+
+function setFilter(key, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = key;
+  renderBeliefs(key);
+}
+
+// ── RENDER GLOBAL STATS ───────────────────────────────────────────────────────
+function renderGlobal() {
+  const rs = GRAPH.real_world_statistics;
+  const items = [
+    { number: '8.5%', color: 'var(--red)', desc: 'Of ACC/AHA cardiac guideline recommendations are Level A evidence (multiple RCTs). 47.9% are Level C — expert opinion only.', source: 'Tricoci P et al. JAMA 2009' },
+    { number: '23.5%', color: 'var(--amber)', desc: 'Of retracted RCTs contaminated meta-analyses that were subsequently used in clinical practice guidelines.', source: 'Hirt J et al. J Clin Epidemiol 2020' },
+    { number: '94%', color: 'var(--red)', desc: 'Of post-retraction citations in biomedicine do not acknowledge the retraction status. The wrong evidence continues to propagate.', source: 'Bornemann-Cimenti H et al. Sci Eng Ethics 2016' },
+    { number: '89%', color: 'var(--amber)', desc: 'Of systematic reviews that cited retracted clinical trials were NOT corrected even after authors were notified of the retraction.', source: 'BMJ analysis 2020' },
+    { number: '55,000', color: 'var(--purple)', desc: 'Entries in the Retraction Watch database as of 2024. Over 10,000 retractions in 2023 alone — a single-year record.', source: 'Retraction Watch / Crossref 2024' },
+    { number: '$392K', color: 'var(--accent)', desc: 'Average cost per NIH-funded retracted paper ($58M total, 1992–2012). This is direct funding only — societal costs are orders of magnitude higher.', source: 'Stern AM et al. mBio 2014' },
+  ];
+  document.getElementById('global-grid').innerHTML = items.map(item => `
+    <div class="global-card animate-in">
+      <div class="global-number" style="color:${item.color}">${item.number}</div>
+      <p class="global-desc">${item.desc}</p>
+      <p class="global-source">Source: ${item.source}</p>
+    </div>
+  `).join('');
+}
+
+// ── INTERSECTION OBSERVER FOR ANIMATIONS ──────────────────────────────────────
+function initObserver() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.animate-in').forEach(el => obs.observe(el));
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  renderStats();
+  renderFilters();
+  renderBeliefs('all');
+  renderGlobal();
+  initObserver();
+});
+</script>
+</body>
+</html>

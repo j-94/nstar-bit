@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+323	1	ok	324	345	549	472	dialogue_heartbeat,foundational_axiom,structural_priority	2	1	The 'dialogue_heartbeat' provides a clear structural resolution to the tensions 
+323	2	ok	325	346	551	473	dialogue_heartbeat,foundational_axiom,heartbeat_candidate_zo	2	2	The experimental baseline and audit cohorts provide the necessary empirical data
+323	3	ok	326	346	553	474	architecture,dialogue_heartbeat,heartbeat_candidate_zombie	2	2	The system successfully identified the 'mention-farmed' nature of the architectu
+323	4	ok	327	347	554	475	dialogue_heartbeat,mention_farming,temporal_silo	2	2	The relation 'heartbeat_refines_priority' is significantly weakened by the claim
+323	5	ok	328	347	555	476	cascading_filter_deadlock,dialogue_heartbeat,foundational_ax	2	2	The 'dialogue_heartbeat' is currently failing its primary safety test; acting on
+323	6	ok	329	347	557	477	citation_independence_test,dialogue_heartbeat,heartbeat_cand	2	2	The system is currently running a comparative test between two competing livenes
+323	7	ok	330	348	559	478	citation_independence_test,dialogue_heartbeat,mention_farmin	1	2	The vulnerability of the heartbeat mechanism has been empirically demonstrated; 
+323	8	ok	331	348	560	478	citation_independence_test,foundational_axiom	2	2	The 100% false-positive rate on foundational anchors provides sufficient evidenc
+323	9	ok	332	348	560	479	audit_as_validator,stratified_certainty	2	2	The audit is conclusive; the heartbeat mechanism is falsified and the baseline t
+323	10	ok	333	349	560	479	relational_liveness,stratified_certainty	2	1	The system has definitively falsified the utility of the heartbeat across both f
+323	11	ok	334	350	561	479	foundational_axiom,relational_liveness	1	1	The 'dialogue_heartbeat' experiment is formally concluded; the shift to relation

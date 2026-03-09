@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+244	1	ok	245	265	417	375	amnesiac_floor,dependency_weighted_quarantine,foundational_a	2	1	The system has moved from identifying a tension (amnesiac floor) to proposing an
+244	2	ok	246	266	418	379	epoch_10_baseline,foundational_axiom	1	1	Baseline established; the system is now prepared to measure the impact of the Ep
+244	3	ok	247	266	420	380	dependency_weighted_quarantine,foundational_axiom,stratified	2	1	The DWQ mechanism successfully resolved the primary tension (Amnesiac Floor) ide
+244	4	ok	248	267	422	381	forking_logic,foundational_axiom,information_loss	2	1	The simulation successfully produced quantitative data (orphaned relation counts
+244	5	ok	249	267	422	382	dependency_weighted_quarantine,foundational_axiom	2	1	The disconfirming evidence is explicit and identifies a clear functional redunda
+244	6	ok	250	267	423	383	audit_as_generator,dependency_weighted_quarantine,performati	2	1	The system has successfully integrated disconfirming evidence against a specific
+244	7	ok	251	269	425	384	dependency_weighted_fork,performative_stability,phantom_pers	2	1	The stress test has been initiated but the measurement of drift magnitude (relat
+244	8	ok	252	272	426	384	dependency_weighted_fork,gaming_risk,inflated_connectivity	2	1	The stress test result (whether the safeguard exists or failed) has not been rep
+244	9	ok	253	274	427	385	audit_bypasses_quarantine,dependency_weighted_quarantine	2	2	The audit requirements were met; confidence shifts are quantified and the redund
+244	10	ok	254	275	429	386	dialogue_evidence,evidence_ledger	2	2	The audit criteria are explicitly defined and the trigger_monopoly rule provides
+244	11	ok	255	276	431	387	dependency_authentication,dependency_weighted_quarantine	1	2	Epoch 10 is closed; the graph has reached a stable 'dependency-aware' property, 

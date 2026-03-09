@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+828	1	ok	829	766	1277	1047	control_measurement,sustained_presence_requirement,timing_ex	2	1	no_evidence_at_declaration_or_missing_dialogue
+828	2	ok	830	767	1280	1049	boundary_evidence_only,strict_interior_requirement,sustained	2	1	no_evidence_at_declaration_or_missing_dialogue
+828	3	ok	831	768	1282	1050	strict_interior_requirement,sustained_presence_requirement,t	2	1	no_evidence_at_declaration_or_missing_dialogue
+828	4	ok	832	768	1283	1051	asymmetric_acceptance_pressure,strict_interior_requirement,s	2	1	no_evidence_at_declaration_or_missing_dialogue
+828	5	ok	833	768	1284	1052	alias_deduplication_layer,census_targets_rdl,strict_interior	2	2	no_evidence_at_declaration_or_missing_dialogue
+828	6	ok	834	768	1286	1054	strict_interior_requirement,sustained_presence_requirement	2	1	no_evidence_at_declaration_or_missing_dialogue
+828	7	ok	835	768	1288	1056	recovery_protocol,strict_interior_requirement,sustained_pres	1	0	no_evidence_at_declaration_or_missing_dialogue
+828	8	ok	836	768	1288	1058	asymmetry_refines_pdg,census_targets_rdl,stratified_certaint	2	1	no_evidence_at_declaration_or_missing_dialogue
+828	9	ok	837	769	1290	1059	post_mitigation_far,strict_interior_requirement,sustained_pr	2	1	no_evidence_at_declaration_or_missing_dialogue
+828	10	ok	838	770	1292	1060	alias_citation_recycling,self_citation_firewall,strict_inter	1	1	no_evidence_at_declaration_or_missing_dialogue
+828	11	ok	839	772	1294	1061	recovery_protocol,rehabilitation_candidates,strict_interior_	1	1	no_evidence_at_declaration_or_missing_dialogue
+828	12	ok	840	772	1295	1062	audit_as_validator,self_citation_firewall,sustained_presence	1	1	no_evidence_at_declaration_or_missing_dialogue

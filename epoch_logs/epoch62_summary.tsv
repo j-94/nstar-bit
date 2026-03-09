@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+862	1	ok	863	782	1317	1086	performative_stability,representation_disambiguation_layer,s	1	2	no_evidence_at_declaration_or_missing_dialogue
+864	2	ok	865	783	1321	1089	content_circularity,performative_stability,self_citation_fir	2	2	no_evidence_at_declaration_or_missing_dialogue
+864	3	ok	866	783	1323	1091	content_circularity,self_citation_firewall,stratified_certai	2	2	no_evidence_at_declaration_or_missing_dialogue
+864	4	ok	867	785	1325	1092	control_population,false_rejection_measurement,self_citation	2	2	no_evidence_at_declaration_or_missing_dialogue
+864	5	ok	868	786	1327	1093	content_circularity_penalty,self_citation_firewall,stratifie	2	2	no_evidence_at_declaration_or_missing_dialogue
+864	6	ok	869	787	1328	1093	content_blind_provenance,performative_stability,self_citatio	2	2	no_evidence_at_declaration_or_missing_dialogue
+864	7	ok	870	789	1328	1094	circularity_taint,control_anchors_pdg,penalty_layer	2	2	no_evidence_at_declaration_or_missing_dialogue
+864	8	ok	871	789	1330	1095	audit_as_validator,penalty_layer,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+864	9	ok	872	789	1332	1096	causal_anchor,false_rejection_rate,penalty_layer	1	2	no_evidence_at_declaration_or_missing_dialogue
+864	10	ok	873	789	1334	1097	false_rejection_rate,penalty_layer,representation_disambigua	2	1	no_evidence_at_declaration_or_missing_dialogue
+864	11	ok	874	790	1336	1098	penalty_layer,stratified_certainty	1	1	no_evidence_at_declaration_or_missing_dialogue
+864	12	ok	875	793	1337	1099	content_circularity_penalty_layer,loop_depth_graduated_penal	2	2	no_evidence_at_declaration_or_missing_dialogue

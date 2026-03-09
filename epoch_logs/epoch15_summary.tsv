@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+279	1	ok	280	298	469	418	audit_origin_tag,disconfirming_evidence,recursive_audit_depe	2	2	The provenance tagging successfully exposes the internal vs external split, allo
+279	2	ok	281	298	469	421	audit_origin_tag,recursive_audit_dependency,stratified_certa	2	2	The rule enforcement successfully purged ungrounded confidence, resolving the te
+279	3	ok	282	298	471	423	audit_as_generator,evidence_ledger,recursive_audit_dependenc	2	2	The audit successfully quantified the recursive dependency; the system is now re
+279	4	ok	283	299	472	424	audit_as_generator,audit_misclassification,citation_independ	1	2	The injection proves a vulnerability; we now need to determine if this misclassi
+279	5	ok	284	300	472	425	audit_verifies_protocol,functional_deadlock,veto_authority	2	2	The injection has successfully compromised a high-level relation (audit_verifies
+279	6	ok	285	302	474	426	integrity_layer,provenance_transparency,tag_laundering	2	2	The 'tag_laundering' risk exposes a fundamental flaw in the provenance protocol;
+279	7	ok	286	303	476	427	audit_as_generator,false_negative_cost,foundational_axiom	2	2	The false-negative cost of the tagging regime is now empirically confirmed via t
+279	8	ok	287	306	479	428	computational_overhead,property_enforcement,redundant_tracin	2	2	The evaluation of overhead is initiated but the actual cost-benefit delta betwee
+279	9	ok	288	307	482	430	audit_verifies_protocol,evidence_laundering,performative_sta	2	2	The audit of tasks 2-7 provides a clear ranking of relational stability and iden
+279	10	ok	289	308	484	431	audit_as_generator,recursive_audit_dependency,status_classif	2	2	The turn identifies a critical leakage in the provenance rule (status shifts vs 
+279	11	ok	290	309	486	433	audit_as_generator,status_classification	1	2	Epoch 13 is synthesized; the fork is adopted with known vulnerabilities, shiftin

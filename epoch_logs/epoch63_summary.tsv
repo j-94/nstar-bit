@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+880	1	ok	881	794	1342	1104	content_circularity_penalty_layer,immutable_comparison_floor	1	1	no_evidence_at_declaration_or_missing_dialogue
+880	2	ok	882	794	1343	1105	graduated_scale_refines_flat_penalty,loop_depth_graduated_pe	2	1	no_evidence_at_declaration_or_missing_dialogue
+880	3	ok	883	794	1343	1106	loop_depth_graduated_penalty	2	1	no_evidence_at_declaration_or_missing_dialogue
+880	4	ok	884	795	1345	1107	loop_depth_graduated_penalty,neutral_equivalence	1	1	no_evidence_at_declaration_or_missing_dialogue
+880	5	ok	885	795	1346	1108	loop_depth_graduated_penalty,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+880	6	ok	886	796	1347	1109	graduated_scale_refines_flat_penalty,performative_stability	2	2	no_evidence_at_declaration_or_missing_dialogue
+880	7	ok	887	798	1348	1110	stratified_certainty,violation_count_rhs	2	2	no_evidence_at_declaration_or_missing_dialogue
+880	8	ok	888	799	1348	1110	inflation_delta,stratified_certainty	1	2	The experiment is concluded with a clear metric failure (inflation_delta > -0.10
+880	9	ok	889	801	1349	1111	performative_stability,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+880	10	ok	890	802	1349	1111	legacy_flat_penalty,stratified_certainty	1	1	The evidentiary ledger for the graduated scale experiment is closed with a defin
+880	11	ok	891	803	1351	1112	legacy_flat_penalty,zero_false_rejection_criterion	1	1	no_evidence_at_declaration_or_missing_dialogue
+880	12	ok	892	804	1351	1113	legacy_flat_penalty,self_citation_firewall	1	1	no_evidence_at_declaration_or_missing_dialogue

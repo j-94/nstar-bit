@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+666	1	ok	667	663	1097	868	gate_circularity_risk,representation_disambiguation_layer	2	1	no_evidence_at_declaration_or_missing_dialogue
+666	2	ok	668	663	1098	869	rdl_guards_gate,representation_disambiguation_layer	2	1	no_evidence_at_declaration_or_missing_dialogue
+666	3	ok	669	663	1099	870	ambiguity_weakens_recovery,cosine_similarity_gate	2	2	no_evidence_at_declaration_or_missing_dialogue
+666	4	ok	670	664	1101	872	cosine_similarity_gate,interpretation_variance,representatio	2	2	no_evidence_at_declaration_or_missing_dialogue
+666	5	ok	671	665	1102	873	cosine_similarity_gate,input_ambiguity,representation_disamb	2	2	no_evidence_at_declaration_or_missing_dialogue
+666	6	ok	672	665	1103	874	alias_deduplication_layer,representation_disambiguation_laye	2	2	no_evidence_at_declaration_or_missing_dialogue
+666	7	ok	673	666	1104	875	cosine_similarity_gate,representation_disambiguation_layer	2	1	no_evidence_at_declaration_or_missing_dialogue
+666	8	ok	674	666	1104	877	alias_deduplication_layer,audit_as_validator,cosine_similari	2	2	no_evidence_at_declaration_or_missing_dialogue
+666	9	ok	675	667	1105	878	cosine_similarity_gate,rdl_guards_gate,second_order_circular	2	2	no_evidence_at_declaration_or_missing_dialogue
+666	10	ok	676	667	1107	879	complexity_enables_recovery,representation_disambiguation_la	2	2	no_evidence_at_declaration_or_missing_dialogue
+666	11	ok	677	670	1109	880	cosine_similarity_gate,decision_variance,fork_proposal	1	1	no_evidence_at_declaration_or_missing_dialogue
+666	12	ok	678	670	1110	881	alias_deduplication_layer,decision_variance	1	1	no_evidence_at_declaration_or_missing_dialogue

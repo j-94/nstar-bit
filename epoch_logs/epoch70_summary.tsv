@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+1000	1	ok	1001	886	1497	1225	audit_as_validator,representation_disambiguation_layer,valid	2	1	no_evidence_at_declaration_or_missing_dialogue
+1000	2	ok	1002	886	1498	1226	audit_as_validator,performative_stability,representation_dis	1	1	no_evidence_at_declaration_or_missing_dialogue
+1000	3	ok	1003	886	1500	1227	recovery_protocol,representation_disambiguation_layer,sustai	2	1	no_evidence_at_declaration_or_missing_dialogue
+1000	4	ok	1004	886	1500	1227		0	0	missing_gate
+1000	5	ok	1005	887	1501	1228	audit_verifies_thresholds,representation_disambiguation_laye	2	1	no_evidence_at_declaration_or_missing_dialogue
+1000	6	ok	1006	887	1501	1229	representation_disambiguation_layer	2	1	no_evidence_at_declaration_or_missing_dialogue
+1000	7	ok	1007	889	1502	1230	stratified_certainty,survival_floor_breach	2	1	no_evidence_at_declaration_or_missing_dialogue
+1000	8	ok	1008	891	1504	1231	propagation_outcome_metric	2	1	no_evidence_at_declaration_or_missing_dialogue
+1000	9	ok	1009	892	1506	1232	audit_as_validator,performative_stability,representation_dis	2	1	no_evidence_at_declaration_or_missing_dialogue
+1000	10	ok	1010	893	1508	1233	representation_disambiguation_layer,structural_opacity_persi	2	1	no_evidence_at_declaration_or_missing_dialogue
+1000	11	ok	1011	895	1509	1234	performative_stability,propagation_outcome_metric,representa	1	1	no_evidence_at_declaration_or_missing_dialogue
+1000	12	ok	1012	895	1510	1235	audit_verifies_thresholds,representation_disambiguation_laye	2	1	no_evidence_at_declaration_or_missing_dialogue

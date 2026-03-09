@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+1017	1	ok	1018	895	1513	1242	audit_as_validator,representation_disambiguation_layer	1	1	no_evidence_at_declaration_or_missing_dialogue
+1017	2	ok	1019	896	1514	1243	grounding_bypass_probe,representation_disambiguation_layer	2	1	no_evidence_at_declaration_or_missing_dialogue
+1017	3	ok	1020	897	1516	1244	grounding_bypass_probe,recovery_protocol,sustained_presence_	2	1	no_evidence_at_declaration_or_missing_dialogue
+1017	4	ok	1021	897	1516	1245	alias_deduplication_layer,audit_detects_rdl_loops	2	1	no_evidence_at_declaration_or_missing_dialogue
+1017	5	ok	1022	898	1517	1246	audit_detects_rdl_loops,stratified_certainty,syntactic_recyc	2	1	no_evidence_at_declaration_or_missing_dialogue
+1017	6	ok	1023	899	1517	1247	alias_deduplication_layer,audit_as_validator	2	1	no_evidence_at_declaration_or_missing_dialogue
+1017	7	ok	1024	900	1519	1247	exit_transition,recovery_protocol	2	1	no_evidence_at_declaration_or_missing_dialogue
+1017	8	ok	1025	901	1520	1248	stratified_certainty	2	1	no_evidence_at_declaration_or_missing_dialogue
+1017	9	ok	1026	903	1521	1249	representation_disambiguation_layer,stratified_certainty	1	1	no_evidence_at_declaration_or_missing_dialogue
+1017	10	ok	1027	904	1523	1250	audit_as_validator,epoch_1012_baseline	1	1	no_evidence_at_declaration_or_missing_dialogue
+1017	11	ok	1028	905	1524	1252	recovery_protocol,representation_disambiguation_layer,strati	2	2	no_evidence_at_declaration_or_missing_dialogue

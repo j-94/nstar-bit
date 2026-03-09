@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+932	1	ok	933	830	1408	1156	architecture,epoch_8_baseline,sustained_presence_requirement	2	1	no_evidence_at_declaration_or_missing_dialogue
+932	2	ok	934	831	1410	1157	causal_anchor,sustained_presence_requirement,tier_boundary_d	2	0	no_evidence_at_declaration_or_missing_dialogue
+932	3	ok	935	833	1412	1158	architecture,foundational_axiom,misclassification_collision,	2	1	no_evidence_at_declaration_or_missing_dialogue
+932	4	ok	936	835	1414	1159	causal_anchor,dependency_weighted_quarantine,tbdr_process	2	1	no_evidence_at_declaration_or_missing_dialogue
+932	5	ok	937	835	1415	1160	audit_blindness_to_rdl,immutable_linking,representation_disa	2	1	no_evidence_at_declaration_or_missing_dialogue
+932	6	ok	938	836	1415	1161	3_hop_boundary,delta_validates_regime,depth_stratified_penal	2	1	no_evidence_at_declaration_or_missing_dialogue
+932	7	ok	939	838	1417	1162	epoch_8_baseline,performative_stability,tier_2_node_reclassi	2	2	no_evidence_at_declaration_or_missing_dialogue
+932	8	ok	940	839	1419	1163	architecture,classification_collisions,tier_boundary_disambi	2	2	no_evidence_at_declaration_or_missing_dialogue
+932	9	ok	941	839	1420	1164	audit_as_validator,stratified_certainty,tier_boundary_disamb	2	2	no_evidence_at_declaration_or_missing_dialogue
+932	10	ok	942	839	1421	1165	causal_anchor,performative_stability,tier_boundary_disambigu	2	1	no_evidence_at_declaration_or_missing_dialogue
+932	11	ok	943	840	1423	1166	architecture,stratified_certainty,tbdr_regime	1	1	no_evidence_at_declaration_or_missing_dialogue
+932	12	ok	944	842	1425	1167	interior_anchor_scarcity,interior_anchor_tiered_classificati	2	1	no_evidence_at_declaration_or_missing_dialogue

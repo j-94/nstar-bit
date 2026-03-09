@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+622	1	ok	623	631	1039	815	causal_anchor,dynamic_recovery_floor	2	1	no_evidence_at_declaration_or_missing_dialogue
+622	2	ok	624	632	1040	816	causal_anchor,dynamic_recovery_floor	2	1	no_evidence_at_declaration_or_missing_dialogue
+622	3	ok	625	633	1041	817	causal_anchor,structurally_reflexive	2	1	no_evidence_at_declaration_or_missing_dialogue
+622	4	ok	626	633	1043	819	alias_deduplication_layer,causal_anchor,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+622	5	ok	627	633	1045	821	alias_deduplication_layer,dynamic_recovery_floor,performativ	2	2	no_evidence_at_declaration_or_missing_dialogue
+622	6	ok	628	634	1047	823	causal_anchor,recovery_protocol,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+622	7	ok	629	636	1049	824	causal_anchor,monotonic_improvement_chain,ratchet_recovery_m	1	1	no_evidence_at_declaration_or_missing_dialogue
+622	8	ok	630	637	1050	825	causal_anchor,ratchet_floor_logic,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+622	9	ok	631	637	1050	826	audit_as_validator,floor_prevents_regression	1	1	no_evidence_at_declaration_or_missing_dialogue
+622	10	ok	632	638	1052	828	alias_deduplication_layer,stratified_certainty,temporal_blin	2	2	no_evidence_at_declaration_or_missing_dialogue
+622	11	ok	633	641	1054	830	causal_anchor,ratchet_spoofability,semantic_novelty_enforcem	2	2	no_evidence_at_declaration_or_missing_dialogue

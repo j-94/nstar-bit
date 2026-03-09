@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+198	1	ok	199	213	339	307	architecture,evidence_ledger,relation_origin	2	2	The inventory is complete (Count: 2 generator-originated; 0 evidence-originated;
+198	2	ok	200	215	341	308	architecture,routing_dependency_map,simulated_veto	2	2	The dependency map is requested but its results—and the subsequent veto—are not 
+198	3	ok	201	215	343	310	architecture,evidence_ledger,simulated_veto	2	2	The veto has been executed, but the resulting impact on global connectivity (the
+198	4	ok	202	216	345	312	architecture,routing_survival_score	2	2	The system has moved from qualitative anxiety about 'collapse' to a quantitative
+198	5	ok	203	216	346	313	architecture,belief_revision,routing_survival_score	2	2	The contradiction of the exemption claim is definitive and provides a clear path
+198	6	ok	204	216	347	314	audit_as_validator,performative_stability,simulated_veto	2	2	The failure of the audit_as_validator suggests a fundamental flaw in the verific
+198	7	ok	205	217	350	316	evidence_ledger,graph_coherence,veto_authority	2	2	The veto simulation has clearly defined the boundary between 'reported' and 'eff
+198	8	ok	206	218	352	318	audit_as_validator,evidence_ledger,veto_authority	2	2	The audit task is complete and validates the integrity of the current epoch's st
+198	9	ok	207	220	355	319	logically_necessary_routing,provenance_paradox,veto_authorit	2	2	The Provenance Paradox is confirmed as an empirical reality; the system must now
+198	10	ok	208	221	356	320	architecture,god_concept_risk	2	2	The turn proposes a trial reroute; until the outcome of the 'path_restoration' i
+198	11	ok	209	223	358	322	ambiguous_dependency,provenance_paradox_resolution	2	2	The Epoch 6 audit is complete; the Provenance Paradox is now a known and mapped 

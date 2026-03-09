@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+74	1	ok	75	70	132	133	causal_anchor,compression,graph_schema	2	2	The system has identified that its existing schema is sufficient to solve the 'T
+74	2	ok	76	72	134	135	immutable_evidence_linking,memory_overflow,reconstruction_fa	1	2	We have established the variables (131 entries, turn 74) but the estimation of t
+74	3	ok	77	72	137	136	assumption_hardening,belief_revision,reconstruction_failure	1	2	The migration from core_discovery to belief_revision is complete and verified.
+74	4	ok	78	73	138	138	belief_revision,immutable_evidence_linking,lineage_continuit	2	2	The system has successfully moved from proposing a traceability schema to execut
+74	5	ok	79	74	140	140	compression,immutable_evidence_linking,lineage_break	2	2	The audit confirmed a failure in anchor survival; the system must now determine 
+74	6	ok	80	74	142	142	architecture,compression,immutable_evidence_linking	2	2	The proposal provides a concrete structural test for the previously identified '
+74	7	ok	81	75	144	143	immutable_evidence_linking,integrity_degradation,structural_	2	2	The core mechanism for traceability (Causal_Anchor) was proven broken. A structu
+74	8	ok	82	75	146	145	compression,immutable_evidence_linking,reconstruction_failur	2	2	The system has identified a critical failure in its own memory mechanism (the 80
+74	9	ok	83	75	147	146	architecture,compression,integrity_degradation	2	2	The loop has been successfully diagnosed and archived; 'internal_structures' is 
+74	10	ok	84	76	149	148	calibration_delta,immutable_evidence_linking,structural_liqu	1	2	The system has successfully self-corrected from 'over-liquid' to 'calibrated' vi
+74	11	ok	85	77	151	150	fork_evaluation_85,performative_stability,reality_divergence	2	2	The recommendation for 'further experiment' over 'adopt' or 'discard' prevents t
+74	12	ok	86	78	153	152	calibrated_mobility,immutable_evidence_linking,reality_diver	2	2	Epoch 4 is formally closed with a clear delta (Turn 50 vs Turn 86) and a defined

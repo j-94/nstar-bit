@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+434	1	ok	435	445	725	587	decomposability_assumption,overlapping_window_accumulator,wi	2	2	no_evidence_at_declaration_or_missing_dialogue
+434	2	ok	436	445	727	588	decomposability_assumption,overlapping_window_accumulator,wi	2	2	no_evidence_at_declaration_or_missing_dialogue
+434	3	ok	437	445	729	589	overlapping_window_accumulator,window_shopping	2	2	no_evidence_at_declaration_or_missing_dialogue
+434	4	ok	438	446	731	590	dependency_weighted_quarantine,dual_tracking_conflict	2	2	no_evidence_at_declaration_or_missing_dialogue
+434	5	ok	439	448	733	591	freshness_trumps_volume,overlapping_window_accumulator,signa	2	2	no_evidence_at_declaration_or_missing_dialogue
+434	6	ok	440	449	734	592	overlapping_window_accumulator,performative_stability	2	2	no_evidence_at_declaration_or_missing_dialogue
+434	7	ok	441	449	736	593	audit_paralysis,overlapping_window_accumulator	1	1	no_evidence_at_declaration_or_missing_dialogue
+434	8	ok	442	450	739	595	evasion_effort_function,recursive_vulnerability_inheritance	1	1	no_evidence_at_declaration_or_missing_dialogue
+434	9	ok	443	450	740	597	dependency_weighted_quarantine,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+434	10	ok	444	451	742	598	overlapping_window_accumulator,performative_stability,window	2	2	no_evidence_at_declaration_or_missing_dialogue
+434	11	ok	445	453	744	600	adversarial_equivalence,non_windowed_approach,overlapping_wi	2	2	no_evidence_at_declaration_or_missing_dialogue

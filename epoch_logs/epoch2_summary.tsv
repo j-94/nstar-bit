@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+490	1	ok	491	507	827	657	validation_subjectivity,validation_sufficiency_protocol	2	1	no_evidence_at_declaration_or_missing_dialogue
+490	2	ok	492	507	829	658	foundational_axiom,stratified_certainty,validation_sufficien	2	1	no_evidence_at_declaration_or_missing_dialogue
+490	3	ok	493	507	831	659	confidence_trajectory,foundational_axiom,validation_sufficie	2	1	no_evidence_at_declaration_or_missing_dialogue
+490	4	ok	494	507	833	660	stratified_certainty,validation_sufficiency_protocol,vestigi	1	1	no_evidence_at_declaration_or_missing_dialogue
+490	5	ok	495	507	833	661	decay_dampener,decay_enforces_separation,validation_sufficie	2	1	no_evidence_at_declaration_or_missing_dialogue
+490	6	ok	496	507	834	662	novel_claim_reference,validation_subjectivity,validation_suf	2	2	no_evidence_at_declaration_or_missing_dialogue
+490	7	ok	497	508	836	662	decay_evasion_loop,explicit_user_query,performative_stabilit	2	2	no_evidence_at_declaration_or_missing_dialogue
+490	8	ok	498	508	838	663	audit_as_generator,novel_claim_reference,validation_sufficie	2	2	no_evidence_at_declaration_or_missing_dialogue
+490	9	ok	499	508	840	665	audit_as_generator,performative_stability,validation_suffici	2	2	no_evidence_at_declaration_or_missing_dialogue
+490	10	ok	500	511	842	666	decision_variance,stratified_certainty,validation_sufficienc	2	2	no_evidence_at_declaration_or_missing_dialogue
+490	11	ok	501	512	846	667	adversarial_selection,audit_as_validator	1	1	no_evidence_at_declaration_or_missing_dialogue

@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+727	1	ok	728	691	1153	933	baseline_cohort,recovery_protocol	2	1	no_evidence_at_declaration_or_missing_dialogue
+727	2	ok	729	692	1155	934	audit_as_validator,dwq_exit_rules	2	1	no_evidence_at_declaration_or_missing_dialogue
+727	3	ok	730	692	1155	935	causal_anchor,dependency_weighted_quarantine,freshness_drive	1	2	no_evidence_at_declaration_or_missing_dialogue
+727	4	ok	731	693	1155	936	asymmetry_persists,audit_as_validator	2	2	no_evidence_at_declaration_or_missing_dialogue
+727	5	ok	732	693	1156	938	audit_as_validator,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+727	6	ok	733	693	1156	939	rdl_strengthens_recovery,recovery_protocol	2	1	no_evidence_at_declaration_or_missing_dialogue
+727	7	ok	734	693	1158	941	audit_as_validator,rdl_strengthens_recovery	1	1	no_evidence_at_declaration_or_missing_dialogue
+727	8	ok	735	694	1160	942	exit_transition_traceability,rdl_strengthens_recovery	1	1	no_evidence_at_declaration_or_missing_dialogue
+727	9	ok	736	695	1162	943	exit_rules_anti_inflation,recovery_protocol	1	1	no_evidence_at_declaration_or_missing_dialogue
+727	10	ok	737	695	1164	945	recovery_protocol	1	1	no_evidence_at_declaration_or_missing_dialogue
+727	11	ok	738	696	1165	947	grounding_gaps,recovery_protocol	2	1	no_evidence_at_declaration_or_missing_dialogue
+727	12	ok	739	699	1167	948	residual_isolation_stasis,symmetric_dwq_exit	2	2	no_evidence_at_declaration_or_missing_dialogue

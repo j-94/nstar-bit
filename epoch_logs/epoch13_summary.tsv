@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+255	1	ok	256	276	433	388	dependency_authentication,dependency_weighted_quarantine,fou	2	2	The turn provided a concrete operational rule that directly addresses the primar
+255	2	ok	257	276	433	389	dependency_authentication,gaming_risk	2	2	The audit of elegant_abstraction provides a clear operational baseline for the d
+255	3	ok	258	276	435	390	dependency_authentication,foundational_axiom	1	1	The system has successfully established both a negative exemplar (elegant_abstra
+255	4	ok	259	277	436	391	dependency_authentication,dependency_inflation	2	1	The turn provided explicit synthetic disconfirmation to archive a high-confidenc
+255	5	ok	260	278	437	392	architecture,dependency_inflation,reality_divergence	2	2	The disconfirmation of the tautological loop is definitive for the current state
+255	6	ok	261	278	438	393	architecture,dependency_authentication	2	2	The simulation provided clear pass/fail statuses and flagged the specific nodes 
+255	7	ok	262	279	440	394	boundary_sensitivity_analysis,dependency_authentication,stra	2	2	The simulation results for the 40% and 60% runs are required to determine if the
+255	8	ok	263	281	442	395	dependency_authentication,gaming_risk_nodes,phantom_persiste	1	2	The turn poses a measurement question regarding the drift rate (increase/decreas
+255	9	ok	264	282	444	398	audit_as_validator,dependency_chain_effects,stratified_certa	2	2	The audit has successfully quantified the impact of the disconfirming injections
+255	10	ok	265	283	446	399	dependency_authentication,evidence_laundering	2	2	The system has identified a potential flaw (evidence laundering) but has not yet
+255	11	ok	266	284	447	399	denial_accuracy,performative_stability,stratified_certainty	1	1	The comparison between the parent and forked DWQ logic provides clear categorica
+255	12	ok	267	285	449	400	evidence_laundering,phantom_persistence_drift	2	1	Epoch 11 is closed with a clear verdict; the system is stable enough to transiti

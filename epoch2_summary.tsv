@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+50	1	ok	51	48	103	94	architecture,compression,noisy_symbols	1	1	The system successfully executed the first executive probe, achieving significan
+50	2	ok	52	50	104	96	epistemic_audit,load_bearing,performative_stability	2	1	The system has been ordered to perform a self-audit of all 'known' relations. Ac
+50	3	ok	53	50	104	97	epistemic_audit,triadic_durability_support	1	1	The Executive Burden tension is resolved by the arrival of external data, allowi
+50	4	ok	54	50	105	98	contrast_exposes_weakness,load_bearing,performative_stabilit	2	1	The system has identified a potential structural illusion (performative stabilit
+50	5	ok	55	50	105	99	elegant_abstraction,epistemic_audit	2	1	The system successfully acted on its mandate to prune under-tested claims. The s
+50	6	ok	56	51	105	102	memory_retains_evidence,performative_stability,pruning_impac	2	1	The audit provides a clear path for pruning by distinguishing between load-beari
+50	7	ok	57	52	105	103	graph_density,pruning_impact_audit	1	1	Archival instructions were executed; graph density has been recalculated (11 act
+50	8	ok	58	52	105	104	core_discovery,graph_density	1	1	The system successfully executed the specific mandate to collapse a redundant no
+50	9	ok	59	54	107	106	compression_metrics,graph_discrimination	1	1	The system has successfully provided the requested metrics and demonstrated a st
+50	10	ok	60	54	108	107	core_discovery,load_bearing	1	1	The audit hypothesis has been explicitly confirmed and the task to close the aud
+50	11	ok	61	56	110	109	fork_adoption,quality_signal	2	1	The system has defined the three-way metric (improved/flat/degraded) required to
+50	12	ok	62	57	111	110	architecture,disconfirming_evidence,structural_liquidity	2	1	The transition to Epoch 3 is clearly defined with a specific concept set, a domi

@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+693	1	ok	694	671	1116	897	audit_as_validator,rdl_strengthens_recovery	2	1	no_evidence_at_declaration_or_missing_dialogue
+693	2	ok	695	674	1118	898	pre_rdl_failure,recovery_protocol,representation_disambiguat	1	1	no_evidence_at_declaration_or_missing_dialogue
+693	3	ok	696	674	1118	899	rdl_strengthens_recovery,recovery_protocol,representation_di	2	1	no_evidence_at_declaration_or_missing_dialogue
+693	4	ok	697	675	1119	900	dependency_gap,foundational_axiom,rdl_strengthens_recovery	2	2	no_evidence_at_declaration_or_missing_dialogue
+693	5	ok	698	676	1120	901	performative_stability,recovery_protocol,stratified_certaint	2	2	no_evidence_at_declaration_or_missing_dialogue
+693	6	ok	699	676	1121	902	causal_anchor,recovery_protocol,representation_disambiguatio	2	2	no_evidence_at_declaration_or_missing_dialogue
+693	7	ok	700	676	1122	903	dependency_weighted_quarantine,rdl_to_recovery_strength,stra	2	2	no_evidence_at_declaration_or_missing_dialogue
+693	8	ok	701	676	1123	904	alias_deduplication_layer,ambiguity_weakens_recovery,cosine_	2	2	no_evidence_at_declaration_or_missing_dialogue
+693	9	ok	702	678	1125	905	grounding_depth,rdl_strengthens_recovery,structural_asymmetr	1	2	no_evidence_at_declaration_or_missing_dialogue
+693	10	ok	703	679	1127	906	performative_stability,recovery_protocol	1	1	no_evidence_at_declaration_or_missing_dialogue
+693	11	ok	704	681	1130	908	dark_relation,grounding_sequence,representation_disambiguati	2	2	no_evidence_at_declaration_or_missing_dialogue
+693	12	ok	705	683	1131	910	bilateral_grounding_symmetry,dependency_weighted_quarantine,	2	2	no_evidence_at_declaration_or_missing_dialogue

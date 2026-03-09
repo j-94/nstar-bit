@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+345	1	ok	346	358	585	492	cascade_collapse,decay_dampener,global_relevance_decay	2	2	The turn provides specific operational parameters (0.40 floor, 10-turn window) f
+345	2	ok	347	359	587	493	foundational_axiom,global_relevance_decay,undampened_regime	2	2	The simulation has provided clear evidence of the 'cascade-collapse' mechanics, 
+345	3	ok	348	360	589	495	decay_dampener,false_positive_pruning,foundational_axiom	2	1	The cascade-collapse risk has been simulated, mitigated, and the mitigation (dec
+345	4	ok	349	361	590	497	census_tests_foundational_stability,decay_dampener,global_re	2	2	The 60% failure rate in the decay metric requires a redesign of either the dampe
+345	5	ok	350	361	590	498	decay_dampener,foundational_axiom	2	2	The decay_dampener is now a known liability, but its removal may still trigger t
+345	6	ok	351	362	591	499	decay_dampener,ghost_node_reintroduction,global_relevance_de	2	2	The failure mode is clearly identified and the 10-turn simulation is complete; w
+345	7	ok	352	364	593	500	decay_dampener,disconfirming_evidence,error_rate_comparison,	2	1	The comparison run is initiated but the results (error rates) are required to de
+345	8	ok	353	364	595	501	audit_as_validator,decay_dampener,foundational_axiom	2	2	The audit clearly identifies the confidence values: (a) census/audit on foundati
+345	9	ok	354	366	597	502	decay_dampener,recursive_logic,ten_turn_window	2	2	The system has identified a circular dependency that could invalidate the 'found
+345	10	ok	355	367	599	503	sliding_floor_alternative,vestigial_structure	2	1	The comparative simulation has provided clear metric-based justification to move
+345	11	ok	356	368	601	504	recursive_dependency_vulnerability,sliding_floor_alternative	2	1	Epoch 15 is resolved; the dampener variant is selected and the primary tension f

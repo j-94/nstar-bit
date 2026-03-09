@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+478	1	ok	479	489	805	646	dialogue_probe_decay_curve,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+478	2	ok	480	492	807	647	structural_necessity_probe,test_foundational_axiom,test_vest	2	2	no_evidence_at_declaration_or_missing_dialogue
+478	3	ok	481	494	809	648	exponential_probe_decay,test_foundational_axiom,test_vestigi	2	2	no_evidence_at_declaration_or_missing_dialogue
+478	4	ok	482	494	809	648		0	0	missing_gate
+478	5	ok	483	495	810	649	dimensional_collapse,exponential_probe_decay,freshness_vs_ce	2	2	no_evidence_at_declaration_or_missing_dialogue
+478	6	ok	484	495	811	650	cascading_filter_deadlock,exponential_decay,topological_rout	2	2	no_evidence_at_declaration_or_missing_dialogue
+478	7	ok	485	495	813	652	exponential_probe_decay,grounding_ratio,topological_routing_	2	2	no_evidence_at_declaration_or_missing_dialogue
+478	8	ok	486	497	816	653	audit_as_validator,maintenance_burden,probe_overhead_cost	2	2	no_evidence_at_declaration_or_missing_dialogue
+478	9	ok	487	497	818	654	exponential_decay,performative_stability,stratified_certaint	1	2	no_evidence_at_declaration_or_missing_dialogue
+478	10	ok	488	498	820	654	limbo_nodes,linear_decay_profile,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+478	11	ok	489	500	823	655	audit_as_validator,decisive_metric,exponential_growth	2	1	no_evidence_at_declaration_or_missing_dialogue
+478	12	ok	490	503	825	656	exponential_decay,validation_subjectivity	2	1	no_evidence_at_declaration_or_missing_dialogue

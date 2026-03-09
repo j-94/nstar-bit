@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+511	1	ok	512	519	867	680	probabilistic_gating,shadow_influence_audit,stratified_certa	2	1	no_evidence_at_declaration_or_missing_dialogue
+511	2	ok	513	520	869	681	probabilistic_gating,stratified_certainty,sub_threshold_depe	2	1	no_evidence_at_declaration_or_missing_dialogue
+511	3	ok	514	520	871	683	semantic_utility_probe,session_accumulator,shadow_influence_	2	1	no_evidence_at_declaration_or_missing_dialogue
+511	4	ok	515	521	873	684	self_citation_firewall,session_accumulator,shadow_influence_	2	2	no_evidence_at_declaration_or_missing_dialogue
+511	5	ok	516	522	874	685	audit_as_generator,legitimate_semantic_payload,performative_	1	1	no_evidence_at_declaration_or_missing_dialogue
+511	6	ok	517	524	875	686	audit_as_validator,freshness_vs_ceiling,shadow_influence_mec	2	1	no_evidence_at_declaration_or_missing_dialogue
+511	7	ok	518	525	877	687	reflexivity_loop,shadow_influence_audit,stratified_certainty	2	1	no_evidence_at_declaration_or_missing_dialogue
+511	8	ok	519	526	878	688	routing_path_dependency	2	1	no_evidence_at_declaration_or_missing_dialogue
+511	9	ok	520	528	880	689	audit_as_validator,freshness_vs_ceiling	2	2	no_evidence_at_declaration_or_missing_dialogue
+511	10	ok	521	529	882	690	stratified_certainty,sub_threshold_dependency	2	1	no_evidence_at_declaration_or_missing_dialogue
+511	11	ok	522	531	883	691	reflexive_closure,shadow_filter	1	1	no_evidence_at_declaration_or_missing_dialogue

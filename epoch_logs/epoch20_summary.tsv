@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+334	1	ok	335	351	563	480	foundational_axiom,global_relevance_decay	2	1	The system has moved from rejecting a flawed metric (heartbeat) to proposing a s
+334	2	ok	336	352	565	481	downstream_dependents,foundational_axiom,global_relevance_de	2	1	The system has successfully moved from proposing a metric (Turn 335) to executin
+334	3	ok	337	353	566	481	global_relevance_decay,obsolescence_review	1	1	The system successfully operationalized the decay test on a legacy target, provi
+334	4	ok	338	354	569	482	citation_independence_test,foundational_axiom,ghost_node_syn	2	2	The disconfirming injection has successfully lowered confidence in the prior 'pa
+334	5	ok	339	355	571	483	ghost_node_syndrome,routing_function,stratified_certainty	2	2	The injection successfully provided concrete counter-examples (core_discovery, p
+334	6	ok	340	356	573	484	evidence_ledger,global_relevance_decay,graph_memory,structur	2	2	The system has successfully operationalized the 'global_relevance_decay' test ag
+334	7	ok	341	356	574	485	architecture,global_relevance_decay	1	1	The stress test successfully validated 'global_relevance_decay' over the failed 
+334	8	ok	342	356	574	486	foundational_axiom,global_relevance_decay	1	1	The adversarial scenario successfully documented and verified the gap between lo
+334	9	ok	343	356	577	489	audit_as_validator,global_relevance_decay	2	1	The audit successfully quantified the impact of recent injections and establishe
+334	10	ok	344	357	579	490	cascade_collapse,global_relevance_decay,stratified_certainty	2	2	The circularity risk must be resolved before 'global_relevance_decay' can be tru
+334	11	ok	345	358	583	491	cascade_collapse,decay_dampener,foundational_axiom	2	2	The epoch verdict is delivered and the metric is adopted; the system is ready to

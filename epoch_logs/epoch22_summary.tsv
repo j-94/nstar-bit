@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+356	1	ok	357	369	603	505	recursive_dependency_vulnerability,self_citation_firewall	2	2	The firewall is currently 'hypothetical' and requires an experimental run to see
+356	2	ok	358	369	605	506	recursive_dependency_vulnerability,self_citation_firewall	2	2	The relation 'firewall_preserves_sliding_floor' is successfully registered as a 
+356	3	ok	359	369	607	507	foundational_axiom,self_citation_firewall,stratified_certain	2	2	The 3-hop synthetic test provided the necessary mechanical validation to move th
+356	4	ok	360	370	608	508	self_citation_firewall,sliding_floor_dampener,sparse_subgrap	2	2	no_evidence_at_declaration
+356	5	ok	361	371	609	509	adoption_requires_signal,audit_as_generator,self_citation_fi	2	2	no_evidence_at_declaration
+356	6	ok	362	371	611	510	mention_farming_attack,self_citation_firewall,vestigial_stru	1	2	no_evidence_at_declaration
+356	7	ok	363	371	612	511	disconfirming_evidence,self_citation_firewall,vestigial_stru	2	2	no_evidence_at_declaration
+356	8	ok	364	371	613	513	adoption_requires_signal,audit_as_generator,firewall_preserv	2	2	no_evidence_at_declaration
+356	9	ok	365	371	615	514	foundational_axiom,self_citation_firewall,vestigial_structur	2	1	no_evidence_at_declaration
+356	10	ok	366	372	616	515	firewall_gaming,self_citation_firewall	2	1	no_evidence_at_declaration
+356	11	ok	367	373	618	516	firewall_gaming,self_citation_firewall	2	1	no_evidence_at_declaration

@@ -1,0 +1,25 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+795	1	ok	796	739	1234	1013	edge_case_node,rolling_window_gap,spr_mechanism	2	1	no_evidence_at_declaration_or_missing_dialogue
+795	1	ok	796	739	1235	1013	provenance_depth_gate_baseline,rolling_window_gap	1	1	no_evidence_at_declaration_or_missing_dialogue
+795	2	ok	797	740	1235	1013	rolling_window_rule,sustained_presence_requirement	1	1	no_evidence_at_declaration_or_missing_dialogue
+795	2	ok	797	740	1237	1014	discrimination_test_797,rolling_window_gap,sustained_presenc	2	1	no_evidence_at_declaration_or_missing_dialogue
+795	3	ok	798	741	1237	1014	edge_case_node,rolling_window_rule	2	1	no_evidence_at_declaration_or_missing_dialogue
+795	3	ok	798	740	1237	1014		0	0	missing_gate
+795	4	ok	799	741	1239	1015	dense_slow_node,sustained_presence_requirement	1	1	no_evidence_at_declaration_or_missing_dialogue
+795	4	ok	799	741	1238	1015	crp_validates_structural_role,internal_audit_cycles,performa	2	1	no_evidence_at_declaration_or_missing_dialogue
+795	5	ok	800	742	1240	1016	crp_validates_structural_role,historical_density_artifacts,r	2	1	no_evidence_at_declaration_or_missing_dialogue
+795	5	ok	800	742	1238	1016	baseline_records_gate,provenance_depth_gate,recency_enforcem	1	1	no_evidence_at_declaration_or_missing_dialogue
+795	6	ok	801	743	1241	1017	audit_as_validator,spr_mechanism,trailing_window_decay	2	1	no_evidence_at_declaration_or_missing_dialogue
+795	6	ok	801	743	1240	1017	performative_stability,rolling_window_sub_clause,sustained_p	1	1	no_evidence_at_declaration_or_missing_dialogue
+795	7	ok	802	745	1243	1018	discrimination_delta,rehabilitation_pipeline,rolling_window_	2	1	no_evidence_at_declaration_or_missing_dialogue
+795	7	ok	802	744	1241	1018	rolling_window_sub_clause,self_citation_firewall,stratified_	2	1	no_evidence_at_declaration_or_missing_dialogue
+795	8	ok	803	744	1242	1019	sustained_presence_requirement	1	1	no_evidence_at_declaration_or_missing_dialogue
+795	8	ok	803	744	1242	1019	sustained_presence_requirement	1	1	no_evidence_at_declaration_or_missing_dialogue
+795	9	ok	804	744	1244	1020	self_citation_firewall,sustained_presence_requirement	1	1	no_evidence_at_declaration_or_missing_dialogue
+795	9	ok	804	746	1244	1020	false_block_rate,passed_recency_dense,self_citation_firewall	2	1	no_evidence_at_declaration_or_missing_dialogue
+795	10	ok	805	745	1246	1021	causal_anchor,performative_stability,rolling_window_cost	2	1	no_evidence_at_declaration_or_missing_dialogue
+795	10	ok	805	746	1246	1021	causal_anchor,self_citation_firewall,sustained_presence_requ	2	1	no_evidence_at_declaration_or_missing_dialogue
+795	11	ok	806	746	1248	1022	discrimination_delta,sustained_presence_requirement	1	1	no_evidence_at_declaration_or_missing_dialogue
+795	11	ok	806	748	1248	1022	causal_anchor,global_ratio_only_pdf,rolling_window_fork	1	1	no_evidence_at_declaration_or_missing_dialogue
+795	12	ok	807	747	1248	1022	dependency_weighted_quarantine,provenance_depth_gate,sustain	1	1	The epoch has reached a formal verdict; the rolling-window sub-clause is fully a
+795	12	ok	807	750	1250	1024	recency_discrimination,sustained_presence_requirement	2	1	no_evidence_at_declaration_or_missing_dialogue

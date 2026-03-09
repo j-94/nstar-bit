@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+983	1	ok	984	879	1474	1206	audit_as_validator,representation_disambiguation_layer,topol	2	2	no_evidence_at_declaration_or_missing_dialogue
+983	2	ok	985	880	1477	1207	architecture,causal_anchor,topology_aware_verification	2	1	no_evidence_at_declaration_or_missing_dialogue
+983	3	ok	986	881	1479	1208	causal_anchor,piv_standard,topology_aware_verification	2	1	no_evidence_at_declaration_or_missing_dialogue
+983	4	ok	987	881	1480	1209	iase_refines_pdg,vestigial_structure	2	1	no_evidence_at_declaration_or_missing_dialogue
+983	5	ok	988	882	1481	1209	representation_disambiguation_layer,stratified_certainty,tai	2	1	no_evidence_at_declaration_or_missing_dialogue
+983	6	ok	989	882	1483	1210	piv_standard,representation_disambiguation_layer,topology_aw	2	1	no_evidence_at_declaration_or_missing_dialogue
+983	7	ok	990	882	1485	1212	performative_stability,piv_standard,topology_aware_verificat	1	1	no_evidence_at_declaration_or_missing_dialogue
+983	8	ok	991	883	1486	1213	stratified_certainty	1	1	no_evidence_at_declaration_or_missing_dialogue
+983	9	ok	992	883	1488	1215	audit_as_validator,stratified_certainty,topology_aware_verif	2	1	no_evidence_at_declaration_or_missing_dialogue
+983	10	ok	993	884	1490	1216	topology_aware_verification,unconfirmed_inflation_ratio	1	1	no_evidence_at_declaration_or_missing_dialogue
+983	11	ok	994	884	1491	1217	architecture,topology_aware_verification	1	1	no_evidence_at_declaration_or_missing_dialogue
+983	12	ok	995	885	1493	1219	degree_normalized_violation_scoring,representation_disambigu	2	1	no_evidence_at_declaration_or_missing_dialogue

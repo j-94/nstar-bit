@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+62	1	ok	63	58	112	111	assumption_hardening,evidence_tests_stability,failure_condit	2	1	The system must define its failure conditions before proceeding with the stress 
+62	2	ok	64	58	113	112	evidence_tests_stability,failure_masking,noisy_symbols	2	1	The architecture failed its first major stress test; the mechanism for belief re
+62	3	ok	65	59	115	114	compression,graph_memory,reconstruction_failure	2	2	The graph's primary memory mechanism is confirmed to be lossy. Action must be pa
+62	4	ok	66	61	117	116	core_discovery,graph_memory,over_liquidity_risk	1	2	The system is in the middle of a tri-partite signal injection; the final state o
+62	5	ok	67	62	119	118	alias_resolution,architecture	2	2	The alias resolution algorithm is fundamentally compromised; further merges must
+62	6	ok	68	63	119	120	assumption_hardening,inheritance_bias	2	1	The five-signal audit is complete; the system has identified its internal biases
+62	7	ok	69	63	121	123	assumption_hardening,belief_revision,structural_liquidity	2	1	The system successfully completed its 6-turn self-audit and demonstrated correct
+62	8	ok	70	64	122	125	core_discovery,holding_concept	2	2	We have identified that core_discovery is a 'holding concept' candidate, but we 
+62	9	ok	71	66	124	127	adoption_vs_drift,architecture,belief_revision	2	2	The turn successfully localized the changes as 'evolution' by linking them to th
+62	10	ok	72	66	125	128	belief_revision,graph_memory,reconstruction_failure	2	2	The system has successfully pruned the 'Core Discovery' redundancy and stabilize
+62	11	ok	73	67	127	130	immutable_evidence_linking,reconstruction_failure,structural	1	2	The stress-test verdict is complete. The graph has successfully identified its c
+62	12	ok	74	68	129	131	belief_revision,epoch_transition,reconstruction_failure	2	2	Epoch 3 is successfully closed with clear lineage adoption, identified anchors, 

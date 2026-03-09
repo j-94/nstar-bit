@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+467	1	ok	468	474	784	634	foundational_axiom,grounding_starvation,structural_dependenc	2	2	no_evidence_at_declaration_or_missing_dialogue
+467	2	ok	469	476	787	635	false_exemption_surface,performative_stability,structural_de	2	2	no_evidence_at_declaration_or_missing_dialogue
+467	3	ok	470	477	788	637	adversarial_equivalence,structural_dependency_floor	2	2	no_evidence_at_declaration_or_missing_dialogue
+467	4	ok	471	478	789	638	stratified_certainty,structural_dependency_floor,sub_thresho	2	2	no_evidence_at_declaration_or_missing_dialogue
+467	5	ok	472	478	791	639	structural_dependency_floor,sub_threshold_limbo,superlinear_	2	2	no_evidence_at_declaration_or_missing_dialogue
+467	6	ok	473	479	793	640	archetype_limitation,metric_blindness,structural_dependency_	1	2	no_evidence_at_declaration_or_missing_dialogue
+467	7	ok	474	480	795	641	audit_as_validator,grounding_ratio_breaks_equivalence,superl	2	2	no_evidence_at_declaration_or_missing_dialogue
+467	8	ok	475	482	796	642	grounding_starvation,status_laundering_suspect,structural_de	2	2	no_evidence_at_declaration_or_missing_dialogue
+467	9	ok	476	485	799	644	binary_gating_regression,structural_dependency_floor,structu	2	2	no_evidence_at_declaration_or_missing_dialogue
+467	10	ok	477	486	802	645	archetype_limitation,structural_necessity_dialogue,superline	1	2	no_evidence_at_declaration_or_missing_dialogue
+467	11	ok	478	486	802	645		0	0	missing_gate

@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+44	1	ok	45	57	74	70	constitutive_relevance,explanatory_autonomy,mutual_manipulab	2	2	The introduction of MM offers a structural alternative to the failed proportiona
+44	2	ok	46	57	76	71	constitutive_relevance,interventionist_causation,mutual_mani	2	2	The relationship between MM and IC is now formally established as a competition,
+44	3	ok	47	59	77	72	mechanistic_decomposition,mutual_manipulability	2	2	The turn successfully provides a rebuttal to 'Circular Grounding,' but the stabi
+44	4	ok	48	60	78	73	circular_grounding,interventionist_causation,mutual_manipula	2	2	The primary defense for non-reductive levels (MM) has been severely compromised 
+44	5	ok	49	62	79	74	abstractive_novelty,causal_drainage,rel_cpf_collapses_to_red	2	2	The 1.0 confidence in the reductive collapse of CPF has been successfully challe
+44	6	ok	50	64	79	75	constitutive_relevance,mutual_manipulability,open_ended_real	2	2	The turn identifies a potential 'fatal flaw' in the current leading candidate fo
+44	7	ok	51	66	81	76	epistemic_collapse,epistemic_vs_ontic,mutual_manipulability	2	2	The fundamental status of MM (ontic vs. epistemic) is currently under interrogat
+44	8	ok	52	68	83	77	causal_drainage,mereological_composition,rel_mm_vs_causal_dr	2	2	The relation between MM and Causal Drainage is newly established but under immed
+44	9	ok	53	68	83	80	abstractive_novelty,causal_powers_functionalism,mutual_manip	2	2	The audit successfully mapped the confidence drifts and current states of the ma
+44	10	ok	54	68	83	82	abstractive_novelty,causal_powers_functionalism,explanatory_	2	2	The status of MM is now resolved as 'failed/collapsed'; the graph can move to al
+44	11	ok	55	71	85	83	causal_constitutive_hybrid,topological_account	2	2	Epoch 5 is closed; the verdict on MM is final and the tension for Epoch 6 is cle

@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+522	1	ok	523	532	885	692	pre_isolation_baseline,reflexive_closure,reflexivity_loop	2	1	no_evidence_at_declaration_or_missing_dialogue
+522	2	ok	524	534	888	693	external_origin_only,externally_unsupported,stratified_certa	2	1	no_evidence_at_declaration_or_missing_dialogue
+522	3	ok	525	535	890	694	external_origin_only,foundational_axiom,structural_grounding	2	1	no_evidence_at_declaration_or_missing_dialogue
+522	4	ok	526	537	892	695	self_citation_firewall,session_accumulator,sub_threshold_lea	2	1	no_evidence_at_declaration_or_missing_dialogue
+522	5	ok	527	538	893	696	reflexivity_loop,routing_centrality	2	1	no_evidence_at_declaration_or_missing_dialogue
+522	6	ok	528	539	895	697	externally_unsupported,shadow_filter,vulnerability_set_compa	2	1	no_evidence_at_declaration_or_missing_dialogue
+522	7	ok	529	540	897	699	external_origin_only,reflexive_persistence,second_order_refl	2	1	no_evidence_at_declaration_or_missing_dialogue
+522	8	ok	530	542	899	700	diagnostic_noise,reflexive_inflation_rate,stratified_certain	2	1	no_evidence_at_declaration_or_missing_dialogue
+522	9	ok	531	543	902	701	audit_as_validator,dialogue_evidence,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+522	10	ok	532	544	904	702	pre_isolation_baseline,stratified_certainty,vestigial_struct	2	2	no_evidence_at_declaration_or_missing_dialogue
+522	11	ok	533	546	905	703	dialogue_drought_vulnerability,external_origin_regime,reflex	2	2	no_evidence_at_declaration_or_missing_dialogue

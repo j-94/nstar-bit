@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+390	1	ok	391	395	658	541	audit_trust_calibration,causal_anchor_cross_reference,origin	2	2	no_evidence_at_declaration
+390	2	ok	392	397	660	542	evidence_ledger,label_mismatch_detection,origin_spoofing	2	2	no_evidence_at_declaration
+390	3	ok	393	397	661	544	causal_anchor_cross_reference,firewall_reduces_obsolescence,	2	2	no_evidence_at_declaration
+390	4	ok	394	399	662	545	anchors_calibrate_liquidity,metadata_layer_fraud,origin_spoo	2	2	no_evidence_at_declaration
+390	5	ok	395	400	664	546	audit_as_validator,causal_anchor_cross_reference,origin_spoo	2	2	no_evidence_at_declaration
+390	6	ok	396	402	667	547	audit_paralysis,causal_anchor_cross_reference,correction_thr	2	2	no_evidence_at_declaration
+390	7	ok	397	403	669	548	causal_anchor_cross_reference,rigidity_debt,unified_scoring_	2	2	no_evidence_at_declaration
+390	8	ok	398	403	671	551	causal_anchor_cross_reference,origin_spoofing,stratified_cer	2	1	no_evidence_at_declaration
+390	9	ok	399	403	673	553	audit_paralysis,causal_anchor_cross_reference,origin_spoofin	2	1	no_evidence_at_declaration
+390	10	ok	400	405	675	554	complexity_overhead,fixed_constant_rigidity,operational_sust	2	1	no_evidence_at_declaration
+390	11	ok	401	406	677	556	audit_paralysis,fixed_constant_rigidity,origin_spoofing	1	1	no_evidence_at_declaration_or_missing_dialogue

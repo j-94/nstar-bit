@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+949	1	ok	950	843	1430	1173	interior_anchor_tiered_classification,pre_iase_baseline,sust	2	1	no_evidence_at_declaration_or_missing_dialogue
+949	2	ok	951	845	1432	1174	interior_anchor_scarcity_exemption,sustained_presence_requir	2	1	no_evidence_at_declaration_or_missing_dialogue
+949	3	ok	952	846	1434	1175	iase_qualification,recovery_protocol,representation_disambig	2	1	no_evidence_at_declaration_or_missing_dialogue
+949	4	ok	953	848	1435	1176	anchor_sparse_path_failure,baseline_tests_architecture,iase_	1	1	no_evidence_at_declaration_or_missing_dialogue
+949	5	ok	954	849	1437	1177	interior_anchor_scarcity_exemption,performative_stability,pr	2	2	no_evidence_at_declaration_or_missing_dialogue
+949	6	ok	955	851	1439	1178	anchor_sparse_false_negative,architecture,interior_anchor_sc	2	1	no_evidence_at_declaration_or_missing_dialogue
+949	7	ok	956	853	1441	1179	iase_promotions,performative_stability,stratified_certainty	1	1	no_evidence_at_declaration_or_missing_dialogue
+949	8	ok	957	854	1443	1180	architecture,iase_audit_delta,stratified_certainty	1	2	no_evidence_at_declaration_or_missing_dialogue
+949	9	ok	958	855	1445	1182	anchor_sparse_segment,audit_as_validator,representation_disa	2	2	no_evidence_at_declaration_or_missing_dialogue
+949	10	ok	959	857	1447	1183	evidence_diversity_criterion,iase_rule,provenance_cluster_vi	2	1	no_evidence_at_declaration_or_missing_dialogue
+949	11	ok	960	858	1449	1184	audit_as_validator,iase_rule,iase_trial_results	1	1	no_evidence_at_declaration_or_missing_dialogue
+949	12	ok	961	860	1449	1185	anchor_density_aware_classification,evidence_diversity_colla	2	1	no_evidence_at_declaration_or_missing_dialogue

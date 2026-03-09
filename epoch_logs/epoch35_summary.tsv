@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+500	1	ok	501	510	845	664	commitment_chain,immutable_linking,performative_stability	2	2	no_evidence_at_declaration_or_missing_dialogue
+500	2	ok	502	510	848	667	commitment_chain,self_citation_firewall,session_accumulator	2	2	no_evidence_at_declaration_or_missing_dialogue
+500	3	ok	503	512	849	668	commitment_chain,semantic_emptiness,syntactic_integrity	2	2	no_evidence_at_declaration_or_missing_dialogue
+500	4	ok	504	513	851	669	audit_as_generator,commitment_verification,performative_stab	2	2	no_evidence_at_declaration_or_missing_dialogue
+500	5	ok	505	513	853	671	audit_as_validator,cascading_filter_deadlock,commitment_veri	2	2	no_evidence_at_declaration_or_missing_dialogue
+500	6	ok	506	514	855	672	commitment_chain,false_freshness,vestigial_structure	1	2	no_evidence_at_declaration_or_missing_dialogue
+500	7	ok	507	515	857	673	alias_deduplication_layer,commitment_scheme,vestigial_struct	2	2	no_evidence_at_declaration_or_missing_dialogue
+500	8	ok	508	515	858	676	audit_as_validator,commitment_scheme,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+500	9	ok	509	516	860	677	commitment_scheme,metadata_attribution_layer,vestigial_struc	2	2	no_evidence_at_declaration_or_missing_dialogue
+500	10	ok	510	517	863	678	scoped_commitment_verification,semantic_utility_probe,strati	2	2	no_evidence_at_declaration_or_missing_dialogue
+500	11	ok	511	518	865	679	probabilistic_gating,semantic_utility_probe,stratified_certa	2	2	no_evidence_at_declaration_or_missing_dialogue

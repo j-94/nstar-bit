@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+222	1	ok	223	240	381	340	provenance_ceiling_5,stratified_certainty	2	1	The system has moved from structural debate (dual vs single ledger) to parameter
+222	2	ok	224	241	382	344	monitored_cohort_epoch_8,provenance_ceiling_5,stratified_cer	2	1	Baseline established; the system is prepared for the 10-turn simulation run.
+222	3	ok	225	241	383	346	monitored_cohort_epoch_8,provenance_ceiling_5	2	1	The simulation phase successfully demonstrated the accumulation of metadata towa
+222	4	ok	226	243	385	347	confidence_drift,provenance_ceiling_5,stratified_certainty	2	1	The simulation successfully demonstrated the failure point of the integrated pro
+222	5	ok	227	244	387	349	architecture,misattributed_routing_provenance	2	1	The disconfirming evidence was successfully integrated, resulting in a necessary
+222	6	ok	228	244	388	350	decay_identifies_reclassification,performative_stability	2	1	The turn provided specific, quantifiable disconfirmation (2 of 4 instances) allo
+222	7	ok	229	245	390	351	god_concept_risk,ungrounded_connectivity	2	2	Inflation is measured and confirmed in abstractions; we now need to test if this
+222	8	ok	230	245	390	354	audit_as_validator,performative_stability,stratified_certain	2	2	The audit requested in the turn has been completed with exact confidence deltas 
+222	9	ok	231	245	392	355	confidence_drift,provenance_ceiling_5,stratified_certainty	2	2	The circuit breaker's performance is quantified; the next step is a remedial adj
+222	10	ok	232	245	394	357	audit_fragmentation,evidence_ledger,routing_ledger	2	2	The null hypothesis for the routing_ledger has been effectively disproven, narro
+222	11	ok	233	246	395	359	graph_memory,information_loss,provenance_ceiling_5	2	2	Epoch 8 is resolved with a clear verdict and a defined tension for Epoch 9.

@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+301	1	ok	302	324	506	445	foundational_axiom,structural_inertia_score	2	1	The deadlock is operationally resolved by the new rule; the graph is now capable
+301	2	ok	303	325	508	446	structural_inertia_score,survival_census	2	1	The system has moved from a state of total paralysis (0% survival) to a measurab
+301	3	ok	304	326	510	447	foundational_axiom,graduated_filter,structural_inertia_score	1	1	The evaluation of the primary 'false-negative' victim is complete, confirming th
+301	4	ok	305	326	511	448	graduated_filter,structural_inertia_score	1	1	The disconfirming evidence has been injected but the filter's response (the 'ver
+301	5	ok	306	327	513	449	citation_independence_test,structural_inertia_score,tautolog	2	1	The 0.55 confidence floor is proven vulnerable to synthetic inflation; the syste
+301	6	ok	307	328	515	450	cascading_filter_deadlock,independence_discounting,structura	2	2	The system has reverted to a deadlock state where foundational concepts are fail
+301	7	ok	308	329	517	452	structural_inertia_score,utility_vs_origin_tension,vestigial	2	2	The audit identifies the vulnerability but hasn't yet listed the specific concep
+301	8	ok	309	329	518	453	dual_ledger_splits_authority,stratified_certainty,structural	2	2	The audit identified a deepening split in authority due to the new scoring dimen
+301	9	ok	310	330	520	454	downstream_orphaning,stratified_certainty	2	2	The stress-test successfully falsified the 'graduated_filter' as a final solutio
+301	10	ok	311	331	521	455	cascading_filter_deadlock,origin_tag,stratified_certainty	2	2	The comparison clearly delineated the failure modes of both 'inertia' and 'origi
+301	11	ok	312	333	523	456	citation_independence_test,stratified_certainty,topological_	2	2	Epoch verdict rendered. Structural inertia discarded; new tension (filter intera

@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use super::types::{
-    EdgeKind, GateDecision, GatePattern, GraphEdge, GraphState, NodeDiscovery, NodeObservation,
-    RuleScorecard, ScorecardEdge, CanonicalReceipt, Scale,
+    CausalAnchor, EdgeKind, GateDecision, GatePattern, GraphEdge, GraphState, NodeDiscovery,
+    NodeObservation, RuleScorecard, ScorecardEdge, CanonicalReceipt, Scale,
 };
 use evalexpr::{ContextWithMutableFunctions, ContextWithMutableVariables};
 
@@ -229,7 +229,7 @@ pub fn reinforce_active_nodes(graph: &mut GraphState, cutoff: f32) {
     }
 }
 
-pub fn learn_coactivation_edges(graph: &mut GraphState, cutoff: f32) {
+pub fn learn_coactivation_edges(graph: &mut GraphState, cutoff: f32, turn: u64) {
     let active = active_nodes(graph, cutoff)
         .into_iter()
         .map(|(id, _, _)| id)
@@ -243,8 +243,10 @@ pub fn learn_coactivation_edges(graph: &mut GraphState, cutoff: f32) {
         for j in (i + 1)..active.len() {
             let a = &active[i];
             let b = &active[j];
-            maybe_add_or_reinforce_edge(graph, a, b, 0.08, EdgeKind::Supports);
-            maybe_add_or_reinforce_edge(graph, b, a, 0.08, EdgeKind::Supports);
+            let snippet = format!("{} ∧ {}", a, b);
+            let anchor = CausalAnchor { turn_id: turn, snippet };
+            maybe_add_or_reinforce_edge(graph, a, b, 0.08, EdgeKind::Supports, Some(anchor.clone()));
+            maybe_add_or_reinforce_edge(graph, b, a, 0.08, EdgeKind::Supports, Some(anchor));
         }
     }
 }
@@ -255,6 +257,7 @@ fn maybe_add_or_reinforce_edge(
     to: &str,
     delta: f32,
     kind: EdgeKind,
+    anchor: Option<CausalAnchor>,
 ) {
     if let Some(edge) = graph.edges.iter_mut().find(|e| {
         e.from == from
@@ -262,7 +265,13 @@ fn maybe_add_or_reinforce_edge(
             && std::mem::discriminant(&e.kind) == std::mem::discriminant(&kind)
     }) {
         edge.weight = (edge.weight + delta).clamp(0.0, 1.0);
+        if let Some(a) = anchor {
+            if edge.anchors.len() < 8 {
+                edge.anchors.push(a);
+            }
+        }
     } else {
+        let anchors = anchor.into_iter().collect();
         graph.edges.push(GraphEdge {
             from: from.to_string(),
             to: to.to_string(),
@@ -272,6 +281,7 @@ fn maybe_add_or_reinforce_edge(
             c10: 0,
             c01: 0,
             c00: 0,
+            anchors,
         });
     }
 }
@@ -285,7 +295,7 @@ fn maybe_add_or_reinforce_edge(
 pub fn update_hypothesis_substrate(
     graph: &mut GraphState,
     observations: &[NodeObservation],
-    _turn: u64,
+    turn: u64,
 ) {
     // Only track behavioral nodes (node: prefix), not sym: word nodes.
     let behavioral_ids: Vec<String> = graph
@@ -326,7 +336,13 @@ pub fn update_hypothesis_substrate(
         let a_on = active_set.contains(edge.from.as_str());
         let b_on = active_set.contains(edge.to.as_str());
         match (a_on, b_on) {
-            (true, true) => edge.c11 += 1,
+            (true, true) => {
+                edge.c11 += 1;
+                if edge.anchors.len() < 8 {
+                    let snippet = format!("{} ∧ {}", edge.from, edge.to);
+                    edge.anchors.push(CausalAnchor { turn_id: turn, snippet });
+                }
+            }
             (true, false) => edge.c10 += 1,
             (false, true) => edge.c01 += 1,
             (false, false) => edge.c00 += 1,
@@ -350,15 +366,9 @@ fn ensure_hypothesis_edge(graph: &mut GraphState, a: &str, b: &str) {
             c10: 0,
             c01: 0,
             c00: 0,
+            anchors: vec![],
         });
     }
-}
-
-fn tokenize_raw(s: &str) -> Vec<String> {
-    s.split(|c: char| !c.is_ascii_alphanumeric())
-        .map(|w| w.trim().to_lowercase())
-        .filter(|w| w.len() >= 4)
-        .collect()
 }
 
 pub fn apply_operator(graph: &mut GraphState) -> Vec<String> {

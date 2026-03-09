@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+33	1	ok	34	42	59	52	causal_drainage,proportionality_constraint	2	1	Proportionality provides a theoretical defense against drainage, but its status 
+33	2	ok	35	43	59	53	causal_drainage,proportionality_constraint	2	1	The introduction of proportionality directly counters the 'drainage' objection t
+33	3	ok	36	44	60	55	causal_powers_functionalism,interventionist_causation,propor	2	1	The introduction of the interventionist formalization significantly stabilizes t
+33	4	ok	37	45	60	56	interventionist_causation,proportionality_constraint,rel_ide	2	1	The turn successfully degraded a high-confidence relation (0.85 -> 0.65), but th
+33	5	ok	38	47	63	58	causal_drainage,epistemic_proportionality,proportionality_co	2	2	The proportionality constraint, which was a high-confidence pillar for non-reduc
+33	6	ok	39	48	65	60	interventionist_causation,proportionality_constraint,surgery	1	2	The system has moved from a state of 'proportionality as a solution' to 'proport
+33	7	ok	40	49	67	61	multiple_realizability,proportionality_constraint,screening_	2	2	The introduction of the 'screening-off' tension with 'novelty' provides a strong
+33	8	ok	41	51	68	63	causal_drainage,granular_reductionism,rel_cpf_collapses_to_r	2	2	The system has transitioned from the high-confidence CPF success (Turn 36-37) to
+33	9	ok	42	52	69	66	causal_drainage,proportionality_constraint,rel_cpf_resolves_	2	2	The audit reveals that the primary defense for non-reductive functionalism (prop
+33	10	ok	43	54	71	68	deflationary_resolution,explanatory_autonomy,rel_reductionis	2	2	The graph is currently experiencing a 'coherence crisis' where its ontological c
+33	11	ok	44	55	72	69	explanatory_autonomy,interventionist_causation,ontic_vs_epis	2	2	Epoch 4 is formally closed with a clear verdict and a structured pivot to the ne

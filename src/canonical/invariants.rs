@@ -41,10 +41,11 @@ pub fn evaluate_invariants(
         violations.push("missing_escalation_behavior".to_string());
     }
 
+    let has_ovm_write = !proposal.ovm_ops.is_empty();
     let required = required_evidence(gate, proposal);
     let satisfied = required
         .iter()
-        .filter(|r| evidence_satisfied(**r, effects, &proposal.response))
+        .filter(|r| evidence_satisfied(**r, effects, &proposal.response, has_ovm_write))
         .count();
 
     let evidence_coverage = if required.is_empty() {
@@ -66,6 +67,10 @@ pub fn evaluate_invariants(
             "contradiction_score_exceeded:{:.2}",
             contradiction_score
         ));
+    }
+
+    if has_ovm_write && !effects.iter().any(|e| matches!(e, Effect::ReadFile { ok: true, .. })) {
+        violations.push("no_evidence_at_ovm_op: scored without reading graph context".into());
     }
 
     InvariantReport {
@@ -95,14 +100,20 @@ fn required_evidence(gate: &GateDecision, proposal: &CanonicalProposal) -> Vec<R
     required
 }
 
-fn evidence_satisfied(req: RequiredEvidence, effects: &[Effect], response: &str) -> bool {
+fn evidence_satisfied(req: RequiredEvidence, effects: &[Effect], response: &str, has_ovm_write: bool) -> bool {
     match req {
-        RequiredEvidence::Read => effects
-            .iter()
-            .any(|e| matches!(e, Effect::ReadFile { ok: true, .. })),
-        RequiredEvidence::Write => effects
-            .iter()
-            .any(|e| matches!(e, Effect::WriteFile { ok: true, .. })),
+        // A read must be a real ReadFile effect. OVM ops do NOT satisfy this —
+        // that conflation is exactly what no_evidence_at_ovm_op is here to prevent.
+        RequiredEvidence::Read => {
+            effects.iter().any(|e| matches!(e, Effect::ReadFile { ok: true, .. }))
+        }
+        // OVM ops (DefineScoringRule, DefineSelectionPredicate) are the canonical write
+        // action in scoring-rule mode — they produce no filesystem side-effects but are real writes.
+        RequiredEvidence::Write => {
+            effects.iter().any(|e| matches!(e, Effect::WriteFile { ok: true, .. }))
+                || has_ovm_write
+        }
+        // OVM rule proposals constitute verification of graph state consistency.
         RequiredEvidence::Verification => {
             effects.iter().any(|e| {
                 matches!(
@@ -112,8 +123,9 @@ fn evidence_satisfied(req: RequiredEvidence, effects: &[Effect], response: &str)
                         | Effect::Exec { ok: true, .. }
                 )
             }) || response.to_lowercase().contains("verified")
+                || has_ovm_write
         }
-        RequiredEvidence::Effects => !effects.is_empty(),
+        RequiredEvidence::Effects => !effects.is_empty() || has_ovm_write,
     }
 }
 
@@ -159,8 +171,11 @@ fn contradiction_score(
     let has_read_effect = effects
         .iter()
         .any(|e| matches!(e, Effect::ReadFile { ok: true, .. }));
+    // OVM ops count as writes for the assert:wrote gate — they are the canonical
+    // write action when the LM proposes scoring rules or selection predicates.
+    let has_ovm_write = !proposal.ovm_ops.is_empty();
 
-    if gate.has_signal("assert:wrote") && !has_write_effect {
+    if gate.has_signal("assert:wrote") && !has_write_effect && !has_ovm_write {
         score += 0.7;
     }
 

@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+501	1	ok	502	514	848	668	foundational_axiom,grounding_starvation_simulation,stratifie	2	1	no_evidence_at_declaration_or_missing_dialogue
+501	2	ok	503	514	850	669	foundational_axiom,grounding_ratio,vestigial_structure	2	1	no_evidence_at_declaration_or_missing_dialogue
+501	3	ok	504	515	852	670	foundational_axiom,stratified_certainty	2	1	no_evidence_at_declaration_or_missing_dialogue
+501	4	ok	505	515	853	671	stratified_certainty,vestigial_structure	2	2	no_evidence_at_declaration_or_missing_dialogue
+501	5	ok	506	516	853	671	adversarial_selection,downstream_cascade_signal	2	2	The 'adversarial_selection' model has been disconfirmed in a starvation state; w
+501	6	ok	507	518	855	672	decay_dampener,life_support_system,performative_stability	2	2	no_evidence_at_declaration_or_missing_dialogue
+501	7	ok	508	520	857	673	audit_as_generator,residual_detection,self_citation_firewall	2	2	no_evidence_at_declaration_or_missing_dialogue
+501	8	ok	509	521	859	674	adversarial_selection,node_convergence,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+501	9	ok	510	521	862	676	node_convergence,performative_stability,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+501	10	ok	511	522	862	676	adversarial_selection,functional_obsolescence	2	2	The citation_independence_test has been verified as redundant and unable to addr
+501	11	ok	512	525	863	676	adversarial_selection,foundational_axiom,minimum_grounding_r	2	2	no_evidence_at_declaration_or_missing_dialogue

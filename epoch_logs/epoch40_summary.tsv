@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+555	1	ok	556	575	944	727	measurement_escrow,reconstructive_inheritance,thaw_cost_acco	2	2	no_evidence_at_declaration_or_missing_dialogue
+555	2	ok	557	576	946	729	architecture,reconstruction_ratio,reconstructive_inheritance	2	2	no_evidence_at_declaration_or_missing_dialogue
+555	3	ok	558	577	947	731	foundational_axiom,reconstruction_classification	2	2	no_evidence_at_declaration_or_missing_dialogue
+555	4	ok	559	578	948	733	architecture,immutable_linking,reconstruction_dependency	2	2	no_evidence_at_declaration_or_missing_dialogue
+555	5	ok	560	580	949	734	measurement_escrow,reconstructive_identity,stratified_certai	2	2	no_evidence_at_declaration_or_missing_dialogue
+555	6	ok	561	583	951	735	escrow_replaces_privilege,reconstruction_costs,thaw_process	2	2	no_evidence_at_declaration_or_missing_dialogue
+555	7	ok	562	584	952	736	drought_baseline_t534,drought_vulnerability_anchors_state,me	2	2	no_evidence_at_declaration_or_missing_dialogue
+555	8	ok	563	585	954	737	performative_stability,thaw_latency	2	2	no_evidence_at_declaration_or_missing_dialogue
+555	9	ok	564	585	955	740	audit_as_validator,performative_stability,stratified_certain	2	2	no_evidence_at_declaration_or_missing_dialogue
+555	10	ok	565	588	958	742	architecture,cascading_thaw_obligation,reconstruction_depend	2	2	no_evidence_at_declaration_or_missing_dialogue
+555	11	ok	566	588	958	742		0	0	missing_gate
+555	12	ok	567	588	958	742		0	0	missing_gate

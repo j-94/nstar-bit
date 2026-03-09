@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+589	1	ok	590	611	995	773	hollowing_ratchet,performative_stability,recovery_protocol	2	2	no_evidence_at_declaration_or_missing_dialogue
+589	2	ok	591	612	996	774	architecture,hollowing_ratchet,simulation_baseline	1	1	no_evidence_at_declaration_or_missing_dialogue
+589	3	ok	592	612	998	776	architecture,hollowing_ratchet,recovery_protocol	1	1	no_evidence_at_declaration_or_missing_dialogue
+589	4	ok	593	612	1000	777	architecture,recovery_protocol	1	2	no_evidence_at_declaration_or_missing_dialogue
+589	5	ok	594	613	1002	778	architecture,interpretation_ambiguity,recovery_protocol	2	2	no_evidence_at_declaration_or_missing_dialogue
+589	6	ok	595	613	1003	779	immutable_linking,pcr_buffer_absorption,recovery_propagates_	2	2	no_evidence_at_declaration_or_missing_dialogue
+589	7	ok	596	614	1005	780	causal_anchor,recovery_protocol,suspended_animation	2	2	no_evidence_at_declaration_or_missing_dialogue
+589	8	ok	597	614	1007	782	architecture,hollowing_ratchet,measurement_escrow	1	2	no_evidence_at_declaration_or_missing_dialogue
+589	9	ok	598	615	1008	785	architecture,delta_threshold,recovery_protocol	2	2	no_evidence_at_declaration_or_missing_dialogue
+589	10	ok	599	616	1010	787	hollowing_ratchet,measurement_escrow,self_generated_evidence	2	2	no_evidence_at_declaration_or_missing_dialogue
+589	11	ok	600	617	1011	789	architecture,causal_anchor,ratchet_legitimacy	2	2	no_evidence_at_declaration_or_missing_dialogue

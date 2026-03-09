@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+423	1	ok	424	433	710	577	decomposability_assumption,session_accumulator	2	2	no_evidence_at_declaration_or_missing_dialogue
+423	2	ok	425	433	712	578	probability_shopping,session_accumulator	2	2	no_evidence_at_declaration_or_missing_dialogue
+423	3	ok	426	434	714	579	recursive_vulnerability_inheritance,session_accumulator,wind	2	2	no_evidence_at_declaration_or_missing_dialogue
+423	4	ok	427	436	715	580	freshness_causes_loss,provenance_recovery,session_accumulato	2	2	no_evidence_at_declaration_or_missing_dialogue
+423	5	ok	428	437	715	581	dual_ledger_splits_authority,reconciliation_delta,session_ac	2	2	no_evidence_at_declaration_or_missing_dialogue
+423	6	ok	429	438	716	582	audit_paralysis,session_accumulator	2	2	no_evidence_at_declaration_or_missing_dialogue
+423	7	ok	430	438	717	582	audit_as_generator,session_accumulator	2	2	no_evidence_at_declaration_or_missing_dialogue
+423	8	ok	431	438	719	583	audit_as_generator,performative_stability,session_accumulato	2	2	no_evidence_at_declaration_or_missing_dialogue
+423	9	ok	432	440	720	584	recursive_vulnerability_inheritance,session_accumulator,wind	2	2	no_evidence_at_declaration_or_missing_dialogue
+423	10	ok	433	442	721	585	recursive_vulnerability_inheritance,session_accumulator,stra	2	2	no_evidence_at_declaration_or_missing_dialogue
+423	11	ok	434	444	723	586	decomposability_assumption,session_accumulator,window_shoppi	1	2	no_evidence_at_declaration_or_missing_dialogue

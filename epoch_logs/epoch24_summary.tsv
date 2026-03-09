@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+378	1	ok	379	383	636	527	audit_privilege_bias,origin_weighted_hop_normalization,self_	2	2	no_evidence_at_declaration
+378	2	ok	380	384	638	528	audit_privilege_bias,origin_weighted_hop_normalization,self_	2	2	no_evidence_at_declaration
+378	3	ok	381	384	638	529	audit_as_generator,self_citation_firewall,vestigial_structur	2	2	The relation 'firewall_improves_detection' has lost its perfect confidence; the 
+378	4	ok	382	385	639	530	audit_as_generator,origin_weighted_hop_normalization,unified	1	1	no_evidence_at_declaration
+378	5	ok	383	385	641	531	chain_splitting_gaming,origin_weighted_hop_normalization	2	2	no_evidence_at_declaration
+378	6	ok	384	386	643	533	disconfirming_evidence,origin_weighted_hop_normalization	1	1	no_evidence_at_declaration
+378	7	ok	385	388	645	534	origin_weighted_hop_normalization,self_referential_inflation	2	2	no_evidence_at_declaration
+378	8	ok	386	389	647	535	evidence_ledger,origin_spoofing,origin_weighted_hop_normaliz	1	2	no_evidence_at_declaration
+378	9	ok	387	389	649	536	evidence_ledger,origin_spoofing,origin_weighted_hop_normaliz	2	2	no_evidence_at_declaration
+378	10	ok	388	390	651	537	binary_rigidity,origin_weighted_hop_normalization,unified_sc	2	2	no_evidence_at_declaration
+378	11	ok	389	391	654	539	complexity_overhead,origin_spoofing,origin_weighted_hop_norm	2	2	no_evidence_at_declaration
+378	12	ok	390	394	656	540	asymmetric_path_weighting,audit_trust_calibration,origin_spo	1	2	no_evidence_at_declaration

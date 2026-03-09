@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+401	1	ok	402	407	678	556	audit_paralysis,stratified_certainty,tiered_validation	2	1	no_evidence_at_declaration_or_missing_dialogue
+401	2	ok	403	408	680	557	audit_paralysis,correction_throughput,epoch_20_baseline	1	1	no_evidence_at_declaration_or_missing_dialogue
+401	3	ok	404	409	683	559	checksum_collision_rate,correction_throughput,tiered_validat	2	1	no_evidence_at_declaration_or_missing_dialogue
+401	4	ok	405	410	685	560	detection_latency,regime_c_baseline,tiered_validation	2	1	no_evidence_at_declaration_or_missing_dialogue
+401	5	ok	406	412	686	561	origin_spoofing,tiered_validation	2	2	no_evidence_at_declaration_or_missing_dialogue
+401	6	ok	407	413	688	562	corrupted_bonus_propagation,tiered_validation,unified_scorin	2	1	no_evidence_at_declaration_or_missing_dialogue
+401	7	ok	408	414	690	564	audit_paralysis,spoofing_risk_cost,tiered_validation	2	1	no_evidence_at_declaration_or_missing_dialogue
+401	8	ok	409	415	691	567	confidence_inflation,stratified_certainty,tiered_validation	2	2	no_evidence_at_declaration_or_missing_dialogue
+401	9	ok	410	417	691	567	bypass_threshold_boundary,origin_tag	2	2	The bypass threshold is fundamentally compromised; further testing of mitigation
+401	10	ok	411	419	693	567	checksum_evasion,tiered_validation	2	2	no_evidence_at_declaration_or_missing_dialogue
+401	11	ok	412	421	693	567	bypass_threshold_exploitability	1	1	The epoch verdict criteria were explicitly met (regression > 5%), requiring the 

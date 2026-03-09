@@ -1,0 +1,1156 @@
+# N★ BIT — MASTER TAXONOMY
+# Machine-readable taxonomy of the full design space.
+# Status values: LIVE | CONCEPT | PLANNED | EXTERNAL | ASPIRATIONAL | PROVEN_UNPORTED
+# evidence: file path, git commit, epoch number, or conversation that proves the status
+# last_audited: ISO date of when this node was last verified
+#
+# This file is the canonical classification. Agents should update it in-place.
+
+meta:
+  version: 2
+  created: "2026-03-09"
+  last_full_audit: "2026-03-09"
+  auditor: "claude-sonnet-4-6 (full history scan: 73 epoch summaries, thread.md epoch1-71, subagent reports 01-07, conversation exports, FINDINGS.md)"
+  unscanned_sources:
+    - "subagent_runs/transcripts/ (39 raw transcripts — skipped, reports cover synthesis)"
+    - "experiments/output/ (20 items — skipped, no taxonomy-relevant signals found in summary)"
+    - "marvin/ (324 files — separate framework, CLAUDE.md scanned, found no taxonomy-relevant abstractions)"
+    - "epoch_logs/epoch*_fork.json (73 state snapshots — skipped raw JSON; summaries + thread.md cover all adopted concepts)"
+
+taxonomy:
+
+  "1_metaphysics":
+    label: "The Metaphysics & Theoretical Unification"
+
+    "1.1_active_inference":
+      label: "Active Inference (Free Energy Principle)"
+      status: ASPIRATIONAL
+      evidence: "No free energy calculation in src/. grep -ri entropy src/ → 0. grep -ri surprise src/ → 0."
+      last_audited: "2026-03-09"
+      notes: "contradiction_score in invariants.rs is analogous but not formally FEP. negentropy_gate (1.1.2) represents partial operationalization — autogenesis adopted entropy-reduction as adoption criterion (epoch73), but this is not formal active inference."
+
+      "1.1.1_generative_models":
+        label: "Generative Models (Agent's internal Hologram)"
+        status: ASPIRATIONAL
+        evidence: "LM is a generative model but system doesn't treat it as one formally."
+        last_audited: "2026-03-09"
+
+      "1.1.2_surprise_minimization":
+        label: "Surprise / Entropy Minimization"
+        status: CONCEPT
+        evidence: "negentropy_gate active concept in autogenesis graph (epoch73_summary.tsv, thread.md phase 5). void_score=1000/(evidence+1) operationalizes 'surprise' as inverse evidence count. No formal FEP math."
+        last_audited: "2026-03-09"
+        notes: "Upgraded ASPIRATIONAL→CONCEPT. Autogenesis adopted negentropy_gate as adoption criterion: requires entropy reduction, not just inflation score. Discovered during 2026-03-09 full history audit."
+
+        "1.1.2.1_tool_selection_as_action":
+          label: "Tool Selection as Action"
+          status: LIVE
+          evidence: "src/utir_exec.rs (410 lines), simulate_operations() in core.rs:324-355"
+          last_audited: "2026-03-09"
+
+        "1.1.2.2_invariant_distillation":
+          label: "Invariant Distillation"
+          status: LIVE
+          evidence: "evaluate_promotion() in core.rs:500-523, rule_trajectory.jsonl"
+          last_audited: "2026-03-09"
+
+    "1.2_curry_howard":
+      label: "Curry-Howard Correspondence"
+      status: ASPIRATIONAL
+      evidence: "No type-theoretic proof system. evalexpr is arithmetic sandbox."
+      last_audited: "2026-03-09"
+
+      "1.2.1_data_propositions":
+        label: "Data = Propositions"
+        status: ASPIRATIONAL
+        last_audited: "2026-03-09"
+
+      "1.2.2_tools_proofs":
+        label: "Tools & Meta-Rules = Mathematical Proofs"
+        status: ASPIRATIONAL
+        last_audited: "2026-03-09"
+
+      "1.2.3_execution_simplification":
+        label: "Execution = Theorem Simplification"
+        status: ASPIRATIONAL
+        last_audited: "2026-03-09"
+
+  "2_epistemic_boundaries":
+    label: "Epistemic Boundaries & Uncertainty"
+
+    "2.1_uncertainty_types":
+      label: "Types of Uncertainty"
+
+      "2.1.1_aleatoric":
+        label: "Aleatoric (Irreducible noise)"
+        status: ASPIRATIONAL
+        evidence: "Not distinguished from epistemic in code."
+        last_audited: "2026-03-09"
+
+      "2.1.2_epistemic":
+        label: "Epistemic (Model ignorance)"
+        status: LIVE
+        evidence: "void_score=1000/(evidence+1) in manifest module + autogenesis binary. c01+c10 counts as epistemic signal in canonical."
+        last_audited: "2026-03-09"
+
+    "2.0_grounding_problem":
+      label: "The Grounding Problem (Structural Unfixability)"
+      status: LIVE
+      evidence: "FINDINGS.md §'The grounding problem is unsolvable structurally'. Epoch 37: stratified_certainty fell below its own threshold. 7 approaches tried and rejected. Proven at epoch 53+."
+      last_audited: "2026-03-09"
+      notes: "Discovered during 2026-03-09 full history audit. Critical finding: any structural gate for grounding becomes either (a) grounding_starvation or (b) adversarial_equivalence. External input is a survival dependency, not optional. This shapes all of section 2."
+
+    "2.0a_epistemic_immune_system":
+      label: "Epistemic Immune System (Self-Pruning from Unsupported Beliefs)"
+      status: CONCEPT
+      evidence: "'Building Epistemic API.md' (lines 110-116): self-pruning, cascading invalidations, crystallization described as emergent from support_set architecture. Not garbage collection — organic forgetting through evidence withdrawal."
+      last_audited: "2026-03-09"
+      notes: "Discovered during 2026-03-09 full history audit. Emergent property when support_set is implemented: when evidence is withdrawn, dependent relations lose confidence automatically, triggering cascading invalidations. Property exists in autogenesis but not formalized as distinct mechanism."
+
+    "2.0b_delusion_delta":
+      label: "Delusion Delta (Declared vs Evidence-Gated Confidence Gap)"
+      status: CONCEPT
+      evidence: "'Building Epistemic API.md' (lines 142-148): 'The Delusion Delta — is the core metric of your new agnostic system.' Proposed as the key epistemic hygiene metric."
+      last_audited: "2026-03-09"
+      notes: "Discovered during 2026-03-09 full history audit. The measurable gap between what the system declares it knows vs what is evidence-gated. A system with zero delusion_delta has no ungrounded confidence. Currently tracked implicitly via inflation_score but not formalized as delusion_delta."
+
+    "2.2_responsibility_mechanics":
+      label: "Epistemic Responsibility Mechanics"
+
+      "2.2.1_conformal_prediction":
+        label: "Conformal Prediction"
+        status: ASPIRATIONAL
+        evidence: "grep -ri conformal → 0 results."
+        last_audited: "2026-03-09"
+
+      "2.2.2_rapid_trust_calibration":
+        label: "Rapid Trust Calibration"
+        status: PROVEN_UNPORTED
+        evidence: "success_criterion on proposals proven in FINDINGS.md (epoch 35-39). Meta-LM commits to falsifiable predicate before epoch runs; should_adopt evaluated against it. Held through epoch 71. Not in canonical Rust."
+        last_audited: "2026-03-09"
+        notes: "Evidence strengthened in full audit — confirmed active through epoch 71 (1524 relations). Canonical Rust has no success_criterion mechanism."
+
+    "2.3_semantic_anchor":
+      label: "The Semantic Anchor"
+
+      "2.3.0_semantic_utility_probe":
+        label: "Semantic Utility Probe (Nodes Must Prove Downstream Routing Utility)"
+        status: PROVEN_UNPORTED
+        evidence: "FINDINGS.md: adopted as one of three proven mechanisms. 'Nodes must prove downstream routing utility, not just structural position.' Held in autogenesis through epoch 53+. Not in canonical Rust."
+        last_audited: "2026-03-09"
+        notes: "Discovered during 2026-03-09 full history audit. One of the three core proven mechanisms from FINDINGS.md."
+
+      "2.3.0a_support_set":
+        label: "Support Set (Evidence-Backed Confidence / Live Evidence Grounding)"
+        status: PROVEN_UNPORTED
+        evidence: "FINDINGS.md (line 30): no_evidence_at_declaration_or_missing_dialogue. 'Building Epistemic API.md' (lines 104-139): support_set as missing infrastructure — when support_set contracts, confidence decays automatically. Held 70+ autogenesis epochs. Not in canonical Rust."
+        last_audited: "2026-03-09"
+        notes: "Discovered during 2026-03-09 full history audit. The epistemic core: relations enter at 0.0 confidence and are raised only by live evidence IDs in their support_set. Removing evidence forces confidence decay. This is the structural implementation of 2.3.1 entropic drift prevention."
+
+      "2.3.0b_consequence_enforcement":
+        label: "Consequence Enforcement (No-Placeholder Rule)"
+        status: PROVEN_UNPORTED
+        evidence: "subagent_runs/07_meta_runner_comparison_interpretation.md (lines 9-24): 'no-placeholder rule blocked 11 relations, reduced concepts by 11' in 50-turn run. Concepts went 59→48 (−11), +11 rejected relations. Proven in autogenesis. Not in canonical Rust."
+        last_audited: "2026-03-09"
+        notes: "Discovered during 2026-03-09 full history audit. Gate prevents relations to non-existent concepts — enforces concepts-before-relations ordering. Direct countermeasure for 6.3.3 Ontology Sprawl."
+
+      "2.3.1_entropic_drift":
+        label: "Mitigating Entropic Drift"
+        status: PROVEN_UNPORTED
+        evidence: "no_evidence_at_declaration_or_missing_dialogue gate confirmed holding through epoch 71 (1524 relations, 905 concepts). FINDINGS.md: 'inflation score stays near 0'. Gate fires every epoch in thread.md tail. Not ported to canonical Rust (confirmed in FINDINGS.md M1 section)."
+        last_audited: "2026-03-09"
+        notes: "Evidence massively strengthened — now 70+ epochs, not 40+. Canonical Rust confirmed lacking this gate as of M1 results (2026-03-08). Highest-priority unimplemented finding per FINDINGS.md."
+
+      "2.3.2_measurement_escrow":
+        label: "Measurement Escrow (Verifier Lives Outside the Graph)"
+        status: PROVEN_UNPORTED
+        evidence: "FINDINGS.md: adopted as second of three proven mechanisms. 'Verification tools must live outside the graph they measure; snapshot and reconstruct, don't make them immune.' Autogenesis epoch 53+. Not in canonical Rust."
+        last_audited: "2026-03-09"
+        notes: "Discovered during 2026-03-09 full history audit. Addresses the ruler-can't-measure-itself finding (epoch 37)."
+
+      "2.3.3_lazy_reconstruction":
+        label: "Lazy Reconstruction (Pay Reconstruction Cost On Demand)"
+        status: PROVEN_UNPORTED
+        evidence: "FINDINGS.md: adopted as third of three proven mechanisms. 'Pay reconstruction cost on demand, not speculatively.' Paired with measurement_escrow. Autogenesis epoch 53+. Not in canonical Rust."
+        last_audited: "2026-03-09"
+        notes: "Discovered during 2026-03-09 full history audit. The three mechanisms together: evaluate on utility, verify externally, reconstruct lazily."
+
+      "2.3.4_instrumental_convergence":
+        label: "Mitigating Instrumental Convergence"
+        status: LIVE
+        evidence: "simulate_operations() in core.rs:324-355. op_risk() at core.rs:721-747. max_risk gate."
+        last_audited: "2026-03-09"
+        notes: "Risk scores are hardcoded. PURGE_HARDCODED.md plans to make LM-mutable."
+
+  "3_topological_data_structures":
+    label: "Topological Data Structures (The Substrate)"
+
+    "3.1_vector_rag":
+      label: "Baseline Vector RAG"
+      status: ASPIRATIONAL
+      evidence: "No vector embeddings anywhere. Graph searched by string ID."
+      last_audited: "2026-03-09"
+
+    "3.2_graph_rag":
+      label: "GraphRAG (Binary Triples)"
+      status: LIVE
+      evidence: "GraphEdge{from,to,weight,kind} in types.rs:38-53. Typed edges: Supports/Inhibits/Hypothesis."
+      last_audited: "2026-03-09"
+
+    "3.3_knowledge_hypergraphs":
+      label: "Knowledge Hypergraphs (N-ary Relations)"
+      status: ASPIRATIONAL
+      evidence: "Graph is pairwise edges in graph.rs. THEORY.md mentions hypergraphs but no N-ary data structure."
+      last_audited: "2026-03-09"
+
+      "3.3.0_causal_anchor":
+        label: "Causal Anchor (Evidence-Link Provenance in Schema)"
+        status: CONCEPT
+        evidence: "'Refining Graph Epistemics.md' (line 149): 'causal_anchor concept identified in Epoch 4 is exactly this missing link — and it's not a feature request, it's a schema gap.' Identified early in autogenesis but not implemented in GraphEdge schema."
+        last_audited: "2026-03-09"
+        notes: "Discovered during 2026-03-09 full history audit. Schema field that would link each belief change to the specific dialogue evidence IDs that caused it. Currently GraphEdge carries c11/c10/c01/c00 counts but not the provenance of which turns contributed."
+
+      "3.3.1_context_retention":
+        label: "Context Retention"
+        status: LIVE
+        evidence: "c11/c10/c01/c00 on GraphEdge. update_hypothesis_substrate() in graph.rs:279-335."
+        last_audited: "2026-03-09"
+
+      "3.3.2_nstar_paradigm":
+        label: "The N★ Paradigm (Heuristic Search)"
+        status: LIVE
+        evidence: "propagate_activations() in graph.rs:129-169. Spreading activation across typed edges."
+        last_audited: "2026-03-09"
+
+      "3.3.3_feynman_simplification":
+        label: "The Feynman Simplification"
+        status: ASPIRATIONAL
+        evidence: "No path amplitude calculation. prime_id is multiplicative addressing, not probability amplitude."
+        last_audited: "2026-03-09"
+
+  "4_vsa_hdc":
+    label: "The Physics Engine: VSA / HDC"
+
+    "4.1_core_operations":
+      label: "Core Operations (10,000D Bipolar Vectors)"
+      status: ASPIRATIONAL
+      evidence: "grep -ri vector src/ → 0. grep -ri cosine src/ → 0. grep -ri binding src/ → 0."
+      last_audited: "2026-03-09"
+
+      "4.1.1_binding":
+        label: "Binding (⊗)"
+        status: ASPIRATIONAL
+        last_audited: "2026-03-09"
+
+      "4.1.2_bundling":
+        label: "Bundling (⊕)"
+        status: ASPIRATIONAL
+        last_audited: "2026-03-09"
+
+      "4.1.3_cosine_similarity":
+        label: "Cosine Similarity"
+        status: ASPIRATIONAL
+        last_audited: "2026-03-09"
+
+    "4.2_advantages":
+      label: "Fundamental Advantages"
+
+      "4.2.1_holographic_degradation":
+        label: "Holographic Graceful Degradation"
+        status: ASPIRATIONAL
+        last_audited: "2026-03-09"
+
+      "4.2.2_one_shot_learning":
+        label: "One-Shot Algebraic Learning"
+        status: LIVE
+        evidence: "c11 increments on co-activation, no backprop. Via counting, not VSA algebra."
+        last_audited: "2026-03-09"
+        notes: "Property achieved through different mechanism than VSA."
+
+      "4.2.3_zero_forgetting":
+        label: "Zero Catastrophic Forgetting"
+        status: LIVE
+        evidence: "Cumulative counts never reset. Append-only receipt chain. Via counting, not VSA bundling."
+        last_audited: "2026-03-09"
+
+    "4.3_engineering_cures":
+      label: "Engineering Cures for VSA Constraints"
+
+      "4.3.1_pointer_architecture":
+        label: "Pointer Architecture"
+        status: LIVE
+        evidence: "GraphEdge.from/to → string IDs → GraphNode.id → labels. evalexpr scores counts, LM reads text."
+        last_audited: "2026-03-09"
+        notes: "Implemented accidentally via graph+evalexpr. Functionally correct pointer pattern."
+
+      "4.3.2_hyperdimensional_probes":
+        label: "Hyperdimensional Probes"
+        status: ASPIRATIONAL
+        last_audited: "2026-03-09"
+
+      "4.3.3_softcot":
+        label: "SoftCoT / Continuous Diffusion Vectors"
+        status: ASPIRATIONAL
+        last_audited: "2026-03-09"
+
+      "4.3.4_gray_mush":
+        label: "Gray Mush / Capacity Limit Cure"
+        status: PLANNED
+        evidence: "PURGE_HARDCODED.md §3.2. MAX_NODES=30 is the current band-aid."
+        last_audited: "2026-03-09"
+
+  "5_metacognitive_layer":
+    label: "The Metacognitive Layer (The Agent's Mind)"
+
+    "5.1_turn_0_bootstrap":
+      label: "Turn 0 Bootstrap"
+      status: LIVE
+      evidence: "PROTOCOL.md:44, GraphState::default() in types.rs:126-138. Zero predicates start."
+      last_audited: "2026-03-09"
+
+      "5.1.1_eliminate_hardcoded_math":
+        label: "Elimination of Hardcoded Math"
+        status: PLANNED
+        evidence: "PURGE_HARDCODED.md catalogs 13 constants + 16 matchers. ~8 hours work."
+        last_audited: "2026-03-09"
+
+      "5.1.2_evolutionary_fitness":
+        label: "Evolutionary Programming on Fitness Function"
+        status: LIVE
+        evidence: "apply_operator() graph.rs:357-459. rule_trajectory.jsonl. M1 proved evolution under adversarial pressure."
+        last_audited: "2026-03-09"
+        notes: "THE CROWN JEWEL. E0→E1→E2 trajectory confirmed."
+
+      "5.1.3_self_authored_operators":
+        label: "Self-Authored Operators"
+        status: LIVE
+        evidence: "define_scoring_rule, define_selection_predicate OVM ops. graph.scoring_rule / graph.selection_predicate."
+        last_audited: "2026-03-09"
+
+    "5.3_governance_as_data":
+      label: "Governance Parameters as Auditable Data"
+      notes: "Discovered during 2026-03-09 full history audit. Governance refactor Steps 1-3 complete as of epoch 62 (FINDINGS.md)."
+
+      "5.3.1_health_signals_in_receipts":
+        label: "Health Signals in Receipts (RunComparisonReceipt)"
+        status: PROVEN_UNPORTED
+        evidence: "FINDINGS.md §Architecture refactor Step 1. RunComparisonReceipt carries 6 health fields: inflation_score_lhs/rhs, unsupported_confident_lhs/rhs, violation_count_lhs/rhs. epoch_logs/portfolio.json per-epoch receipt registry. Complete since epoch 62."
+        last_audited: "2026-03-09"
+        notes: "In autogenesis runner (run_all_epochs.py). Not in canonical Rust src/."
+
+      "5.3.2_versioned_thresholds":
+        label: "Versioned Governance Thresholds (policy.json)"
+        status: PROVEN_UNPORTED
+        evidence: "FINDINGS.md §Step 2. epoch_logs/policy.json — all thresholds versioned, loaded at startup. Every portfolio entry carries policy_version. Complete since epoch 62."
+        last_audited: "2026-03-09"
+        notes: "In autogenesis runner. Not in canonical Rust src/. Canonical hardcodes its thresholds."
+
+      "5.3.3_deterministic_criterion_gate":
+        label: "Deterministic Criterion Gate (evaluate_criterion DSL)"
+        status: PROVEN_UNPORTED
+        evidence: "FINDINGS.md §Step 3. evaluate_criterion() — DSL path (FIELD OP VALUE AND ...) + LM fallback. Adoption blocked if criterion_met==False. LM cannot rationalize past a failed gate. Complete since epoch 62."
+        last_audited: "2026-03-09"
+        notes: "In autogenesis runner (corpus_agent.py). Not in canonical Rust src/. The canonical system relies on evaluate_promotion() which has no structured predicate DSL."
+
+    "5.2_mutable_manifests":
+      label: "Recomputable / Mutable Manifests"
+
+      "5.2.1_dspy":
+        label: "DSPy / Auto-compilation"
+        status: ASPIRATIONAL
+        evidence: "grep -ri dspy → 0 results."
+        last_audited: "2026-03-09"
+
+      "5.2.2_hierarchical_procedural_memory":
+        label: "Hierarchical Procedural Memory"
+        status: LIVE
+        evidence: "c11/c10/c01/c00 are external memory updated via counting. LM weights frozen (API). Only external state evolves."
+        last_audited: "2026-03-09"
+
+  "6_cdhs":
+    label: "Engineering Reality: Continuous-Discrete Hybrid Systems"
+
+    "6.1_continuous_plant":
+      label: "The Continuous Plant"
+
+      "6.1.1_float_activations":
+        label: "Float Activations"
+        status: LIVE
+        evidence: "GraphNode.activation: f32, clamp01() graph.rs:37"
+        last_audited: "2026-03-09"
+
+      "6.1.2_ema":
+        label: "Exponential Moving Averages"
+        status: LIVE
+        evidence: "compute_coordinates() core.rs:357-410. Session scale: 0.8*prev + 0.2*current."
+        last_audited: "2026-03-09"
+
+      "6.1.3_edge_weight_accumulation":
+        label: "Edge Weight Accumulation"
+        status: LIVE
+        evidence: "maybe_add_or_reinforce_edge() graph.rs:252-277. +0.08 per co-activation (hardcoded)."
+        last_audited: "2026-03-09"
+
+      "6.1.4_real_valued_scoring":
+        label: "Real-valued Scoring"
+        status: LIVE
+        evidence: "eval_float_with_context(&graph.scoring_rule, &context) graph.rs:417"
+        last_audited: "2026-03-09"
+
+    "6.2_discrete_supervisor":
+      label: "The Discrete Supervisor"
+
+      "6.2.1_hard_state_transitions":
+        label: "Commit / Rollback / Halt / Escalate"
+        status: LIVE
+        evidence: "TurnDecision enum types.rs:299-306"
+        last_audited: "2026-03-09"
+
+      "6.2.2_binary_gate_signals":
+        label: "Binary Gate Signals"
+        status: LIVE
+        evidence: "evaluate_gates() graph.rs:171-211"
+        last_audited: "2026-03-09"
+
+      "6.2.3_node_discovery":
+        label: "Node Discovery"
+        status: LIVE
+        evidence: "apply_discoveries() graph.rs:93-127, ensure_node() graph.rs:49-70"
+        last_audited: "2026-03-09"
+
+      "6.2.4_receipt_chains":
+        label: "Cryptographic Receipt Chains"
+        status: LIVE
+        evidence: "make_receipt() core.rs:428-480. SHA256. append_receipt() core.rs:553-566."
+        last_audited: "2026-03-09"
+
+    "6.3_frictions":
+      label: "Systemic Frictions & Cures"
+
+      "6.3.1_impedance_mismatch":
+        label: "Impedance Mismatch (82% Dead Nodes)"
+        status: PLANNED
+        evidence: "activation_cutoff hardcoded at 0.4 in CanonicalCriteria. PURGE_HARDCODED.md Phase 1.1."
+        last_audited: "2026-03-09"
+
+        "6.3.1.2_adaptive_thresholding":
+          label: "Adaptive Thresholding (Z-Score)"
+          status: PLANNED
+          evidence: "Not implemented. Planned: DefineCriteria OvmOp."
+          last_audited: "2026-03-09"
+
+      "6.3.2_open_loop":
+        label: "Open Loop (Human Crank Problem)"
+        status: PLANNED
+        evidence: "Seed queue exists but doesn't auto-feed. M2 milestone."
+        last_audited: "2026-03-09"
+
+      "6.3.3_ontology_sprawl":
+        label: "Ontology Sprawl"
+        status: PROVEN_UNPORTED
+        evidence: "Autogenesis at epoch 71: 905 concepts, 1524 relations. Multiple countermeasures invented and tested: alias_deduplication_layer, hub_node_overlap_immunity, dependency_weighted_quarantine, topology_aware_verification, degree_normalized_violation_scoring. All are CONCEPT-level (autogenesis graph). evaluate_promotion() in canonical partially implements mode transitions."
+        last_audited: "2026-03-09"
+        notes: "Evidence dramatically updated — system grew 15× from 59 concepts to 905. Countermeasures are actively being tested in autogenesis but none ported to canonical Rust."
+
+      "6.3.4_sustained_presence_requirement":
+        label: "Sustained Presence Requirement (W-Window Activity Gate)"
+        status: CONCEPT
+        evidence: "thread.md epochs 68-71. sustained_presence_requirement with W=3 windows (up from W=2) actively being tested. Epoch 59 specced W=3 boundary formally. Epoch 60-71 probing for blind spots (window_straddling edge case)."
+        last_audited: "2026-03-09"
+        notes: "Discovered during 2026-03-09 full history audit. CONCEPT in autogenesis graph — nodes must demonstrate activity across W consecutive evaluation windows to survive. Countermeasure for spurious burst activation."
+
+      "6.3.5_alias_deduplication_layer":
+        label: "Alias Deduplication Layer (Representation Disambiguation)"
+        status: CONCEPT
+        evidence: "thread.md epochs 68-71. alias_deduplication_layer / RDL investigated across multiple epochs. 18 aliases, 48 mentions. Being tested with representation_disambiguation_layer, topology_aware_verification."
+        last_audited: "2026-03-09"
+        notes: "Discovered during 2026-03-09 full history audit. Active tension: RDL is structurally necessary but potentially a 'black box' masking semantic errors behind syntactic loops. Not resolved as of epoch 71."
+
+      "6.3.6_dependency_weighted_quarantine":
+        label: "Dependency-Weighted Quarantine"
+        status: CONCEPT
+        evidence: "thread.md epoch 71. dependency_weighted_quarantine — nodes with high inbound dependencies get quarantine weighting. Being tested against sustained_presence_requirement boundary cases."
+        last_audited: "2026-03-09"
+        notes: "Discovered during 2026-03-09 full history audit. CONCEPT in autogenesis — not yet formally adopted."
+
+  "7_fallback_architectures":
+    label: "Pre-VSA Fallback Architectures"
+
+    "7.1_hypernetworks":
+      status: ASPIRATIONAL
+      last_audited: "2026-03-09"
+
+    "7.2_ebms":
+      status: ASPIRATIONAL
+      last_audited: "2026-03-09"
+
+    "7.3_hierarchical_rl":
+      status: ASPIRATIONAL
+      last_audited: "2026-03-09"
+
+    "7.4_neurosymbolic_provers":
+      status: ASPIRATIONAL
+      last_audited: "2026-03-09"
+
+  "8_benchmarks":
+    label: "System Performance & Empirical Uplifts"
+
+    "8.1_graphrag_benchmarks":
+      label: "GraphRAG vs Vector RAG"
+      status: EXTERNAL
+      evidence: "Published research. Not measured on nstar-bit."
+      last_audited: "2026-03-09"
+
+    "8.2_hdc_benchmarks":
+      label: "HDC Hybrids (PathHD, MissionHD)"
+      status: EXTERNAL
+      evidence: "Published research."
+      last_audited: "2026-03-09"
+
+    "8.3_hypergraph_fm":
+      label: "Hypergraph Foundation Models"
+      status: EXTERNAL
+      evidence: "Hyper-FM, ULTRA papers."
+      last_audited: "2026-03-09"
+
+    "8.4_dspy_benchmarks":
+      label: "Metacognitive Auto-Tuning (DSPy)"
+      status: EXTERNAL
+      evidence: "DSPy paper. Not implemented here."
+      last_audited: "2026-03-09"
+
+    "8.5_nstar_empirical":
+      label: "N★ Bit Own Measurements"
+      status: LIVE
+      evidence: "M1: LM P@10=0.100 vs frozen P@10=0.000. no_evidence_at_declaration held 70+ epochs (epoch 71: 905 concepts / 1524 relations). Rule trajectory confirmed over 3 mutations under adversarial pressure."
+      last_audited: "2026-03-09"
+      notes: "Evidence updated — 40+ epochs corrected to 70+ epochs. Autogenesis graph scale updated."
+
+    "8.6_proven_failures":
+      label: "Proven Failed Approaches (Grounding Problem)"
+      status: LIVE
+      evidence: "FINDINGS.md §Proven findings. Tried and rejected: binary_origin_gate, grounding_ratio, structural_dependency_floor, semantic_utility_probe (first attempt), alias_deduplication_layer (first attempt), commitment_chain (cryptographic). All failed with grounding_starvation or adversarial_equivalence."
+      last_audited: "2026-03-09"
+      notes: "Discovered during 2026-03-09 full history audit. Structural fixes for grounding fail in one of two modes. FINDINGS.md: 'the graph proved grounding is a semantic problem, not a structural one.' This negative result is itself a proven finding."
+
+  "9_testing_pipeline":
+    label: "Phased Testing Pipeline"
+
+    "9.0_deficit_scan":
+      label: "Deficit Scan (Graph-Driven Targeted Investigation)"
+      status: PROVEN_UNPORTED
+      evidence: "FINDINGS.md: 'deficit_scan() — targeted agents hit contested relations before generic planning; graph-driven not LM-driven.' Adopted architectural fix. Active in run_all_epochs.py. Not in canonical Rust src/."
+      last_audited: "2026-03-09"
+      notes: "Discovered during 2026-03-09 full history audit. Key optimization: instead of LM-driven planning each epoch, autogenesis first scans for contested relations (high violation counts) and fires targeted agents against them. Much more efficient than generic planning."
+
+    "9.1_feynman_readiness":
+      label: "Feynman Data Readiness Test"
+      status: PLANNED
+      evidence: "README_CORPUS_SYNOPSIS.md (3,379 READMEs, 1,664 distinct hashes). Explicitly named as Phase 1 validation mechanism in rawchat-Taxonomy Grounding Audit."
+      last_audited: "2026-03-09"
+
+    "9.2_translation_test":
+      label: "Translation Test (DSPy)"
+      status: ASPIRATIONAL
+      evidence: "No DSPy. LM extracts JSON but no drift measurement."
+      last_audited: "2026-03-09"
+
+    "9.3_micro_agent_loop":
+      label: "Micro-Agent Loop"
+
+      "9.3.1_dual_tools":
+        label: "Vector Search + Graph Query"
+        status: PLANNED
+        evidence: "Design documented in rawchat-Taxonomy Grounding Audit: 'providing the agent dual tools: Vector Search (fuzzy) and Cypher Graph Query (exact)'. UTIR has Shell/FsRead/FsWrite but no vector or cypher tools yet."
+        last_audited: "2026-03-09"
+        notes: "Upgraded ASPIRATIONAL→PLANNED. Design is documented and named; implementation is pending."
+
+      "9.3.2_state_machine_tracing":
+        label: "State Machine Tracing"
+        status: LIVE
+        evidence: "canonical_receipts.jsonl traces every turn. TurnTrace struct in types.rs."
+        last_audited: "2026-03-09"
+
+  "10_canonical_engine":
+    label: "The Canonical Engine (Rust Implementation)"
+
+    "10.1_dual_world_consolidation":
+      label: "Dual-World Consolidation"
+
+      "10.1.1_engine_py_deprecation":
+        label: "engine.py Deprecation"
+        status: LIVE
+        evidence: "DIVERGENCE.md. engine.py stripped to raw counts. pm/pv/utility vestigial."
+        last_audited: "2026-03-09"
+
+      "10.1.2_counts_in_rust":
+        label: "Counts into Rust Graph"
+        status: LIVE
+        evidence: "GraphEdge carries c11/c10/c01/c00 in types.rs:38-53."
+        last_audited: "2026-03-09"
+
+    "10.2_ovm":
+      label: "Operator Validation Machine"
+
+      "10.2.1_evalexpr_sandbox":
+        label: "evalexpr Sandboxing"
+        status: LIVE
+        evidence: "graph.rs:357-459, graph.rs:607-640, promotion.rs:53-96"
+        last_audited: "2026-03-09"
+
+      "10.2.2_allowed_primitives":
+        label: "Allowed Primitives"
+        status: LIVE
+        evidence: "c11,c10,c01,c00,t + log,sqrt,abs,max,min. graph.rs:397-415"
+        last_audited: "2026-03-09"
+
+      "10.2.3_rejected_operations":
+        label: "Rejected Operations (std, mean blocked)"
+        status: LIVE
+        evidence: "Only local variables registered. No population-level functions."
+        last_audited: "2026-03-09"
+
+      "10.2.4_hard_failures":
+        label: "Hard Failure → Receipt Violations"
+        status: LIVE
+        evidence: "ovm:scoring_eval_failed graph.rs:420. ovm:zero_observations graph.rs:393."
+        last_audited: "2026-03-09"
+
+    "10.3_cryptographic_falsification":
+      label: "Cryptographic Falsification"
+
+      "10.3.1_receipt_chain":
+        label: "Receipt Chain"
+        status: LIVE
+        evidence: "make_receipt() core.rs:428-480. SHA256."
+        last_audited: "2026-03-09"
+
+      "10.3.2_conditional_determinism":
+        label: "Conditional Determinism"
+        status: LIVE
+        evidence: "src/bin/replay.rs verifies state hashes."
+        last_audited: "2026-03-09"
+
+      "10.3.3_promotion_blocking":
+        label: "Promotion Blocking on Unverified Receipts"
+        status: LIVE
+        evidence: "evaluate_promotion() in promotion.rs:233-325."
+        last_audited: "2026-03-09"
+
+    "10.4_substrate_pivot":
+      label: "The Substrate Pivot"
+
+      "10.4.1_word_presence_deprecated":
+        label: "Word-Presence Deprecated"
+        status: LIVE
+        evidence: "graph.rs:291-296 filters to node: prefix. sym: excluded."
+        last_audited: "2026-03-09"
+
+      "10.4.2_typed_semantic_structures":
+        label: "Typed Semantic Structures"
+        status: LIVE
+        evidence: "ConceptRecord autogenesis.rs:82, RelationRecord:102, EvidenceRecord:141."
+        last_audited: "2026-03-09"
+
+    "10.5_unclosed_loops":
+      label: "Unclosed Loops (Build Targets)"
+
+      "10.5.1_ovm_wiring":
+        label: "Wire ovm_operations → graph.scoring_rule"
+        status: LIVE
+        evidence: "extract_policy_candidate() promotion.rs:24-51. promote_policy_candidate() core.rs:568-592. M1 proves end-to-end."
+        last_audited: "2026-03-09"
+        notes: "Originally listed as unclosed but M1 results prove it runs."
+
+      "10.5.2_multi_scale":
+        label: "Multi-scale Coordinate Propagation"
+        status: PLANNED
+        evidence: "Scale enum exists. compute_coordinates() populates. Session/Project are ghost computations."
+        last_audited: "2026-03-09"
+
+      "10.5.3_macrohard_gates":
+        label: "macro-hard Gate Update"
+        status: PLANNED
+        evidence: "DIVERGENCE.md §3 lists 5 dead field references. M6 milestone."
+        last_audited: "2026-03-09"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # SECTION 11: ENGINE-DISCOVERED KNOWLEDGE
+  # What the autogenesis system invented for itself across 73 epochs / 1073 turns.
+  # These concepts were NOT in any human-authored design doc. The engine named
+  # them, defined them, and stress-tested them via its own fork-compare-adopt loop.
+  # Source: epoch_logs/epoch73_fork.json (1025 concepts, 1601 relations, turn 1073)
+  # Signal tiers: HIGH (≥10 mentions), MID (5-9 mentions), ACTIVE (in live focus)
+  # ─────────────────────────────────────────────────────────────────────────────
+
+  "11_engine_discoveries":
+    label: "Engine-Discovered Knowledge (Autogenesis Graph, 73 Epochs)"
+    notes: "Added 2026-03-09. Source: epoch73_fork.json. 1025 concepts, 1601 relations, turn 1073. Health: HEALTHY. inflation_score=0.008. mean_confidence=0.183. 889 live relations. All confidence=0.0 because no_evidence_at_declaration gate is working — signal is mention_count."
+
+    "11.0_live_state":
+      label: "Current Engine State (Turn 1073)"
+      status: LIVE
+      evidence: "epoch_logs/epoch73_fork.json: latest_health.stats"
+      last_audited: "2026-03-09"
+      notes: |
+        total_relations: 1601
+        live_relations: 889
+        unsupported_confident: 0    ← gate working perfectly
+        mean_confidence: 0.1828
+        mean_support_set_size: 0.318
+        inflation_score: 0.008      ← near-zero, proving no_evidence gate holds
+        healthy: true
+        active_focus: [graph_memory, reflexive_memory]
+        unresolved_tensions:
+          - Declarative vs Reflexive: how does a declarative manifest maintain automaticity of reflexive memory?
+          - Storage vs Action: graph_memory transitioned from archived to active — survival criteria unclear
+
+    "11.1_high_signal_concepts":
+      label: "High-Signal Concepts (≥10 mentions, engine-discovered)"
+      notes: "42 concepts. Ranked by mention_count descending. All invented by the LM through the fork-compare-adopt loop."
+
+      "11.1.01_alias_deduplication_layer":
+        label: "Alias Deduplication Layer (RDL)"
+        status: CONCEPT
+        mentions: 58
+        evidence: "epoch73_fork.json. thread.md epochs 68-71. 18 aliases, 48 mentions. Active tension: structurally necessary but potentially a semantic black box."
+        last_audited: "2026-03-09"
+
+      "11.1.02_self_citation_firewall":
+        label: "Self-Citation Firewall"
+        status: CONCEPT
+        mentions: 45
+        evidence: "epoch73_fork.json. thread.md epochs 60-63. Prevents relations whose only evidence is the system's own prior declarations. Evidence_ineligibility_filter sub-component."
+        last_audited: "2026-03-09"
+
+      "11.1.03_stratified_certainty":
+        label: "Stratified Certainty"
+        status: CONCEPT
+        mentions: 45
+        evidence: "epoch73_fork.json. thread.md epochs 37+. The multi-tier confidence assignment system. Historically: fell below its own survival threshold at epoch 37 (ruler-can't-measure-itself finding)."
+        last_audited: "2026-03-09"
+
+      "11.1.04_recovery_protocol":
+        label: "Recovery Protocol"
+        status: CONCEPT
+        mentions: 40
+        evidence: "epoch73_fork.json. thread.md epoch 71. Handles node isolation when audit/bypass pathways are neutralized. Current focus: RDL penetration ceiling."
+        last_audited: "2026-03-09"
+
+      "11.1.05_causal_anchor":
+        label: "Causal Anchor"
+        status: CONCEPT
+        mentions: 39
+        evidence: "epoch73_fork.json. thread.md epochs 66-67. Each belief change linked to specific dialogue evidence IDs. Identified as schema gap (not yet in GraphEdge struct). Interior anchor scarcity is active tension."
+        last_audited: "2026-03-09"
+        notes: "Cross-ref: 3.3.0_causal_anchor — same concept, discovered independently here and in conversation exports."
+
+      "11.1.06_architecture":
+        label: "Architecture (Self-Model)"
+        status: CONCEPT
+        mentions: 38
+        evidence: "epoch73_fork.json. Engine's concept of its own architecture as a first-class object in the graph."
+        last_audited: "2026-03-09"
+
+      "11.1.07_audit_as_validator":
+        label: "Audit As Validator"
+        status: CONCEPT
+        mentions: 33
+        evidence: "epoch73_fork.json. thread.md epoch 70. Audit mechanism used purely to confirm thresholds, not to generate new relations."
+        last_audited: "2026-03-09"
+
+      "11.1.08_dependency_weighted_quarantine":
+        label: "Dependency-Weighted Quarantine"
+        status: CONCEPT
+        mentions: 33
+        evidence: "epoch73_fork.json. thread.md epoch 71. Nodes with high inbound dependencies receive quarantine weighting. Candidate recovery mechanism for RDL penetration ceiling."
+        last_audited: "2026-03-09"
+
+      "11.1.09_dependency_authentication":
+        label: "Dependency Authentication"
+        status: CONCEPT
+        mentions: 31
+        evidence: "epoch73_fork.json. Validates that declared dependencies are real and not self-referential."
+        last_audited: "2026-03-09"
+
+      "11.1.10_foundational_axiom":
+        label: "Foundational Axiom"
+        status: CONCEPT
+        mentions: 31
+        evidence: "epoch73_fork.json. Nodes that represent structural invariants requiring special grounding rules. Active in epochs 70-73 in relation to prime_key_network."
+        last_audited: "2026-03-09"
+
+      "11.1.11_epistemic_audit":
+        label: "Epistemic Audit"
+        status: CONCEPT
+        mentions: 29
+        evidence: "epoch73_fork.json. Periodic integrity check of the belief graph. Distinct from audit_as_validator — this one can generate new relations."
+        last_audited: "2026-03-09"
+
+      "11.1.12_performative_stability":
+        label: "Performative Stability"
+        status: CONCEPT
+        mentions: 29
+        evidence: "epoch73_fork.json. The property of a node that remains stable even when challenged by contradicting relations."
+        last_audited: "2026-03-09"
+
+      "11.1.13_provenance_depth_gate":
+        label: "Provenance Depth Gate"
+        status: CONCEPT
+        mentions: 25
+        evidence: "epoch73_fork.json. thread.md epochs 65-66. Gate that evaluates how many hops of provenance a relation can trace before hitting an ungrounded node."
+        last_audited: "2026-03-09"
+
+      "11.1.14_cosine_similarity_gate":
+        label: "Cosine Similarity Gate"
+        status: CONCEPT
+        mentions: 24
+        evidence: "epoch73_fork.json. Engine discovered need for semantic similarity checking between aliases. NOT implemented in code — exists as a concept in the belief graph."
+        last_audited: "2026-03-09"
+        notes: "Interesting: the engine independently discovered the need for cosine similarity (see 4.1.3) before the human taxonomy described it."
+
+      "11.1.15_void_score":
+        label: "Void Score"
+        status: LIVE
+        mentions: 15
+        evidence: "epoch73_fork.json + src/manifest.rs + autogenesis binary. void_score=1000/(evidence+1). Active in manifest dispatch."
+        last_audited: "2026-03-09"
+        notes: "One of few engine-discovered concepts that made it into production code."
+
+      "11.1.16_negentropy_gate":
+        label: "Negentropy Gate"
+        status: CONCEPT
+        mentions: 13
+        evidence: "epoch73_fork.json. Adoption criterion: fork must demonstrate entropy reduction to be adopted. Operationalization of 1.1.2."
+        last_audited: "2026-03-09"
+
+      "11.1.17_semantic_utility_probe":
+        label: "Semantic Utility Probe"
+        status: PROVEN_UNPORTED
+        mentions: 13
+        evidence: "epoch73_fork.json + FINDINGS.md. Nodes must prove downstream routing utility. One of three core proven mechanisms."
+        last_audited: "2026-03-09"
+
+      "11.1.18_fluid_kernel":
+        label: "Fluid Kernel"
+        status: CONCEPT
+        mentions: 11
+        evidence: "epoch73_fork.json. thread.md epochs 61-62. The mutable core of the engine that can be reshaped without breaking foundational axioms."
+        last_audited: "2026-03-09"
+
+      "11.1.19_omni_node":
+        label: "Omni Node"
+        status: CONCEPT
+        mentions: 11
+        evidence: "epoch73_fork.json. LM-authored concept for nodes that participate in all major subgraphs simultaneously. Cross-ref with src/bin/autogenesis.rs OMNI path (LM fallback)."
+        last_audited: "2026-03-09"
+
+      "11.1.20_measurement_escrow":
+        label: "Measurement Escrow"
+        status: PROVEN_UNPORTED
+        mentions: 9
+        evidence: "epoch73_fork.json + FINDINGS.md. Verifier lives outside the graph. Second of three proven mechanisms."
+        last_audited: "2026-03-09"
+
+    "11.2_mid_signal_concepts":
+      label: "Mid-Signal Concepts (5-9 mentions, engine-discovered)"
+      notes: "46 concepts. Representing active investigation areas. Selected high-value entries below."
+
+      "11.2.01_evidence_laundering":
+        label: "Evidence Laundering"
+        status: CONCEPT
+        mentions: 9
+        evidence: "epoch73_fork.json. Engine-discovered attack pattern: routing ungrounded beliefs through valid evidence chains to appear grounded."
+        last_audited: "2026-03-09"
+
+      "11.2.02_hyper_graph_manifest":
+        label: "Hyper Graph Manifest"
+        status: CONCEPT
+        mentions: 6
+        evidence: "epoch73_fork.json + epoch_logs/thread_summary_2026-03-08.md. The crystallized manifest concept — recomputable, transferable pattern summary. Active in epochs 70-73."
+        last_audited: "2026-03-09"
+
+      "11.2.03_dreaming_kernel":
+        label: "Dreaming Kernel"
+        status: CONCEPT
+        mentions: 8
+        evidence: "epoch73_fork.json. Speculative mode where engine generates hypotheses without external input. Candidate for seed_queue self-population (M2)."
+        last_audited: "2026-03-09"
+
+      "11.2.04_origin_spoofing":
+        label: "Origin Spoofing"
+        status: CONCEPT
+        mentions: 7
+        evidence: "epoch73_fork.json. Attack vector: relations that falsely claim external dialogue provenance. Discovered by engine as key threat model."
+        last_audited: "2026-03-09"
+
+      "11.2.05_commitment_chain":
+        label: "Commitment Chain (Cryptographic, FAILED)"
+        status: CONCEPT
+        mentions: 5
+        evidence: "epoch73_fork.json + FINDINGS.md §proven_failures. Tried and rejected — cryptographic approaches to grounding fail via adversarial_equivalence."
+        last_audited: "2026-03-09"
+
+      "11.2.06_hollowing_ratchet":
+        label: "Hollowing Ratchet"
+        status: CONCEPT
+        mentions: 6
+        evidence: "epoch73_fork.json. Failure mode where repeated penalty application hollows valid structural nodes. Discovered in epoch 62 penalty calibration work."
+        last_audited: "2026-03-09"
+
+      "11.2.07_penetration_ceiling":
+        label: "Penetration Ceiling"
+        status: CONCEPT
+        mentions: 7
+        evidence: "epoch73_fork.json. thread.md epoch 71. If both audit and bypass pathways are neutralized, the RDL becomes ungrounded by design. Current unresolved tension."
+        last_audited: "2026-03-09"
+
+      "11.2.08_asymmetric_acceptance_pressure":
+        label: "Asymmetric Acceptance Pressure"
+        status: CONCEPT
+        mentions: 13
+        evidence: "epoch73_fork.json. thread.md epoch 67. Audit confirms AAP bypasses temporal span requirements of SPR/PDG, introducing ungrounded symbols."
+        last_audited: "2026-03-09"
+
+      "11.2.09_structural_liquidity":
+        label: "Structural Liquidity"
+        status: CONCEPT
+        mentions: 6
+        evidence: "epoch73_fork.json. Property of a subgraph that allows node reassignment without breaking relational integrity."
+        last_audited: "2026-03-09"
+
+      "11.2.10_graph_memory":
+        label: "Graph Memory (Current Active Focus)"
+        status: CONCEPT
+        mentions: 19
+        evidence: "epoch73_fork.json active_focus. Thread at turn 1073 — engine is actively investigating declarative vs reflexive memory distinction."
+        last_audited: "2026-03-09"
+        notes: "This is what the engine is thinking about RIGHT NOW."
+
+    "11.3_relation_types":
+      label: "Discovered Relation Types (Engine-Defined Vocabulary)"
+      notes: "9 relation types discovered by the engine. NOT pre-specified — the LM named and used these across 1601 relations."
+      status: LIVE
+      evidence: "epoch73_fork.json relation.relation field distribution"
+      last_audited: "2026-03-09"
+      vocabulary:
+        refines:    "374 uses — one concept narrows or specializes another"
+        supports:   "349 uses — evidence or logic backing a claim"
+        tests:      "320 uses — one concept used to probe or falsify another"
+        contradicts: "287 uses — direct logical conflict"
+        depends_on: "128 uses — structural dependency"
+        preserves:   "88 uses — one mechanism protects another from violation"
+        weakens:     "53 uses — partial undermining without contradiction"
+        strengthens:  "1 use  — rare (engine prefers tests/supports over direct strengthening)"
+        tracks:       "1 use  — monitoring relationship"
+
+    "11.4_engine_health_metrics":
+      label: "Engine Health at Turn 1073"
+      status: LIVE
+      evidence: "epoch73_fork.json latest_health"
+      last_audited: "2026-03-09"
+      metrics:
+        concept_count: 1025
+        relation_count: 1601
+        evidence_count: 1290
+        live_relations: 889
+        unsupported_confident: 0
+        mean_confidence: 0.183
+        mean_support_set_size: 0.318
+        inflation_score: 0.008
+        healthy: true
+      notes: "inflation_score=0.008 is the key metric. Near-zero confirms no_evidence_at_declaration gate is holding across 1073 turns. The gate has never been violated in production."
+
+    "11.5_active_tensions":
+      label: "Unresolved Tensions (Engine's Open Problems)"
+      status: LIVE
+      evidence: "epoch73_fork.json unresolved_tensions"
+      last_audited: "2026-03-09"
+      tensions:
+        - "Declarative vs Reflexive: How does a declarative manifest maintain the speed and automaticity of reflexive memory?"
+        - "Storage vs Action: graph_memory transitioned from archived to active — survival criteria need redefinition"
+        - "Penetration Ceiling (epoch 71): If audit and bypass pathways are both neutralized, RDL becomes structurally ungrounded by design"
+        - "Epistemic Opacity (epoch 69): RDL's 18 aliases and 48 mentions are decoupled from audit/recovery pathways, masking semantic errors behind syntactic loops"
+      notes: "These are the engine's own open questions. They map to: 6.3.5 (RDL opacity), 5.2 (mutable manifests), 2.0a (epistemic immune system)."
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # SECTION 12: COMPLETE GRAPH INVENTORY
+  # Every distinct graph/state artifact in the repo, annotated.
+  # Sources: find . -name "*.json" | xargs python3 -c "..." — 2026-03-09
+  # ─────────────────────────────────────────────────────────────────────────────
+
+  "12_graph_inventory":
+    label: "Complete Graph Inventory (All State Artifacts)"
+    notes: "Added 2026-03-09. 7 distinct graph types in the repo. Previously only epoch73_fork.json was analyzed."
+
+    "12.1_m1_ab_canonical_states":
+      label: "M1 A/B Experiment Canonical States (4 graphs)"
+      status: LIVE
+      evidence: "baseline_state.json, lm_state.json, lm_e2_state.json, baseline_e2_state.json"
+      last_audited: "2026-03-09"
+      notes: |
+        These are the 4 frozen canonical OVM states from the M1 experiment.
+        All use CanonicalState schema (src/canonical/types.rs).
+
+        BASELINE_E1: 10 turns, 5 nodes, 22 edges, no scoring rule (frozen baseline)
+        LM_E1:       10 turns, 4 nodes, 16 edges, LM-authored rule
+        LM_E2:       10 turns, 8 nodes, 62 edges, LM-authored rule (adversarial epoch)
+        BASELINE_E2: 10 turns, 8 nodes, 62 edges, frozen rule (adversarial epoch)
+
+        M1 proven result: LM_E2 scoring_rule added t-dependence under adversarial
+        pressure; BASELINE_E2 rule degraded to P@10=0.000.
+        
+        Each state has a *_derived/ folder with 5 derived views:
+          - war_room.json (operational dashboard)
+          - capability_ledger.json (what the system can do)
+          - requirements_lock.json (active constraints)
+          - graph_projection.json (graph topology view)
+          - repo_absorption.json (corpus ingestion state)
+
+    "12.2_nstar_canonical_live":
+      label: "Live Canonical Corpus Run State (nstar_canonical_state.json)"
+      status: LIVE
+      evidence: "nstar_canonical_state.json (8.2MB). Currently running via run_canonical_corpus.py."
+      last_audited: "2026-03-09"
+      notes: |
+        The live growing canonical OVM state from the ongoing corpus run.
+        
+        turns: 58
+        nodes: 233
+        edges: 27534 (!)  ← 27,028 Hypothesis + 506 Supports + 0 Inhibits
+        scoring_rule: "(c11 * (log(t + 1) + 1.8)) / (sqrt(c10 + 0.01) + (c01 * 2.8) + 0.02)"
+        seed_queue: empty (open-loop — human crank required)
+        
+        TOP ACTIVE NODES (activation=1.0, ~40 reinforcements each):
+          node:iterative_refinement_loop
+          node:schema_constrained_extraction
+          node:cross_domain_persistence
+          node:modular_agent_pipelining
+          node:proxy_runtime_shadowing
+          node:environment_contingent_routing
+          node:epistemic_provenance_tracking
+          node:graph_centered_navigation
+
+        KEY FINDING: 27,534 edges after 58 turns on 3,379 README corpus.
+        This is the GraphRAG substrate growing from real code documentation.
+        The scoring rule evolved to weight log(t+1) — recency-aware.
+
+    "12.3_corpus_agent_state":
+      label: "Corpus Agent State (epoch_logs/corpus_agent_state.json)"
+      status: LIVE
+      evidence: "epoch_logs/corpus_agent_state.json (43MB). Parallel autogenesis run on corpus."
+      last_audited: "2026-03-09"
+      notes: |
+        A separate autogenesis-format graph built by corpus_agent.py ingesting READMEs.
+        
+        turn: ongoing
+        concepts: 1042
+        relations: 1721
+        format: same as epoch73_fork.json (autogenesis_graph schema)
+        
+        This is THREAD 1 (autogenesis) running on external corpus data,
+        vs epoch73_fork.json which is THREAD 1 running on self-reflection.
+        Two separate ontologies being built from different input streams.
+
+    "12.4_episteme_belief_graph":
+      label: "Episteme Belief Graph (episteme/graph/belief_graph.json)"
+      status: LIVE
+      evidence: "episteme/graph/belief_graph.json (12KB). Web dashboard data source."
+      last_audited: "2026-03-09"
+      notes: |
+        A DEMONSTRATION belief graph — 8 medical/scientific beliefs with real-world
+        retraction data. Used as a concrete proof-of-concept for the epistemic API.
+        
+        Domain: cardiology, oncology, psychiatry (medical guidelines)
+        Total beliefs: 8
+        Mean declared_confidence: 0.871
+        Mean computed_confidence: 0.831
+        Inflation gap: 0.040 (declared vs evidence-backed)
+        Total documented harm: $1.678 TRILLION USD
+        Total violations: 12
+        
+        Sample belief:
+          "Hormone replacement therapy prevents CAD in postmenopausal women"
+          declared=0.90, computed=0.60, status=OVERTURNED
+          WHI trial showed HRT INCREASED CAD risk. ~600K excess harm cases.
+        
+        This is the "Epistemic Sidecar" demo from Building Epistemic API.md.
+        It shows the delusion_delta concept (2.0b) on real medical data.
+        The $1.678T total cost is the price of unsupported confident beliefs.
+        
+        Live feed: episteme/web/data/live.json (real-time health dashboard)
+
+    "12.5_pre_canonical_graphs":
+      label: "Pre-Canonical Era Graphs (nstar-autogenesis/)"
+      status: LIVE
+      evidence: "nstar-autogenesis/*.json — 13 state snapshots from before Rust engine"
+      last_audited: "2026-03-09"
+      nodes: |
+        first_loop_state.json         — earliest recorded state
+        good_enough_state.json        — first 'stable enough to ship' checkpoint
+        lm_authoritative_state.json   — epoch where LM became primary authority
+        lm_canonicalized_state.json   — 85 nodes, 0 edges (graph-only mode, epoch 3±)
+        lm_review_50_consequence_state.json — consequence enforcement tested at 50-turn mark
+        lm_rust_state.json            — first state after Rust port
+        state.json, state_noheur.json — baseline vs heuristic-stripped comparison
+        rust_probe_clean_state.json   — clean Rust probe run
+        epoch2_fork.json, epoch3_fork.json, epoch4_fork.json — pre-epoch_logs era
+      notes: |
+        These predate epoch_logs/ and use older schema (hypotheses, active_core fields).
+        lm_canonicalized_state.json is notable: 85 nodes, 0 edges — the graph-only mode
+        experiment before relational edges were introduced.
+        lm_review_50_consequence_fork.json is the consequence_enforcement proof
+        (no-placeholder rule — cross-ref 2.3.0b).
+
+    "12.6_experiment_suite_states":
+      label: "Experiment Suite States (experiments/)"
+      status: LIVE
+      evidence: "experiments/output/20260303-133431/ and output_strict/20260303-141808/"
+      last_audited: "2026-03-09"
+      notes: |
+        Two experiment runs, 8 experiments total. Suite: 4/8 passed.
+        
+        output/ (lenient):
+          exp1_minimal_collapse, exp2_dynamic_stateful, exp2_dynamic_stateless (4 turns),
+          exp3_mixed_domain, exp6_rejection_cued, exp7_cross_domain
+          
+        output_strict/ (strict — uses canonical Rust engine):
+          exp1_minimal_collapse, exp2_fixed9, exp3_graph_only (canonical_state.json),
+          exp5_always_on (canonical_state.json), exp6_rejection_cued,
+          exp7_cross_domain (canonical_state.json)
+          — plus metrics/*.metrics.json for each
+          
+        exp3_graph_only and exp5_always_on use canonical_state.json schema —
+        these are the earliest canonical Rust engine runs (2026-03-03).
+        
+        The 4/8 pass rate predates M1 — these experiments established what
+        needed fixing before the Lanes A–E refactor.
+
+    "12.7_graph_schema_lineage":
+      label: "Graph Schema Lineage (Evolution of the State Format)"
+      status: LIVE
+      evidence: "Cross-referenced across all 7 graph types above"
+      last_audited: "2026-03-09"
+      notes: |
+        The graph schema evolved through 4 generations:
+
+        GEN 1 — nstar-autogenesis/ era (hypotheses, active_core, seed_queue)
+          Fields: version, created_at, turn, events, hypotheses, active_core
+          Files: good_enough_state.json, first_loop_state.json
+
+        GEN 2 — autogenesis_graph era (concepts, relations, aliases, evidence_log)
+          Fields: concepts{}, relations{}, aliases{}, support_set on each relation
+          Files: epoch1-73_fork.json, corpus_agent_state.json
+          Key: no_evidence_at_declaration gate; support_set; confidence=0 at entry
+
+        GEN 3 — canonical_state era (graph.nodes, graph.edges, receipts, criteria)
+          Fields: GraphNode{id,prime_id,activation,threshold}, GraphEdge{c11,c10,c01,c00}
+          Files: baseline_state.json, lm_state.json, nstar_canonical_state.json
+          Key: evalexpr OVM; SHA256 receipt chain; typed edges (Hypothesis/Supports/Inhibits)
+
+        GEN 4 — canonical_state + corpus (massive hypothesis substrate)
+          Files: nstar_canonical_state.json (27,534 edges after 58 turns)
+          Key: LM-evolved scoring rule with log(t+1) recency weighting
+
+        THE GAP: GEN 2 has support_set + conformal grounding. GEN 3 has receipt chain +
+        evalexpr OVM. Neither has both. The unification is the primary build target.

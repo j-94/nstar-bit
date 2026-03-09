@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+367	1	ok	368	374	619	517	firewall_gaming,provenance_depth_scoring,self_citation_firew	2	2	The new mechanism is registered as hypothetical; operational efficacy against 'f
+367	2	ok	369	375	621	518	binary_firewall_controls,firewall_gaming,self_citation_firew	2	1	no_evidence_at_declaration
+367	3	ok	370	376	624	520	detection_latency,firewall_gaming,provenance_depth_scoring	2	2	no_evidence_at_declaration
+367	4	ok	371	376	625	520	provenance_depth_scoring,stratified_certainty	1	1	no_evidence_at_declaration
+367	5	ok	372	376	626	521	evidence_ledger,provenance_depth_scoring,stratified_certaint	2	2	The core adoption rationale has been falsified; the system is currently unstable
+367	6	ok	373	377	627	522	audit_as_validator,provenance_depth_scoring	1	2	no_evidence_at_declaration
+367	7	ok	374	379	629	523	chain_splitting,credibility_inflation,provenance_depth_scori	2	2	no_evidence_at_declaration
+367	8	ok	375	379	631	523	audit_as_generator,disconfirming_evidence,provenance_depth_s	2	2	no_evidence_at_declaration
+367	9	ok	376	379	631	524	decay_dampener,provenance_depth_scoring,self_citation_firewa	1	2	The audit of tasks 3-8 is complete, providing clear deltas for adoption confiden
+367	10	ok	377	381	634	525	audit_privilege_bias,chain_splitting_gaming,provenance_depth	2	2	no_evidence_at_declaration
+367	11	ok	378	382	634	526	audit_as_generator,audit_privilege_bias,self_citation_firewa	2	2	The epoch verdict is delivered, a clear model choice is made (discarding depth s

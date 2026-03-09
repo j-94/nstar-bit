@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+267	1	ok	268	286	451	402	citation_independence_test,evidence_laundering	2	2	The turn provides a specific operational rule that resolves the 'Priority of Cor
+267	2	ok	269	287	453	404	evidence_laundering,misclassification_risk,stratified_certai	2	2	The synthetic scenario is staged but the data resulting from the 50% threshold r
+267	3	ok	270	287	455	405	citation_independence_test,dependency_authentication	2	2	The system has successfully identified and neutralized the 'evidence laundering'
+267	4	ok	271	288	456	406	dependency_authentication,evidence_laundering,structurally_h	2	2	The 'authentication_validates_preservation' relation has been severely weakened;
+267	5	ok	272	289	457	407	performative_stability,reconstruction_failure,tripartite_cla	2	2	The fundamental governing relation 'classification_governs_floor' has been colla
+267	6	ok	273	289	458	409	citation_independence_test,dependency_authentication,foundat	2	1	The positive control successfully decoupled 'high dependency' from 'circularity'
+267	7	ok	274	292	460	410	citation_independence_test,over_correction,shared_empirical_	1	1	The simulation results regarding the over-correction of the independence test ha
+267	8	ok	275	292	461	412	audit_as_validator,authentication_validates_preservation,cla	2	2	The audit is complete; the system has successfully quantified the failure modes 
+267	9	ok	276	293	463	413	citation_independence_test,dependency_weighted_quarantine,ph	2	2	The relationship between circularity and decay acceleration is now quantified, a
+267	10	ok	277	294	465	414	audit_as_generator,citation_independence_test,evidence_ledge	2	2	The dependency of the independence test on a potentially compromised generator c
+267	11	ok	278	295	467	416	audit_as_generator,citation_independence_test,operational_ne	2	2	We have the metrics for comparison but have not yet received the resulting data 
+267	12	ok	279	297	468	417	audit_as_generator,provenance_transparency,recursive_audit_d	2	2	Epoch 12 is closed with a clear verdict, adoption of the CIT, and identification

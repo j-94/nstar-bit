@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+533	1	ok	534	547	907	704	dialogue_drought_vulnerability,drought_baseline_t534,immutab	1	1	no_evidence_at_declaration_or_missing_dialogue
+533	2	ok	535	549	909	706	dialogue_drought_vulnerability,drought_active,evidence_suppr	2	1	no_evidence_at_declaration_or_missing_dialogue
+533	3	ok	536	550	910	707	external_origin_regime,filter_targets_inflation,performative	2	2	no_evidence_at_declaration_or_missing_dialogue
+533	4	ok	537	550	910	708	external_origin_regime,pre_isolation_baseline,reflexivity_lo	2	2	no_evidence_at_declaration_or_missing_dialogue
+533	5	ok	538	550	911	709	dialogue_drought_vulnerability,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+533	6	ok	539	550	912	710	dependency_weighted_quarantine,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+533	7	ok	540	551	913	711	drought_casualty_list,reflexive_inflation_rate,stratified_ce	2	2	no_evidence_at_declaration_or_missing_dialogue
+533	8	ok	541	554	915	712	casualty_curve,measurement_death_spiral,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+533	9	ok	542	556	917	714	audit_as_validator,baseline_measures_closure,filter_targets_	2	2	no_evidence_at_declaration_or_missing_dialogue
+533	10	ok	543	558	919	715	concept_hibernation,dialogue_drought_vulnerability,stratifie	2	2	no_evidence_at_declaration_or_missing_dialogue
+533	11	ok	544	560	921	716	degradation_curve_shape,measurement_death_spiral,replacement	1	2	no_evidence_at_declaration_or_missing_dialogue

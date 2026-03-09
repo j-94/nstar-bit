@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+914	1	ok	915	817	1381	1137	architecture,pre_fork_reference,self_citation_firewall	1	1	no_evidence_at_declaration_or_missing_dialogue
+914	2	ok	916	818	1384	1138	architecture,foundational_axiom,tiered_penalty_schema	2	1	no_evidence_at_declaration_or_missing_dialogue
+917	3	ok	918	819	1387	1140	representation_disambiguation_layer,stratified_certainty,tie	2	2	no_evidence_at_declaration_or_missing_dialogue
+917	4	ok	919	820	1388	1141	classifier_misclassification,hop_depth_risk_classifier,self_	2	2	no_evidence_at_declaration_or_missing_dialogue
+917	5	ok	920	822	1390	1142	architectural_co_definition_loop,audit_as_validator,tier_3_p	2	2	no_evidence_at_declaration_or_missing_dialogue
+917	6	ok	921	822	1392	1143	audit_as_validator,foundational_axiom,tier_3_penalty_logic	2	2	no_evidence_at_declaration_or_missing_dialogue
+917	7	ok	922	823	1394	1144	architecture,sustained_presence_requirement,tier_2_penalty	1	1	no_evidence_at_declaration_or_missing_dialogue
+917	8	ok	923	823	1394	1145	audit_as_validator,classifier_probes_firewall,stratified_cer	2	2	no_evidence_at_declaration_or_missing_dialogue
+917	9	ok	924	823	1396	1146	architecture,stratified_certainty,tiered_penalty_schema	2	2	no_evidence_at_declaration_or_missing_dialogue
+917	10	ok	925	825	1398	1148	penalty_evasion,rdl_opacity,representation_disambiguation_la	2	2	no_evidence_at_declaration_or_missing_dialogue
+917	11	ok	926	827	1400	1149	architecture,success_criterion,tiered_penalty_regime	2	2	no_evidence_at_declaration_or_missing_dialogue
+917	12	ok	927	829	1401	1150	depth_stratified_penalty,tier_boundary_ambiguity	1	1	no_evidence_at_declaration_or_missing_dialogue

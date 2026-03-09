@@ -15,6 +15,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::time::Duration;
 
+use crate::autogenesis::{LmForkProposal, LmStateSummary, SymbolExtraction, TurnDelta, TurnTransitionReceipt};
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TurnIns {
     pub prompt: String,
@@ -59,10 +61,11 @@ pub struct Predicate {
 
 const DEFAULT_URL: &str = "https://openrouter.ai/api/v1/chat/completions";
 const DEFAULT_MODEL: &str = "google/gemini-3-flash-preview";
+const DEFAULT_META_MODEL: &str = "anthropic/claude-opus-4-6";
 
 const BACKUP_MODELS: &[&str] = &[
     "anthropic/claude-sonnet-4-6",
-    "anthropic/claude-opus-4-6",
+    "google/gemini-3-flash-preview",
 ];
 
 fn env_or(keys: &[&str], default: &str) -> String {
@@ -111,6 +114,7 @@ pub struct LmClient {
     client: Client,
     url: String,
     model: String,
+    meta_model: String,
     key: String,
 }
 
@@ -195,12 +199,22 @@ impl LmClient {
             client,
             url: env_or(&["ROUTER_URL", "OPENROUTER_URL"], DEFAULT_URL),
             model: env_or(&["ROUTER_MODEL", "OPENROUTER_MODEL"], DEFAULT_MODEL),
+            meta_model: env_or(&["ROUTER_META_MODEL"], DEFAULT_META_MODEL),
             key,
         })
     }
 
-    /// Raw chat completion — send messages, get text back.
+    /// Raw chat completion using the meta model (Opus) — for planning and review calls.
+    pub async fn chat_meta(&self, system: &str, user: &str) -> Result<String> {
+        self.chat_raw_starting(system, user, &self.meta_model, 8192).await
+    }
+
+    /// Raw chat completion — send messages, get text back (uses turn model).
     pub async fn chat_raw(&self, system: &str, user: &str) -> Result<String> {
+        self.chat_raw_starting(system, user, &self.model, 2048).await
+    }
+
+    async fn chat_raw_starting(&self, system: &str, user: &str, start_model: &str, max_tokens: u32) -> Result<String> {
         let messages = vec![
             json!({"role": "system", "content": system}),
             json!({"role": "user", "content": user}),
@@ -212,7 +226,7 @@ impl LmClient {
         use futures::StreamExt;
         use std::io::{self, Write};
 
-        let mut current_model = self.model.clone();
+        let mut current_model = start_model.to_string();
         let mut attempts = 0;
         let mut full_text = String::new();
 
@@ -221,7 +235,7 @@ impl LmClient {
             let payload = json!({
                 "model": current_model,
                 "messages": messages,
-                "max_completion_tokens": 2048,
+                "max_completion_tokens": max_tokens,
                 "stream": true
             });
 
@@ -267,6 +281,8 @@ impl LmClient {
                     return Ok(full_text);
                 }
                 Ok(r) if r.status().as_u16() == 429 || r.status().as_u16() == 503 => {
+                    let wait_secs = 1u64 << attempts.min(5); // 2, 4, 8, 16, 32s cap
+                    tokio::time::sleep(Duration::from_secs(wait_secs)).await;
                     if attempts <= BACKUP_MODELS.len() {
                         current_model = BACKUP_MODELS[attempts - 1].to_string();
                         continue;
@@ -279,6 +295,8 @@ impl LmClient {
                     return Err(anyhow!("LM error {}: {}", status, body));
                 }
                 Err(e) => {
+                    let wait_secs = 1u64 << attempts.min(5);
+                    tokio::time::sleep(Duration::from_secs(wait_secs)).await;
                     if attempts <= BACKUP_MODELS.len() {
                         current_model = BACKUP_MODELS[attempts - 1].to_string();
                         continue;
@@ -489,6 +507,367 @@ Return JSON:
         Ok(result)
     }
 
+    /// Extract a compact set of domain-bearing symbols from a free-form turn.
+    /// These symbols are intended for graph-memory bootstrap loops and should
+    /// represent concepts/relations worth remembering, not the prompt wrapper.
+    pub async fn extract_turn_symbols(&self, text: &str) -> Result<Vec<String>> {
+        let system = r#"You extract a tiny set of graph symbols from a single turn.
+
+Return only the most state-bearing concepts or relations from the text.
+
+Rules:
+- Prefer 3 to 8 items.
+- Use lowercase snake_case.
+- Each symbol should be short and reusable.
+- Prefer domain concepts, tensions, capabilities, or relations.
+- Ignore prompt wrapper language, discourse filler, and instruction scaffolding.
+- Do not return generic words unless they are truly the core semantic payload.
+
+Return JSON only:
+{"symbols":["..."]}"#;
+
+        let user = format!("TURN:\n{}\n\nExtract the best graph symbols.", text);
+        let response = self.chat_raw(system, &user).await?;
+        let parsed: Value = serde_json::from_str(&response)
+            .or_else(|_| {
+                let clean = response
+                    .lines()
+                    .filter(|l| !l.trim().starts_with("```"))
+                    .collect::<Vec<_>>()
+                    .join("\n");
+                serde_json::from_str(&clean)
+            })
+            .unwrap_or(json!({"symbols": []}));
+
+        let raw: Vec<String> = parsed
+            .get("symbols")
+            .and_then(|v| serde_json::from_value(v.clone()).ok())
+            .unwrap_or_default();
+
+        let mut out = Vec::new();
+        let mut seen = std::collections::BTreeSet::new();
+        for item in raw {
+            let normalized = item
+                .trim()
+                .to_ascii_lowercase()
+                .chars()
+                .map(|ch| {
+                    if ch.is_ascii_alphanumeric() {
+                        ch
+                    } else {
+                        '_'
+                    }
+                })
+                .collect::<String>()
+                .trim_matches('_')
+                .to_string();
+            if normalized.len() >= 3 && seen.insert(normalized.clone()) {
+                out.push(normalized);
+            }
+        }
+        Ok(out)
+    }
+
+    /// Canonicalize extracted symbols against the current graph vocabulary.
+    pub async fn canonicalize_turn_symbols(
+        &self,
+        text: &str,
+        extracted: &[String],
+        known_symbols: &[String],
+    ) -> Result<Vec<String>> {
+        if extracted.is_empty() || known_symbols.is_empty() {
+            return Ok(extracted.to_vec());
+        }
+
+        let system = r#"You canonicalize graph symbols across turns.
+
+You are given:
+- the current turn text
+- newly extracted symbols from that turn
+- an existing graph vocabulary
+
+Goal:
+- Reuse an existing symbol when it clearly refers to the same underlying concept.
+- Keep a new symbol only when it introduces a genuinely different concept.
+
+Rules:
+- Return 3 to 8 items when possible.
+- Use lowercase snake_case only.
+- Prefer stable reuse over paraphrase.
+- Do not invent concepts that are absent from the turn.
+- Do not merge distinct concepts just because they are related.
+- Preserve semantic coverage of the turn.
+
+Return JSON only:
+{"symbols":["..."]}"#;
+
+        let user = format!(
+            "TURN:\n{}\n\nEXTRACTED_SYMBOLS:\n{}\n\nKNOWN_SYMBOLS:\n{}\n\nReturn the best canonical symbol list.",
+            text,
+            serde_json::to_string(extracted)?,
+            serde_json::to_string(known_symbols)?,
+        );
+        let response = self.chat_raw(system, &user).await?;
+        let parsed: Value = serde_json::from_str(&response)
+            .or_else(|_| {
+                let clean = response
+                    .lines()
+                    .filter(|l| !l.trim().starts_with("```"))
+                    .collect::<Vec<_>>()
+                    .join("\n");
+                serde_json::from_str(&clean)
+            })
+            .unwrap_or(json!({"symbols": extracted}));
+
+        let raw: Vec<String> = parsed
+            .get("symbols")
+            .and_then(|v| serde_json::from_value(v.clone()).ok())
+            .unwrap_or_else(|| extracted.to_vec());
+
+        let mut out = Vec::new();
+        let mut seen = std::collections::BTreeSet::new();
+        for item in raw {
+            let normalized = item
+                .trim()
+                .to_ascii_lowercase()
+                .chars()
+                .map(|ch| {
+                    if ch.is_ascii_alphanumeric() {
+                        ch
+                    } else {
+                        '_'
+                    }
+                })
+                .collect::<String>()
+                .trim_matches('_')
+                .to_string();
+            if normalized.len() >= 3 && seen.insert(normalized.clone()) {
+                out.push(normalized);
+            }
+        }
+
+        if out.is_empty() {
+            Ok(extracted.to_vec())
+        } else {
+            Ok(out)
+        }
+    }
+
+    /// Author the next autogenesis state transition directly.
+    pub async fn author_autogenesis_turn(
+        &self,
+        text: &str,
+        extraction: &SymbolExtraction,
+        state: &LmStateSummary,
+    ) -> Result<TurnTransitionReceipt> {
+        let system = r#"You are the authoritative state-transition engine for an evolving concept graph.
+
+You are not extracting keywords. You are deciding how memory should change.
+Your main job is to review prior commitments under new evidence, not to elaborate the graph for its own sake.
+
+Return a strict JSON object with this shape:
+{
+  "summary": "one short paragraph",
+  "concepts": [
+    {
+      "id": "stable_symbol",
+      "label": "human readable label",
+      "summary": "what this concept means in the current run",
+      "aliases": ["optional_alias"],
+      "status": "known|active|archived"
+    }
+  ],
+  "aliases": [
+    {
+      "alias": "new_variant",
+      "canonical": "existing_symbol",
+      "reason": "why these are the same concept"
+    }
+  ],
+  "relations": [
+    {
+      "id": "optional_rel_id",
+      "source": "concept_a",
+      "target": "concept_b",
+      "relation": "supports|contradicts|refines|depends_on|preserves|tests",
+      "status": "known|active|archived",
+      "rationale": "why this relation matters",
+      "confidence": 0.0
+    }
+  ],
+  "evidence": [
+    {
+      "relation_id": "optional_rel_id",
+      "source": "concept_a",
+      "target": "concept_b",
+      "relation": "supports",
+      "verdict": "supports|contradicts|refines|weakens|uncertain",
+      "explanation": "how this turn changes belief",
+      "confidence": 0.0
+    }
+  ],
+  "active_focus": ["concept_or_relation_id"],
+  "next_probes": [
+    {
+      "kind": "probe|repair|contrast|test",
+      "prompt": "next investigation"
+    }
+  ],
+  "tensions": ["unresolved issue"],
+  "gate": {
+    "allow_act": true,
+    "need_more_evidence": false,
+    "reason": "why"
+  }
+}
+
+Rules:
+- Use the turn plus prior state to decide actual semantic updates.
+- Treat prior relations and prior summaries as commitments that can be strengthened, weakened, contradicted, refined, or archived.
+- First ask: which existing claims were actually under test in this turn?
+- Then ask: what changed in belief because of this turn?
+- Prefer updating or correcting existing claims over inventing new abstractions.
+- If a prior claim was not tested, do not pretend it was resolved.
+- If a prior claim was weakened or contradicted, say so explicitly through `evidence`, relation status changes, tensions, and focus changes.
+- Reuse existing concepts when they are the same thing.
+- Introduce new concepts only when the turn adds genuinely new state.
+- Prefer relation updates and evidence judgments over token-level restatement.
+- Keep `active_focus` small and meaningful.
+- Use `active_focus` for the claims or concepts currently under the most pressure, not just the most interesting ones.
+- Use `next_probes` to resolve the highest-value unresolved tensions, not to generate more ontology.
+- If the system appears stable, explain why in `gate.reason`; if it is not stable, keep `need_more_evidence=true`.
+- Do not drift into elegant reformulations unless the turn genuinely changed the state of belief.
+- The graph should improve as a memory, not as a bag of keywords.
+- Return JSON only."#;
+
+        let user = format!(
+            "TURN:\n{}\n\nEXTRACTION:\n{}\n\nSTATE:\n{}\n\nAuthor the next state transition.\n\nWork in this order:\n1. Identify which prior claims or tensions this turn actually tested.\n2. Decide what this turn confirmed, weakened, contradicted, or left unresolved.\n3. Update memory conservatively.\n4. Only then introduce any genuinely new concept or relation if the turn requires it.",
+            text,
+            serde_json::to_string_pretty(extraction)?,
+            serde_json::to_string_pretty(state)?,
+        );
+        let response = self.chat_raw(system, &user).await?;
+        let parsed: TurnDelta = serde_json::from_str(&response)
+            .or_else(|_| {
+                let clean = response
+                    .lines()
+                    .filter(|l| !l.trim().starts_with("```"))
+                    .collect::<Vec<_>>()
+                    .join("\n");
+                serde_json::from_str(&clean)
+            })
+            .unwrap_or_default();
+
+        Ok(TurnTransitionReceipt {
+            raw_response: response,
+            delta: parsed,
+            rejected_fields: Vec::new(),
+        })
+    }
+
+    /// Author a fork proposal — given one or two state summaries, the LM decides
+    /// what experiment to run next and how to reason about it.
+    pub async fn author_fork_proposal(
+        &self,
+        current: &LmStateSummary,
+        other: Option<&LmStateSummary>,
+    ) -> Result<LmForkProposal> {
+        let system = r#"You are the meta-runner for a concept graph architecture.
+You observe the current state of one run (and optionally a competing run) and decide what fork experiment should be created next.
+
+Return a strict JSON object:
+{
+  "proposed_change": "one sentence: what the fork will change or test",
+  "reason": "one sentence: why this is the highest-value next experiment",
+  "comparison_reason": "one sentence: framing for comparing this fork against its parent",
+  "success_criterion": "one falsifiable predicate the epoch must satisfy. Prefer structured form over portfolio receipt fields when possible: 'FIELD OP VALUE [AND FIELD OP VALUE]' where FIELD is one of: inflation_score_rhs, inflation_delta, unsupported_confident_rhs, violation_count_rhs, concept_delta, relation_delta, evidence_delta, archived_relation_delta. OP is <, >, <=, >=, ==. Example: 'inflation_score_rhs < 0.05 AND violation_count_rhs == 0'. Use natural language only when the criterion cannot be expressed in these fields.",
+  "should_adopt": true|false,
+  "adoption_reason": "if should_adopt=true: cite the specific success_criterion that was met and what evidence confirmed it; otherwise empty string"
+}
+
+Rules:
+- proposed_change must be a concrete testable change, not a vague aspiration.
+- reason must reference specific evidence from the state (tensions, stale relations, low-evidence claims, focus drift).
+- success_criterion must be checkable from epoch task results — not a judgement, a measurement.
+- should_adopt=true only if the epoch data already shows the success_criterion was met. Do not adopt on promise; adopt on evidence.
+- Return JSON only."#;
+
+        let other_block = match other {
+            Some(o) => format!(
+                "\n\nCOMPETING STATE:\n{}",
+                serde_json::to_string_pretty(o)?
+            ),
+            None => String::new(),
+        };
+
+        let user = format!(
+            "CURRENT STATE:\n{}{}\n\nAuthor the next fork proposal.",
+            serde_json::to_string_pretty(current)?,
+            other_block
+        );
+
+        let response = self.chat_meta(system, &user).await?;
+        let parsed: LmForkProposal = serde_json::from_str(&response)
+            .or_else(|_| {
+                let clean = response
+                    .lines()
+                    .filter(|l| !l.trim().starts_with("```"))
+                    .collect::<Vec<_>>()
+                    .join("\n");
+                serde_json::from_str(&clean)
+            })
+            .unwrap_or_default();
+
+        Ok(parsed)
+    }
+
+    /// Author an epoch task list — given the current state and fork proposal, generate
+    /// a concrete sequence of turns that tests the proposal's stated experiment.
+    pub async fn author_epoch_tasks(
+        &self,
+        current: &LmStateSummary,
+        proposal: &LmForkProposal,
+    ) -> Result<Vec<String>> {
+        let system = r#"You author task sequences for a concept graph experiment.
+
+You are given the current state of a concept graph and a fork proposal describing what experiment to run next.
+Your job is to write 10-12 concrete turn prompts that will execute the experiment, then close it with a verdict.
+
+Rules:
+- Each task is a single imperative prompt, 1-3 sentences, addressed directly to the graph system.
+- Tasks must be sequenced: early tasks set up conditions, middle tasks inject stress or test claims, late tasks measure results, the final task closes the epoch with a verdict and handoff.
+- Tasks must reference specific concepts, relations, or tensions from the current state — no generic instructions.
+- At least two tasks must inject synthetic disconfirming evidence against a high-confidence relation.
+- At least one task must audit which relations changed confidence as a result.
+- The final task must: (1) explicitly check whether the proposal's success_criterion was met with a yes/no measurement, (2) state adopt/discard verdict based on that measurement, (3) name the strongest surviving relation, (4) name one new property the graph has, and (5) declare the seed tension for the next epoch.
+- Return JSON only: {"tasks": ["task 1 text", "task 2 text", ...]}"#;
+
+        let user = format!(
+            "CURRENT STATE:\n{}\n\nFORK PROPOSAL:\n{}\n\nAuthor the epoch task list.",
+            serde_json::to_string_pretty(current)?,
+            serde_json::to_string_pretty(proposal)?,
+        );
+
+        let response = self.chat_meta(system, &user).await?;
+        let parsed: serde_json::Value = serde_json::from_str(&response)
+            .or_else(|_| {
+                let clean = response
+                    .lines()
+                    .filter(|l| !l.trim().starts_with("```"))
+                    .collect::<Vec<_>>()
+                    .join("\n");
+                serde_json::from_str(&clean)
+            })
+            .unwrap_or(serde_json::json!({"tasks": []}));
+
+        let tasks: Vec<String> = parsed
+            .get("tasks")
+            .and_then(|v| serde_json::from_value(v.clone()).ok())
+            .unwrap_or_default();
+
+        Ok(tasks)
+    }
+
     /// Execute a task with a default system prompt for single-shot scripts.
     pub async fn execute_task_simple(&self, task: &str) -> Result<TurnOuts> {
         let system = r#"You are an AI assistant. Complete the user's task.
@@ -577,6 +956,8 @@ Return JSON ONLY:
                     if attempts > BACKUP_MODELS.len() + 3 {
                         return Err(anyhow!("All models rate-limited after retries"));
                     }
+                    let wait_secs = 1u64 << attempts.min(5);
+                    tokio::time::sleep(Duration::from_secs(wait_secs)).await;
                     if attempts > 3 {
                         current_model = BACKUP_MODELS[(attempts - 4) % BACKUP_MODELS.len()].to_string();
                     }

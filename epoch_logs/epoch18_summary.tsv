@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+312	1	ok	313	334	525	457	liquidity_trap,staleness_census,stratified_certainty	2	2	The system has transitioned from naming a tension (Epoch 11 conclusion) to measu
+312	2	ok	314	336	528	458	liquidity_trap,speculative_status,staleness_clock	1	1	The formal rule provides a clear state-transition logic for resolving the previo
+312	3	ok	315	337	530	460	downstream_orphaning,speculative_status,staleness_clock	1	1	The efficacy of the staleness_clock over the static threshold is now empirically
+312	4	ok	316	337	531	461	dependency_weighted_quarantine,liquidity_trap,staleness_cloc	2	1	The system has received a significant disconfirming injection that flips a previ
+312	5	ok	317	339	533	463	premature_pruning,staleness_clock,structural_antagonism	2	1	The system has moved from a stable 'solution' (staleness_clock) back into a high
+312	6	ok	318	339	536	465	cascading_filter_deadlock,foundational_axiom,staleness_clock	2	1	The replication of 'cascading_filter_deadlock' reveals a critical flaw in the cu
+312	7	ok	319	340	539	467	audit_as_generator,mention_farming,staleness_clock	2	2	The 'mention farming' vulnerability suggests the staleness_clock may be fundamen
+312	8	ok	320	340	542	469	mention_farming,staleness_clock,stratified_certainty	2	2	The audit provided clear binary results: injections lowered confidence, but the 
+312	9	ok	321	342	544	469	staleness_clock,vestigial_structure	2	2	The relationship between the two windows is now analytically defined as orthogon
+312	10	ok	322	343	546	471	citation_independence_test,staleness_clock,temporal_orthogon	2	2	Orthogonality is confirmed; the system now needs a prioritisation rule to preven
+312	11	ok	323	344	547	472	citation_independence_test,foundational_axiom,structural_pri	2	2	Epoch 12 successfully falsified the temporal clock fork and identified a new str

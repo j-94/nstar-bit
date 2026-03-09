@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+290	1	ok	291	311	488	434	status_change_origin_tag,status_classification	2	2	The system has introduced a new control layer ('status_change_origin_tag') but i
+290	2	ok	292	314	490	435	baseline_census,epistemic_provenance,status_laundering_suspe	2	2	The census has been established but the findings (which concepts are actually fl
+290	3	ok	293	315	492	436	foundational_axiom,status_change_origin_tag,structural_liqui	2	2	The test confirmed the risk of structural collapse under the current filter; a r
+290	4	ok	294	316	492	437	audit_as_generator,audit_inflates_confidence,status_confiden	2	2	The disconfirming evidence was specific and empirical (simulation-based), requir
+290	5	ok	295	316	494	438	audit_as_validator,audit_verifies_protocol,status_change_ori	2	2	The system has encountered a functional deadlock at the status layer; proceeding
+290	6	ok	296	318	496	439	semantic_ambiguity,status_change_origin_tag,status_channel_m	2	2	The status_change_origin_tag has been empirically validated against a specific m
+290	7	ok	297	319	497	440	cascading_archival,citation_independence_test	2	2	The interaction between the two filters is now empirically defined; the system s
+290	8	ok	298	319	498	441	evidence_ledger,status_change_origin_tag	2	2	The audit of Tasks 3-7 provided a clear empirical basis for downgrading the 'aud
+290	9	ok	299	320	501	442	audit_as_validator,dual_filter_paralysis	2	2	The system is currently in a state of 'dual-filter paralysis' where internal sta
+290	10	ok	300	322	503	443	audit_as_generator,false_negative_rate,status_limbo	2	2	The system is in a state of 'status limbo' for all active concepts; proceeding w
+290	11	ok	301	323	504	444	cascading_filter_deadlock,topological_routing_resistance	1	2	The verdict to discard status_change_origin_tag is unambiguous based on the 100%

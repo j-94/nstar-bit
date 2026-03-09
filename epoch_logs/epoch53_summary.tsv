@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+710	1	ok	711	683	1132	915	audit_as_validator	2	1	no_evidence_at_declaration_or_missing_dialogue
+710	2	ok	712	683	1133	915	dependency_weighted_quarantine,entry_rule_a	2	1	no_evidence_at_declaration_or_missing_dialogue
+710	3	ok	713	684	1135	916	dependency_weighted_quarantine,entry_rule_b	2	1	no_evidence_at_declaration_or_missing_dialogue
+710	4	ok	714	685	1136	917	entry_rule_a,stratified_certainty	2	1	no_evidence_at_declaration_or_missing_dialogue
+710	5	ok	715	685	1138	918	architecture,dependency_weighted_quarantine,entry_rule_b	2	2	no_evidence_at_declaration_or_missing_dialogue
+710	6	ok	716	685	1139	919	audit_as_validator,entry_rule_a,entry_rule_b	2	2	no_evidence_at_declaration_or_missing_dialogue
+710	7	ok	717	686	1141	921	entry_rule_a,entry_rule_b,registration_requirement	2	2	no_evidence_at_declaration_or_missing_dialogue
+710	8	ok	718	686	1142	922	asymmetry_persists,bilateral_grounding_symmetry	2	2	no_evidence_at_declaration_or_missing_dialogue
+710	9	ok	719	686	1143	923	causal_anchor,entry_rule_a	1	1	no_evidence_at_declaration_or_missing_dialogue
+710	10	ok	720	687	1145	924	audit_as_validator,dependency_weighted_quarantine,dwq_transi	2	2	no_evidence_at_declaration_or_missing_dialogue
+710	11	ok	721	689	1147	925	dependency_weighted_quarantine,exit_criteria_symmetry,quaran	2	2	no_evidence_at_declaration_or_missing_dialogue
+710	12	ok	722	689	1149	927	dependency_weighted_quarantine,quarantine_exit_vacuum	2	1	no_evidence_at_declaration_or_missing_dialogue

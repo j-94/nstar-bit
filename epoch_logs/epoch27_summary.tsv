@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+412	1	ok	413	422	695	567	probabilistic_escalation	2	1	no_evidence_at_declaration_or_missing_dialogue
+412	2	ok	414	424	697	568	probabilistic_escalation,quantitative_gates	2	1	no_evidence_at_declaration_or_missing_dialogue
+412	3	ok	415	424	698	568	probabilistic_escalation	1	1	no_evidence_at_declaration_or_missing_dialogue
+412	4	ok	416	424	698	569	confidence_inflation,epoch_20_baseline	2	2	no_evidence_at_declaration_or_missing_dialogue
+412	5	ok	417	425	700	570	calibration_latency,ceiling_fork,checksum_evasion	2	2	no_evidence_at_declaration_or_missing_dialogue
+412	6	ok	418	426	701	571	probabilistic_escalation,probability_shopping	2	2	no_evidence_at_declaration_or_missing_dialogue
+412	7	ok	419	427	703	572	audit_paralysis_reduction,probabilistic_escalation,probabili	2	2	no_evidence_at_declaration_or_missing_dialogue
+412	8	ok	420	428	703	574	baseline_benchmarks_regime_c,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+412	9	ok	421	430	706	575	corrupted_bonus_propagation,probabilistic_escalation,survivi	2	2	no_evidence_at_declaration_or_missing_dialogue
+412	10	ok	422	431	708	575	decomposability_assumption,probabilistic_escalation,probabil	2	2	no_evidence_at_declaration_or_missing_dialogue
+412	11	ok	423	432	708	576	decomposability_assumption,probability_shopping,recursive_vu	2	2	no_evidence_at_declaration_or_missing_dialogue

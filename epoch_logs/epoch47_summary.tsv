@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+633	1	ok	634	642	1057	831	alias_deduplication_layer,semantic_novelty_enforcement,tempo	2	2	no_evidence_at_declaration_or_missing_dialogue
+633	2	ok	635	643	1059	832	causal_anchor,semantic_novelty_enforcement,temporal_fingerpr	2	2	no_evidence_at_declaration_or_missing_dialogue
+633	3	ok	636	644	1061	833	causal_anchor,recovery_simulation_metrics,temporal_fingerpri	1	1	no_evidence_at_declaration_or_missing_dialogue
+633	4	ok	637	645	1063	834	alias_recycling_attack,recovery_simulation_metrics,temporal_	1	1	no_evidence_at_declaration_or_missing_dialogue
+633	5	ok	638	646	1065	836	causal_anchor,recalibration_success_rate,temporal_fingerprin	1	1	no_evidence_at_declaration_or_missing_dialogue
+633	6	ok	639	647	1065	837	audit_as_validator,audit_triggers_transition,performative_st	2	1	no_evidence_at_declaration_or_missing_dialogue
+633	7	ok	640	648	1066	838	ambiguity_stalls_recovery,content_hashing,temporal_fingerpri	1	1	no_evidence_at_declaration_or_missing_dialogue
+633	8	ok	641	649	1068	840	alias_deduplication_layer,causal_anchor,temporal_blindness	2	1	no_evidence_at_declaration_or_missing_dialogue
+633	9	ok	642	649	1070	842	architecture,causal_anchor,temporal_fingerprint_gate	2	1	no_evidence_at_declaration_or_missing_dialogue
+633	10	ok	643	651	1072	844	audit_triggers_transition,causal_anchor,temporal_fingerprint	2	2	no_evidence_at_declaration_or_missing_dialogue
+633	11	ok	644	652	1074	845	alias_deduplication_layer,evidence_throughput,stratified_cer	2	2	no_evidence_at_declaration_or_missing_dialogue

@@ -18,4 +18,10 @@ clap = { version = "4", features = ["derive"] }
 walkdir = "2"
 futures = "0.3.31"
 evalexpr = "11.3"
+serde_yaml = "0.9"
+regex = "1"
+axum = { version = "0.8.8", features = ["ws"] }
+tokio-stream = "0.1.18"
+tower-http = { version = "0.6.8", features = ["cors"] }
+tokio-tungstenite = "0.28.0"
 

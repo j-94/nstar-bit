@@ -1,0 +1,13 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+760	1	ok	761	714	1189	974	performative_stability,pre_spr_baseline,recovery_protocol	1	1	no_evidence_at_declaration_or_missing_dialogue
+760	2	ok	762	716	1192	975	burst_node,recovery_protocol,self_citation_firewall,sustaine	2	1	no_evidence_at_declaration_or_missing_dialogue
+760	3	ok	763	717	1193	976	burst_node,candidate_a,recovery_protocol,stratified_certaint	2	1	no_evidence_at_declaration_or_missing_dialogue
+760	4	ok	764	717	1193	977	dependency_weighted_quarantine,performative_stability,recove	2	1	no_evidence_at_declaration_or_missing_dialogue
+760	5	ok	765	717	1193	978	audit_as_validator,performative_stability,recovery_protocol	2	1	no_evidence_at_declaration_or_missing_dialogue
+760	6	ok	766	718	1196	980	burst_node,recovery_protocol,sustained_presence_requirement	2	1	no_evidence_at_declaration_or_missing_dialogue
+760	7	ok	767	719	1198	981	residual_isolation,sustained_node	1	1	no_evidence_at_declaration_or_missing_dialogue
+760	8	ok	768	719	1199	983	audit_as_validator,dependency_weighted_quarantine,stratified	2	1	no_evidence_at_declaration_or_missing_dialogue
+760	9	ok	769	720	1201	984	hollowed_node,performative_stability,spr_mechanism	1	1	no_evidence_at_declaration_or_missing_dialogue
+760	10	ok	770	721	1203	985	recovery_protocol,slow_legitimate_node	1	1	no_evidence_at_declaration_or_missing_dialogue
+760	11	ok	771	721	1205	986	dependency_weighted_quarantine,provenance_depth_gate	1	1	no_evidence_at_declaration_or_missing_dialogue
+760	12	ok	772	723	1207	987	provenance_anchoring,spr_mechanism	1	1	no_evidence_at_declaration_or_missing_dialogue

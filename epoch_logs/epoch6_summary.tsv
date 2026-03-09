@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+55	1	ok	56	72	87	85	explanatory_autonomy,information_closure	2	2	The introduction of information_closure provides a promising successor to MM, bu
+55	2	ok	57	73	88	86	abstractive_novelty,explanatory_autonomy,information_closure	2	2	The 'Grounding Void' is sufficiently filled by the formal link between closure a
+55	3	ok	58	74	90	88	circular_grounding,information_closure	2	2	The 'information_closure' solution is currently under a high-probability defeate
+55	4	ok	59	76	92	89	causal_powers_functionalism,closure_boundary_individuation,i	2	2	The core relation 'rel_cpf_collapses_to_reductionism' has been successfully dest
+55	5	ok	60	77	94	91	information_closure,local_identity,rel_identity_tautology_we	2	2	The system has successfully ingested a targeted defeater for a high-confidence r
+55	6	ok	61	78	96	93	causal_drainage,information_closure,observer_relativity	2	2	The grounding of 'information_closure' has shifted from a solution to a problem;
+55	7	ok	62	78	98	95	causal_constitutive_hybrid,information_closure,topological_a	1	2	The relationship between information closure and causal structure is currently i
+55	8	ok	63	79	99	96	downward_causation,information_closure,macro_level_constrain	1	2	The turn successfully provided a mechanism to deflate a long-standing high-tensi
+55	9	ok	64	81	100	98	downward_causation,information_closure,structurally_signific	2	2	The audit successfully quantified the impact of the information-closure turn, si
+55	10	ok	65	83	102	100	grounding_void,information_closure,viability_score	1	2	The stress test of information_closure is complete; its limitations regarding ci
+55	11	ok	66	84	102	101	grounding_void,information_closure,systemic_constraint	2	2	Epoch 6 is closed with a clear verdict: Information Closure is a valid formal to

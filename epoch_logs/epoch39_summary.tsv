@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+544	1	ok	545	561	924	717	measurement_death_spiral,measurement_immune_privilege,strati	2	2	no_evidence_at_declaration_or_missing_dialogue
+544	2	ok	546	562	925	717	audit_as_validator,self_citation_firewall	2	2	no_evidence_at_declaration_or_missing_dialogue
+544	3	ok	547	563	927	718	audit_as_validator,protection_failure,self_citation_firewall	2	2	no_evidence_at_declaration_or_missing_dialogue
+544	4	ok	548	564	929	719	audit_as_validator,immune_privileged_node,immune_sovereignty	2	2	no_evidence_at_declaration_or_missing_dialogue
+544	5	ok	549	565	931	720	functional_orphanhood,immune_sovereignty_paradox,measurement	2	2	no_evidence_at_declaration_or_missing_dialogue
+544	6	ok	550	567	933	721	audit_on_nothing_syndrome,functional_hollowing	2	2	no_evidence_at_declaration_or_missing_dialogue
+544	7	ok	551	567	934	722	immune_privileged_node,performative_stability	1	2	no_evidence_at_declaration_or_missing_dialogue
+544	8	ok	552	567	935	723	audit_as_validator,performative_stability,stratified_certain	1	2	no_evidence_at_declaration_or_missing_dialogue
+544	9	ok	553	570	938	724	measurement_escrow,performative_stability	2	2	no_evidence_at_declaration_or_missing_dialogue
+544	10	ok	554	572	940	725	functional_substrate,immune_sovereignty_paradox,meta_evaluat	1	2	no_evidence_at_declaration_or_missing_dialogue
+544	11	ok	555	573	942	726	measurement_death_spiral,measurement_escrow,reconstructive_i	2	2	no_evidence_at_declaration_or_missing_dialogue

@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+209	1	ok	210	224	360	323	architecture,evidence_ledger,routing_ledger	2	2	The system has moved from a paradox toward a dual-track formalism, but the 'conn
+209	2	ok	211	225	363	325	architecture,routing_ledger,topological_inference	2	2	The routing_ledger is populated but its claims are currently 'inferred from topo
+213	3	ok	214	227	366	329	incremental_application,testing_methodology,veto_tests_archi	2	2	The core premise of the 'Indispensable Ghost' is under effective challenge; we c
+213	4	ok	215	229	368	330	absolute_grounding_deficit,dual_ledger,evidence_ledger	2	2	The re-derivation of 3 paths significantly destabilizes the Epoch 6 conclusion, 
+213	5	ok	216	230	370	332	god_concept_risk,routing_ledger,stratified_certainty	2	2	The turn explicitly asks to identify any relation the ledger provides that is *n
+213	6	ok	217	232	372	334	architecture,dual_ledger_regime,validator_circularity	2	2	The 3-turn simulation provided a stable operational baseline for how the dual le
+213	7	ok	218	234	374	335	architecture_is_generator_led,routing_test_ids,validator_cir	2	2	The independence of the routing_ledger is currently undermined by the potential 
+213	8	ok	219	235	376	337	absolute_grounding_deficit,indispensable_ghost,routing_test_	2	2	The auditability of routing_test_ids is currently a hypothesis; we need to verif
+213	9	ok	220	235	377	339	audit_as_validator,stratified_certainty,validator_circularit	1	2	The audit successfully mapped the confidence shifts requested, identifying speci
+213	10	ok	221	237	377	339	audit_fragmentation,stratified_certainty	1	2	The system has successfully adjudicated between two architectural paths and sele
+213	11	ok	222	238	379	339	integrated_provenance,stratified_certainty	1	1	The epoch verdict is delivered: the fork is discarded, 'integrated_provenance' i

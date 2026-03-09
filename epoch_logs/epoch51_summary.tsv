@@ -1,0 +1,10 @@
+678	DEF-1	ok	?	?	?	?		0	0	deficit_targeted
+678	DEF-2	ok	?	?	?	?		0	0	deficit_targeted
+678	DEF-3	ok	?	?	?	?		0	0	deficit_targeted
+678	DEF-4	ok	?	?	?	?		0	0	deficit_targeted
+678	DEF-5	ok	?	?	?	?		0	0	deficit_targeted
+683	DEF-1	ok	684	670	1113	887	audit_as_validator,dependency_weighted_quarantine,	0	0	deficit_targeted
+683	DEF-2	ok	685	670	1113	888	audit_as_validator,stratified_certainty	0	0	deficit_targeted
+683	DEF-3	ok	686	670	1114	889	architecture,cosine_similarity_gate,evidence_ledge	0	0	deficit_targeted
+683	DEF-4	ok	687	670	1114	890	audit_as_validator,cosine_similarity_gate,represen	0	0	deficit_targeted
+683	DEF-5	ok	688	670	1114	891	ambiguity_weakens_recovery,recovery_protocol	0	0	deficit_targeted

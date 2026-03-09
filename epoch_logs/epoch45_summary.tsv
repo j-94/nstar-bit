@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+611	1	ok	612	624	1025	804	causal_anchor,provenance_depth_gate,self_citation_firewall	2	1	no_evidence_at_declaration_or_missing_dialogue
+611	2	ok	613	625	1026	804	provenance_depth_gate,self_citation_firewall,test_node_pdg	2	1	no_evidence_at_declaration_or_missing_dialogue
+611	3	ok	614	625	1027	804	provenance_depth_gate,test_node_pdg	2	1	no_evidence_at_declaration_or_missing_dialogue
+611	4	ok	615	625	1029	805	provenance_depth_gate,test_node_pdg	1	1	no_evidence_at_declaration_or_missing_dialogue
+611	5	ok	616	626	1029	806	provenance_depth_gate,test_node_pdg	2	1	no_evidence_at_declaration_or_missing_dialogue
+611	6	ok	617	627	1031	807	event_diversity,performative_stability,provenance_depth_gate	1	1	no_evidence_at_declaration_or_missing_dialogue
+611	7	ok	618	627	1033	808	event_diversity,provenance_depth_gate	2	2	no_evidence_at_declaration_or_missing_dialogue
+611	8	ok	619	627	1035	809	causal_anchor,provenance_depth_gate,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+611	9	ok	620	627	1035	812	causal_anchor,provenance_depth_gate_enforces_upgrade,stratif	2	2	no_evidence_at_declaration_or_missing_dialogue
+611	10	ok	621	628	1037	813	performative_stability,provenance_depth_gate,vulnerability_s	2	2	no_evidence_at_declaration_or_missing_dialogue
+611	11	ok	622	630	1038	814	anchor_restoration_priority,causal_anchor,inherited_floor_br	2	2	no_evidence_at_declaration_or_missing_dialogue

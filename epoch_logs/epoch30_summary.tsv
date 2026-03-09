@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+445	1	ok	446	454	746	601	origin_gated_delta,overlapping_window_accumulator,performati	2	2	no_evidence_at_declaration_or_missing_dialogue
+445	2	ok	447	454	748	603	origin_gated_delta,overlapping_window_accumulator,performati	2	2	no_evidence_at_declaration_or_missing_dialogue
+445	3	ok	448	455	749	605	origin_gated_delta,perpetual_freshness_cloak	1	1	no_evidence_at_declaration_or_missing_dialogue
+445	4	ok	449	456	751	606	origin_gated_delta,origin_spoofing,vulnerability_inheritance	2	2	no_evidence_at_declaration_or_missing_dialogue
+445	5	ok	450	457	752	608	accumulator_reduces_evasion,origin_gated_delta,payload_distr	2	2	no_evidence_at_declaration_or_missing_dialogue
+445	6	ok	451	459	754	610	audit_as_generator,audit_invisibility,origin_gated_delta	2	2	no_evidence_at_declaration_or_missing_dialogue
+445	7	ok	452	459	755	611	foundational_axiom,origin_gated_delta,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+445	8	ok	453	460	757	613	adversarial_equivalence,origin_gated_delta,pareto_improvemen	2	2	no_evidence_at_declaration_or_missing_dialogue
+445	9	ok	454	460	758	615	audit_invisibility,foundational_axiom,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+445	10	ok	455	460	760	617	adversarial_equivalence,origin_gated_delta,overlapping_windo	2	2	no_evidence_at_declaration_or_missing_dialogue
+445	11	ok	456	463	761	619	origin_classification_solvability,self_shrouding_topology	2	2	no_evidence_at_declaration_or_missing_dialogue

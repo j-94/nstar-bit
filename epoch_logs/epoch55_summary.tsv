@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+744	1	ok	745	701	1171	955	crp_baseline,residual_isolation_population,stratified_certai	1	1	no_evidence_at_declaration_or_missing_dialogue
+744	2	ok	746	702	1173	956	crp_protocol,self_citation_firewall	2	1	no_evidence_at_declaration_or_missing_dialogue
+744	3	ok	747	702	1173	956		0	0	missing_gate
+744	4	ok	748	702	1173	957	dwq_exit_rules,exit_rules_resolve_vacuum	2	1	no_evidence_at_declaration_or_missing_dialogue
+744	5	ok	749	704	1175	958	artifact_dependency,audit_validates_certainty,audit_window_s	2	2	no_evidence_at_declaration_or_missing_dialogue
+744	6	ok	750	705	1177	959	crp_probing_window,self_citation_firewall,stratified_certain	2	2	no_evidence_at_declaration_or_missing_dialogue
+744	7	ok	751	706	1179	960	recovery_protocol,self_citation_firewall,stratified_certaint	1	1	no_evidence_at_declaration_or_missing_dialogue
+744	8	ok	752	707	1181	962	crp_stage_3,dependency_weighted_quarantine,recovery_protocol	1	0	no_evidence_at_declaration_or_missing_dialogue
+744	9	ok	753	709	1181	964	audit_as_validator,recovery_protocol,stratified_certainty	2	2	no_evidence_at_declaration_or_missing_dialogue
+744	10	ok	754	710	1182	965	crp_eligibility_criteria,recovery_protocol	1	1	no_evidence_at_declaration_or_missing_dialogue
+744	11	ok	755	712	1184	967	rehabilitation_drift,symmetric_dwq_exit	1	1	no_evidence_at_declaration_or_missing_dialogue

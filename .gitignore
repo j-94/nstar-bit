@@ -4,3 +4,32 @@ target/
 *.json
 *.jsonl
 nstar-autogenesis/
+
+# Large framework (tracked separately)
+marvin/
+
+# Python cache
+__pycache__/
+scripts/__pycache__/
+
+# Large log files (ephemeral)
+epoch_logs/*.log
+epoch_logs/canonical_*.log
+epoch_logs/corpus_*.log
+epoch_logs/runner.log
+
+# Untracked conversation exports (too noisy)
+*.md.resolved
+*.md.unresolved
+rawchat-*.md
+
+# Baseline/ab test logs
+ab_adversarial.log
+baseline_run.log
+baseline_summary.tsv
+epoch1_run.log
+
+# Exception: persist subagent run transcripts
+!subagent_runs/transcripts/
+!subagent_runs/transcripts/**
+

@@ -1,0 +1,12 @@
+epoch_start_turn	task	result	turn	concepts	relations	evidence	focus	seeds	tensions	gate
+489	1	ok	490	501	822	653	alias_deduplication_layer,counterfactual_gaming_surface,sema	2	1	no_evidence_at_declaration_or_missing_dialogue
+489	2	ok	491	501	824	654	alias_deduplication_layer,counterfactual_gaming_surface,suff	2	1	no_evidence_at_declaration_or_missing_dialogue
+489	3	ok	492	502	826	655	alias_deduplication_layer,counterfactual_score,stratified_ce	2	1	no_evidence_at_declaration_or_missing_dialogue
+489	4	ok	493	503	828	656	alias_deduplication_layer,naming_collision,session_accumulat	2	2	no_evidence_at_declaration_or_missing_dialogue
+489	5	ok	494	504	830	657	alias_deduplication_layer,performative_stability,stratified_	2	2	no_evidence_at_declaration_or_missing_dialogue
+489	6	ok	495	504	832	658	alias_deduplication_layer,performative_stability	2	2	no_evidence_at_declaration_or_missing_dialogue
+489	7	ok	496	504	834	659	audit_as_generator,semantic_utility_probe,unified_scoring_di	2	1	no_evidence_at_declaration_or_missing_dialogue
+489	8	ok	497	504	838	661	alias_deduplication_layer,counterfactual_gaming_surface,unif	1	1	no_evidence_at_declaration_or_missing_dialogue
+489	9	ok	498	505	840	661	maintenance_feedback_loop,performative_stability,session_acc	2	2	no_evidence_at_declaration_or_missing_dialogue
+489	10	ok	499	507	842	662	alias_padding,cascading_vulnerability,self_citation_firewall	2	2	no_evidence_at_declaration_or_missing_dialogue
+489	11	ok	500	509	843	662	disconfirming_evidence,metadata_integrity_sink,provenance_en	2	1	no_evidence_at_declaration_or_missing_dialogue
