@@ -111,8 +111,7 @@ async fn main() -> Result<()> {
                 if let Some(ref md) = manifest_dispatch {
                     if let Some(result) = md.try_dispatch(&message) {
                         eprintln!(
-                            "[manifest] {} edge(s) matched — deterministic dispatch (OMNI not fired)",
-                            result.matched_edges.len()
+                            "[manifest] edge matched — deterministic dispatch (OMNI not fired)",
                         );
                         md.apply_ops(&mut state, &result);
                         // Still run process_turn for receipt + focus bookkeeping
@@ -184,16 +183,7 @@ async fn main() -> Result<()> {
                 event.gate.reason
             );
 
-            // Emit void diagnostics if manifest loaded
-            if let Some(ref md) = manifest_dispatch {
-                let top_void = md.top_void_concepts(&state, md.manifest.void_score.display_top_n.max(3));
-                if !top_void.is_empty() {
-                    eprintln!("[void] top ignorance targets:");
-                    for (c, score) in &top_void {
-                        eprintln!("  {:.0} — {}", score, c.id);
-                    }
-                }
-            }
+            // Void diagnostics placeholder — requires full manifest implementation.
         }
         Command::Fork {
             output,

@@ -952,7 +952,10 @@ pub fn process_turn_with_delta(
     }
 
     for evidence in &normalized.evidence {
-        if let Some(relation_id) = apply_evidence(state, evidence, turn, String::new(), String::new(), std::collections::BTreeMap::new(), &mut rejected_fields) {
+        // Pass the raw signal as source_uri so every evidence entry is traceable
+        // back to the exact text that generated it. This closes the provenance gap
+        // where evidence_log entries had source_uri: "" and could not be audited.
+        if let Some(relation_id) = apply_evidence(state, evidence, turn, message.to_string(), now_iso(), std::collections::BTreeMap::new(), &mut rejected_fields) {
             if !relation_ids.iter().any(|id| id == &relation_id) {
                 relation_ids.push(relation_id);
             }
@@ -1037,6 +1040,18 @@ pub fn process_turn_with_delta(
         normalized.gate.need_more_evidence = true;
         normalized.gate.allow_act = false;
         normalized.gate.reason = "no_evidence_at_declaration_or_missing_dialogue".to_string();
+        // Downgrade newly discovered concepts to "candidate" — they were declared
+        // without dialogue evidence and must earn promotion through subsequent turns.
+        // This is the anti-inflation gate that kept inflation_score=0.008 over 73 epochs.
+        // Without this write-back, the gate blocked LM actions but concepts landed as
+        // "known" anyway, bypassing the structural utility requirement entirely.
+        for id in &discovered {
+            if let Some(concept) = state.concepts.get_mut(id) {
+                if concept.status != "archived" {
+                    concept.status = "candidate".to_string();
+                }
+            }
+        }
     }
 
     state.active_focus = active_focus.clone();
