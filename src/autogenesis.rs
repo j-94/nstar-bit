@@ -952,10 +952,15 @@ pub fn process_turn_with_delta(
     }
 
     for evidence in &normalized.evidence {
-        // Pass the raw signal as source_uri so every evidence entry is traceable
-        // back to the exact text that generated it. This closes the provenance gap
-        // where evidence_log entries had source_uri: "" and could not be audited.
-        if let Some(relation_id) = apply_evidence(state, evidence, turn, message.to_string(), now_iso(), std::collections::BTreeMap::new(), &mut rejected_fields) {
+        // Evidence from the LM turn path is dialogue evidence by definition.
+        // Set origin="dialogue" when empty so the no_evidence_at_declaration gate
+        // can distinguish LM-grounded evidence from injected/audit entries.
+        // source_uri carries the full raw signal for provenance tracing.
+        let mut ev = evidence.clone();
+        if ev.origin.is_empty() {
+            ev.origin = "dialogue".to_string();
+        }
+        if let Some(relation_id) = apply_evidence(state, &ev, turn, message.to_string(), now_iso(), std::collections::BTreeMap::new(), &mut rejected_fields) {
             if !relation_ids.iter().any(|id| id == &relation_id) {
                 relation_ids.push(relation_id);
             }
@@ -1023,6 +1028,9 @@ pub fn process_turn_with_delta(
         .cloned()
         .collect::<Vec<_>>();
 
+    // Gate fires if ANY new relation lacks dialogue evidence, OR if new concepts
+    // were declared without any accompanying relations at all (concept-only turns
+    // previously bypassed the gate since the loop over relation_ids was empty).
     let mut missing_evidence = false;
     for id in &relation_ids {
         if let Some(rel) = state.relations.get(id) {
@@ -1035,6 +1043,12 @@ pub fn process_turn_with_delta(
             }
         }
     }
+    // Concept-only turn bypass: if concepts were discovered but no relations were
+    // proposed, the relation loop is empty and missing_evidence stays false —
+    // allowing noise concepts to land as "known". Close this path.
+    if !missing_evidence && !discovered.is_empty() && relation_ids.is_empty() {
+        missing_evidence = true;
+    }
 
     if missing_evidence {
         normalized.gate.need_more_evidence = true;
@@ -1043,8 +1057,6 @@ pub fn process_turn_with_delta(
         // Downgrade newly discovered concepts to "candidate" — they were declared
         // without dialogue evidence and must earn promotion through subsequent turns.
         // This is the anti-inflation gate that kept inflation_score=0.008 over 73 epochs.
-        // Without this write-back, the gate blocked LM actions but concepts landed as
-        // "known" anyway, bypassing the structural utility requirement entirely.
         for id in &discovered {
             if let Some(concept) = state.concepts.get_mut(id) {
                 if concept.status != "archived" {
