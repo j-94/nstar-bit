@@ -75,6 +75,27 @@ Each mutation was driven by a specific adversarial attack. The trajectory is not
 
 **Missing from canonical:** `no_evidence_at_declaration_or_missing_dialogue` (proven over 40+ autogenesis epochs) was never ported. The canonical gate fires on behavioral node patterns; the LM can Commit a scoring rule without any grounding evidence from the graph. This is the highest-value unimplemented finding.
 
+## Autonomous run findings — supervisor_daemon (2026-03-10)
+
+Three independent supervisor runs (turns 1075→2176, 408+361+328 turns fired) converged to identical late-stage seeds. Replicated without human turns.
+
+### ghost_core and shadow_mutation (system-named, autonomously discovered)
+The engine named its own pre-fix failure mode across all three runs:
+- **`ghost_core`**: ungrounded high-frequency concepts — declared without dialogue evidence, accumulating mention weight through repetition alone. The 649 `candidate` concepts in the final graph are ghost_core candidates.
+- **`shadow_mutation`**: the process by which ghost_core concepts gradually displace `foundational_axiom` nodes through weight accumulation, without ever passing the evidence gate. Silent inflation that doesn't trigger the firewall because it operates below the declaration threshold.
+
+Final seed (all three runs): *"If shadow_mutation bypasses the self_citation_firewall, does stratified_certainty collapse into a flat graph?"* — the system asked whether its own confidence hierarchy survives the attack it just named.
+
+Detection mechanism proposed by the system: SHA-256 receipt comparison before/after shadow_mutation activity. The receipt chain it already has.
+
+### Gate bypass bugs found and fixed (this session)
+1. **`source_uri` silent drop** — every evidence entry had `source_uri: ""`. Raw signal never stored.
+2. **`origin="dialogue"` never set** — gate checked `origin=="dialogue"` but LM path wrote `origin=""`. 0/1293 evidence entries had dialogue origin. Gate was a broken clock.
+3. **Concept-only turn bypass** — gate looped over `relation_ids`. Empty loop → `missing_evidence=false` → noise concepts landed as `known`. Engine minted a concept called `known` and marked it `known`.
+4. **Gate fired after write** — concepts upserted before evidence check. Gate set `allow_act=false` but 170 noise concepts already committed as `known`.
+
+All four closed. Post-fix concept rate: 0.50/turn vs 5.67/turn pre-fix. Gate split at halt: 1028 `known` / 649 `candidate`.
+
 ## What the system is currently working on (epoch 60)
 Testing `sustained_presence_requirement` with W=3 windows (up from W=2). Deficit agents targeting `window_straddling` edge case — nodes with activity spanning turn X.3→(X+1).1 that get dropped. Epoch 59 specced the W=3 boundary formally. Epoch 60 probing for blind spots.
 
