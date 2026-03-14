@@ -1,0 +1,26 @@
+{
+  "policy_version": 1,
+  "_comment": "Governance parameters for run_all_epochs.py. Edit here to change thresholds without touching Python. Loaded at runner startup; missing keys fall back to hardcoded defaults.",
+
+  "max_violations": 10,
+  "inflation_threshold": 0.1,
+  "convergence_window": 3,
+
+  "deficit_contested_conf_floor": 0.3,
+  "deficit_stale_conf_floor": 0.7,
+  "deficit_ungrounded_mention_floor": 10,
+  "deficit_agent_timeout_s": 90,
+
+  "decay_evidence_floor": 0.1,
+
+  "adoption_slope_floor": -0.01,
+  "adoption_min_turns": 10,
+  "adoption_failure_rate_cap": 0.5,
+
+  "presence_window_size": 3,
+
+  "focus_stall_threshold": 3,
+
+  "_num_forks_comment": "Set to 3 to enable parallel competing forks per epoch. 1 = serial (default).",
+  "num_forks": 3
+}
